@@ -50,6 +50,7 @@ Desarrollar el proyecto **ClipSync**.
 - NO dejar `console.log` o código muerto tras completar una funcionalidad.
 - NO cambiar la firma de métodos globales del contexto sin actualizar todos los archivos impactados.
 - NO intervenir en otros archivos a los que no ha sido especificado o tengan relación con la tarea solicitada.
+- Antes de finalizar una tarea, NO clasificarla como "done" o "terminada" hasta que pase exitosamente los tests.
 
 ---
 

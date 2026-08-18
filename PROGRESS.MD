@@ -1,23 +1,24 @@
-## Progreso del proyecto
+## 📝 Progreso del proyecto
 
-## Estado actual
-- Último commit: 
+## 🟡 Estado actual
+- Último commit: dba3fff init.
 - Estados de los test: Passing
 - Lint: Algunos errores que corregir pero no alarmantes.
 
-## Completed
+## ✅ Completed
 - Paginas principales de la aplicación.
-- Primero test para las paginas de Dashboard, NoteDetail, Login y ErrorPage.
+- Test unitarios realizados y exitosos de páginas y componentes principales.
 - Implementación de la base de datos con Supabase.
 - Tipado con TS.
-- Estilos con Tailwind CSS
+- Estilos con Tailwind CSS.
+- 
 
-## En progreso
-- Test para los demás componentes de la aplicación.
+## 📝 En progreso
+- No se encuentra nada en progreso actualmente.
 
-## Errores
+## ❌ Errores
 - Errores en el linter.
 
-## Siguientes pasos
-- Continuar con los test para los siguientes componentes y páginas.
+## ⏭️ Siguientes pasos
+- Realizar test end-to-end con Playwright.
 - Corregir errores del linter.
