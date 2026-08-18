@@ -8,6 +8,9 @@ import NotesProvider from "../context/notesContext.tsx";
 import { describe, expect, test, vi } from "vitest";
 import { MemoryRouter, Routes, Route } from "react-router";
 import * as ReactRouter from "react-router";
+import AddNoteModal from "../components/AddNoteModal.tsx";
+import FloatingSelectionButton from "../components/FloatingSelectionButton.tsx";
+import NoteCard from "../components/NoteCard.tsx";
 
 vi.mock("../hooks/useNotes.tsx", () => ({
     default: () => ({
@@ -34,9 +37,7 @@ vi.mock("../hooks/useNotes.tsx", () => ({
         cat: ["test", "All"],
     })
 
-}))
-
-
+}));
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -147,5 +148,77 @@ describe("test to see if users can find the elements  in the pages Login, Dashbo
         expect(status).toBeInTheDocument();
         expect(statusText).toBeInTheDocument();
         expect(statusMessage).toBeInTheDocument();
-    })
+    });
+
+    test("Add note modal should render and close", () => {
+        render(<AddNoteModal isOpen={true} onClose={() => { }} onAddNote={() => { }} showNotification={() => { }} />);
+
+        const newNoteText = screen.getByText("Add new note");
+        const closeBtn = screen.getByRole("button", { name: "Cerrar" });
+        const titlePlaceholder = screen.getByPlaceholderText(/Eg. Project meeting notes, book title.../i);
+        const categoryText = screen.getByText("Category");
+        const noteText = screen.getByText(/Note content/i);
+        const tagsText = screen.getByText("Tags (separated by comma)");
+        const sourceText = screen.getByText(/Source/i);
+        const saveBtn = screen.getByRole("button", { name: "Save Note" });
+        const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+
+        expect(newNoteText).toBeInTheDocument();
+        expect(titlePlaceholder).toBeInTheDocument();
+        expect(closeBtn).toBeInTheDocument();
+        expect(categoryText).toBeInTheDocument();
+        expect(noteText).toBeInTheDocument();
+        expect(tagsText).toBeInTheDocument();
+        expect(sourceText).toBeInTheDocument();
+        expect(saveBtn).toBeInTheDocument();
+        expect(cancelBtn).toBeInTheDocument();
+    });
+
+    test("Floating selection button should render and close", () => {
+        render(<FloatingSelectionButton selectedText="Test Note Content" position={{ top: 10, left: 10 }} onSave={() => { }} onClose={() => { }} />);
+
+        const saveBtn = screen.getByRole("button", { name: "Save in ClipSync" });
+
+        expect(saveBtn).toBeInTheDocument();
+
+    });
+
+    test("Note card should render", () => {
+        const note = {
+            id: "1",
+            title: "Test Note Title",
+            content: "Test Note Content",
+            tags: ["test"],
+            text: "Test Note Content",
+            category: "code",
+            created_at: new Date().toISOString(),
+            favorite: false,
+            source: "http://test.com",
+            user_id: "1"
+        };
+        render(
+            <MemoryRouter initialEntries={["/"]}>
+                <Routes>
+                    <Route path="/" element={<NoteCard note={note} onToggleFavorite={() => { }} onDeleteNote={() => { }} />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const title = screen.getByText("Test Note Title");
+        const content = screen.getByText("Test Note Content");
+        const category = screen.getByText("code");
+        const source = screen.getByText("http://test.com");
+        const favorite = screen.getByTitle(/Add to favorites/i);
+        const openBtn = screen.getByRole("button", { name: /Open/i });
+
+        expect(title).toBeInTheDocument();
+        expect(content).toBeInTheDocument();
+        expect(category).toBeInTheDocument();
+        expect(source).toBeInTheDocument();
+        expect(favorite).toBeInTheDocument();
+        expect(openBtn).toBeInTheDocument();
+
+    });
+
+
 })

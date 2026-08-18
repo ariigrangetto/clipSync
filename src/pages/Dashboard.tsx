@@ -164,7 +164,7 @@ export default function Dashboard() {
                                 <button
                                     key={item.label}
                                     onClick={() => setActiveNav(i)}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all duration-150"
+                                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all duration-150 cursor-pointer"
                                     style={{
                                         background: isActive ? '#EBF2ED' : 'transparent',
                                         color: isActive ? '#4A7856' : '#6B6560',
@@ -327,7 +327,7 @@ export default function Dashboard() {
 
                             <button
                                 onClick={handleCopySyncLink}
-                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border border-petal-border text-[#6B6560] hover:bg-[#EDE8E0] transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border border-petal-border text-[#6B6560] hover:bg-[#EDE8E0] transition-colors cursor-pointer"
                                 title="Copy link to open your session in another browser or device"
                             >
                                 <GlobeIcon size={14} />
@@ -336,7 +336,7 @@ export default function Dashboard() {
 
                             <button
                                 onClick={() => setIsAddModalOpen(true)}
-                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
+                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95 cursor-pointer"
                                 style={{ background: '#4A7856' }}
                             >
                                 <PlusIcon size={14} />

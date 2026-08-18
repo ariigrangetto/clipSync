@@ -7,7 +7,7 @@ export interface Note {
   created_at: string;
   tags: string[];
   favorite: boolean;
-  category: "article" | "research" | "code" | "quote" | "design"
+  category: Category | string;
 }
 
 export type Category = "All" | "article" | "research" | "code" | "quote" | "design";

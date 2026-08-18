@@ -34,7 +34,7 @@ export default function NoteCard({
     const navigate = useNavigate();
     const isCode = note.category === 'code';
     const isQuote = note.category === 'quote';
-    const sourceText = note.source || 'Entrada manual';
+    const sourceText = note.source || 'Manual Entry';
     const tags = Array.isArray(note.tags) ? note.tags : [];
 
     const handleCardClick = () => {
@@ -82,7 +82,7 @@ export default function NoteCard({
                         onMouseLeave={e => {
                             if (!note.favorite) (e.currentTarget as HTMLButtonElement).style.color = '#C5BFB5'
                         }}
-                        title={note.favorite ? "Quitar de favoritos" : "Marcar como favorito"}
+                        title={note.favorite ? "Remove from favorites" : "Add to favorites"}
                     >
                         <HeartIcon size={14} filled={note.favorite} />
                     </button>
@@ -93,7 +93,7 @@ export default function NoteCard({
                                 onDeleteNote(note.id);
                             }}
                             className="p-1 rounded-lg text-[#C5BFB5] hover:text-red-500 hover:bg-red-50 transition-all duration-150"
-                            title="Eliminar nota"
+                            title="Delete note"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="3 6 5 6 21 6" />
@@ -124,7 +124,7 @@ export default function NoteCard({
                             fontSize: '0.7rem',
                         }}
                     >
-                        + Agregar título
+                        + Add title
                     </span>
                 )}
                 {isQuote ? (
@@ -200,7 +200,7 @@ export default function NoteCard({
                                 fontSize: '0.7rem',
                             }}
                         >
-                            + Agregar etiquetas
+                            + Add tags
                         </span>
                     </div>
                 )

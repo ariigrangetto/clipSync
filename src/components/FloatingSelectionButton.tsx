@@ -43,7 +43,7 @@ export default function FloatingSelectionButton({
       <button
         onClick={onSave}
         type="button"
-        title="Guardar selección en ClipSync"
+        title="Save in ClipSync"
         className="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-lg border text-xs font-medium cursor-pointer transform hover:scale-105 active:scale-95 transition-all"
         style={{
           background: "#1C1914",
@@ -58,7 +58,7 @@ export default function FloatingSelectionButton({
         >
           <FlowerIcon size={12} className="text-white" />
         </span>
-        <span>Guardar en ClipSync</span>
+        <span>Save in ClipSync</span>
       </button>
     </div>
   );
