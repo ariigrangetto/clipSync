@@ -1,18 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Login from "../pages/Login.tsx";
-import ErrorPage from "../pages/ErrorPage.tsx";
-import Dashboard from "../pages/Dashboard.tsx";
-import NoteDetail from "../pages/NoteDetail.tsx";
-import NotesProvider from "../context/notesContext.tsx";
+import Login from "../../pages/Login.tsx";
+import ErrorPage from "../../pages/ErrorPage.tsx";
+import Dashboard from "../../pages/Dashboard.tsx";
+import NoteDetail from "../../pages/NoteDetail.tsx";
+import NotesProvider from "../../context/notesContext.tsx";
 import { describe, expect, test, vi } from "vitest";
 import { MemoryRouter, Routes, Route } from "react-router";
 import * as ReactRouter from "react-router";
-import AddNoteModal from "../components/AddNoteModal.tsx";
-import FloatingSelectionButton from "../components/FloatingSelectionButton.tsx";
-import NoteCard from "../components/NoteCard.tsx";
+import AddNoteModal from "../../components/AddNoteModal.tsx";
+import FloatingSelectionButton from "../../components/FloatingSelectionButton.tsx";
+import NoteCard from "../../components/NoteCard.tsx";
 
-vi.mock("../hooks/useNotes.tsx", () => ({
+vi.mock("../../hooks/useNotes.tsx", () => ({
     default: () => ({
         notes: [
             {
