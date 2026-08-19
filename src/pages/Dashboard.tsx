@@ -221,7 +221,7 @@ export default function Dashboard() {
                             <button
                                 type="button"
                                 onClick={toggleAutoSaveEnabled}
-                                title={autoSaveEnabled ? 'Desactivar guardado automático' : 'Activar guardado automático'}
+                                title={autoSaveEnabled ? 'Disable auto-save' : 'Enable auto-save'}
                                 className="w-9 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out cursor-pointer relative shrink-0"
                                 style={{
                                     background: autoSaveEnabled ? '#4A7856' : '#C7C2BC',

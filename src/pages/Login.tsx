@@ -64,7 +64,7 @@ export default function Login() {
               ClipSync
             </h1>
             <span className="text-xs text-petal-muted">
-              Captura & Sincronización sin contraseñas
+              Capture and sync without passwords
             </span>
           </div>
         </div>
@@ -86,10 +86,10 @@ export default function Login() {
               className="text-2xl font-serif leading-tight pt-2"
               style={{ fontFamily: "var(--font-display)", color: "#1C1914" }}
             >
-              Tu Espacio de Notas
+              Your notes space
             </h2>
             <p className="text-xs text-petal-muted leading-relaxed max-w-xs mx-auto">
-              Guarda selecciones de páginas web y sincroniza tus dispositivos sin formularios ni contraseñas.
+              Save web page selections and sync your devices without forms or passwords.
             </p>
           </div>
           <div className="space-y-3 pt-2">
@@ -101,28 +101,29 @@ export default function Login() {
               onMouseLeave={(e) => (e.currentTarget.style.background = "#4A7856")}
             >
               <PlusIcon size={16} />
-              <span>Crear Nuevo Espacio Instantáneo</span>
+              <span>Create a new instant space</span>
             </button>
             <p className="text-[0.72rem] text-center text-petal-muted">
-              Genera un código único aleatorio para comenzar de inmediato.
+              It will generate a unique random code to start immediately.
             </p>
           </div>
 
           <div className="flex items-center gap-3 py-1">
             <div className="flex-1 h-px bg-petal-border" />
             <span className="text-xs text-petal-muted uppercase font-medium tracking-wider">
-              o ingresa con tu código
+              or enter with your code
             </span>
             <div className="flex-1 h-px bg-petal-border" />
           </div>
 
           <form onSubmit={handleEnterExistingSpace} className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-[#6B6560] mb-1.5">
-                Código o Token de Espacio:
+              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="space-token">
+                Space code or token:
               </label>
               <input
                 type="text"
+                id="space-token"
                 value={inputToken}
                 onChange={(e) => setInputToken(e.target.value)}
                 placeholder="Ej: clip_a8f92b"
@@ -148,7 +149,7 @@ export default function Login() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F1E9")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#FFFFFF")}
             >
-              Acceder a mi Espacio
+              Enter my space
             </button>
           </form>
           <div
@@ -157,22 +158,22 @@ export default function Login() {
           >
             <div className="flex flex-col items-center space-y-1">
               <Zap size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Cero Registro</p>
+              <p className="text-[0.68rem] text-petal-muted">No Registration</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Smartphone size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Multi-dispositivo</p>
+              <p className="text-[0.68rem] text-petal-muted">Multi-device</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Puzzle size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Extensión Web</p>
+              <p className="text-[0.68rem] text-petal-muted">Extension Web</p>
             </div>
           </div>
         </div>
       </main>
 
       <footer className="text-center text-xs text-petal-muted py-4">
-        ClipSync &copy; {new Date().getFullYear()} — Sincronización libre de login
+        ClipSync &copy; {new Date().getFullYear()} — Free login synchronization
       </footer>
     </div>
   );
