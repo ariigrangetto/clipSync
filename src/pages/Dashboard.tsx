@@ -1,30 +1,36 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import useNotification from "../hooks/useNotification.tsx";
-import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, GlobeIcon, KeyIcon, CopyIcon, CheckIcon } from "../components/Icons.tsx";
+import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, GlobeIcon, KeyIcon } from "../components/Icons.tsx";
 import NoteCard from "../components/NoteCard.tsx";
 import AddNoteModal from "../components/AddNoteModal.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
 import useNotes from "../hooks/useNotes.tsx";
+import { useNavigate } from "react-router-dom";
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 declare const chrome: any;
 
 export default function Dashboard() {
-    const { notes, loading, addNote, deleteNote, toggleFavorite, updateNote, cat } = useNotes();
+    const { notes, loading: notesLoading, addNote, deleteNote, toggleFavorite, updateNote, cat } = useNotes();
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [activeNav, setActiveNav] = useState(0);
     const [activeCategory, setActiveCategory] = useState<string>("All");
     const [searchFocused, setSearchFocused] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const { showNotification } = useNotification();
-    const { token, getSyncLink } = useUserToken();
-    const [copiedToken, setCopiedToken] = useState(false);
+    const navigate = useNavigate();
+    const { user, token, signOut, loading: userLoading } = useUserToken();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-    const handleCopyToken = () => {
-        if (!token) return;
-        navigator.clipboard.writeText(token);
-        setCopiedToken(true);
-        showNotification("Token copiado al portapapeles", false);
-        setTimeout(() => setCopiedToken(false), 2000);
+    const isLoading = notesLoading || userLoading;
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await signOut();
+        } finally {
+            navigate("/login");
+        }
     };
 
 
@@ -65,7 +71,7 @@ export default function Dashboard() {
             chrome.storage.local.set({ clipsync_autosave_enabled: newValue });
         }
         showNotification(
-            newValue ? "Guardado automático activado" : "Guardado automático desactivado",
+            newValue ? "AutoSave is enabled" : "AutoSave is disabled",
             false
         );
     };
@@ -123,9 +129,8 @@ export default function Dashboard() {
     }, [autoSaveEnabled, addNote, updateNote, notes]);
 
     const handleCopySyncLink = () => {
-        const syncUrl = getSyncLink();
-        navigator.clipboard.writeText(syncUrl);
-        showNotification("Enlace de sincronización copiado", false);
+        navigator.clipboard.writeText(window.location.origin);
+        showNotification("Link copied to clipboard", false);
     };
 
     return (
@@ -260,29 +265,33 @@ export default function Dashboard() {
                             <div className="flex items-center gap-1.5">
                                 <KeyIcon size={13} style={{ color: '#4A7856' } as CSSProperties} />
                                 <span className="text-xs font-medium" style={{ color: '#1C1914', fontSize: '0.72rem' }}>
-                                    Your User Token
+                                    Authenticated User
                                 </span>
                             </div>
                             <button
                                 type="button"
-                                onClick={handleCopyToken}
-                                title="Copiar Token"
-                                className="flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer hover:opacity-80"
-                                style={{ background: '#EBF2ED', color: '#4A7856', fontSize: '0.66rem' }}
+                                onClick={handleLogout}
+                                disabled={isLoggingOut}
+                                title="Cerrar sesión"
+                                className="flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer hover:opacity-80 disabled:opacity-50"
+                                style={{ background: '#FCE8E6', color: '#C53030', fontSize: '0.66rem' }}
                             >
-                                {copiedToken ? <CheckIcon size={11} /> : <CopyIcon size={11} />}
-                                <span>{copiedToken ? 'Copied!' : 'Copy'}</span>
+                                {isLoggingOut ? (
+                                    <span className="flex items-center gap-1">
+                                        <span className="w-2.5 h-2.5 border border-[#C53030] border-t-transparent rounded-full animate-spin" />
+                                        <span>Logging out...</span>
+                                    </span>
+                                ) : (
+                                    <span>Logout</span>
+                                )}
                             </button>
                         </div>
                         <div
-                            className="p-2 rounded-lg mb-2 font-mono select-all flex items-center justify-between overflow-hidden"
-                            style={{ background: '#F0EDE4', color: '#33302C', fontSize: '0.7rem', letterSpacing: '0.02em', border: '1px solid #E5DED0' }}
+                            className="p-2 rounded-lg mb-2 font-sans select-all flex items-center justify-between overflow-hidden"
+                            style={{ background: '#F0EDE4', color: '#33302C', fontSize: '0.7rem', border: '1px solid #E5DED0' }}
                         >
-                            <span className="truncate">{token || 'clip_...'}</span>
+                            <span className="truncate">{user?.email || token}</span>
                         </div>
-                        <p style={{ color: '#8C857B', fontSize: '0.66rem', lineHeight: 1.4 }}>
-                            Save this token to log in from another device or to sign in again without losing anything.
-                        </p>
                     </div>
                 </aside>
 
@@ -368,10 +377,40 @@ export default function Dashboard() {
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-7">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center h-64 gap-3 text-sm text-[#A09A91]">
-                                <div className="w-6 h-6 border-2 border-petal-border border-t-transparent rounded-full animate-spin" />
-                                <span>Loading your clippings...</span>
+                        {isLoading ? (
+                            <div>
+                                <div className="flex items-center gap-2 text-xs font-medium mb-5" style={{ color: '#4A7856' }}>
+                                    <div className="w-4 h-4 border-2 border-petal-green border-t-transparent rounded-full animate-spin" />
+                                    <span>Loading your clippings...</span>
+                                </div>
+                                <div
+                                    className="grid gap-4"
+                                    style={{
+                                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                                    }}
+                                >
+                                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                                        <div
+                                            key={i}
+                                            className="p-5 rounded-2xl animate-pulse flex flex-col justify-between h-44"
+                                            style={{ background: '#FAFAF7', border: '1px solid #E5DED0' }}
+                                        >
+                                            <div className="space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="h-3 bg-[#E5DED0] rounded-md w-20" />
+                                                    <div className="h-3 bg-[#E5DED0] rounded-full w-12" />
+                                                </div>
+                                                <div className="h-4 bg-[#E5DED0] rounded-md w-3/4" />
+                                                <div className="h-3 bg-[#4A7856] opacity-30 rounded-md w-full" />
+                                                <div className="h-3 bg-[#4A7856] opacity-30 rounded-md w-2/3" />
+                                            </div>
+                                            <div className="flex items-center justify-between pt-3 border-t border-[#E5DED0]">
+                                                <div className="h-3 bg-[#E5DED0] rounded-md w-16" />
+                                                <div className="h-3 bg-[#E5DED0] rounded-md w-12" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ) : filteredNotes.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-64 text-center max-w-sm mx-auto">
