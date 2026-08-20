@@ -1,46 +1,64 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { Zap, Smartphone, Puzzle } from "lucide-react";
-import { useUserToken, generateToken } from "../hooks/useUserToken.ts";
-import { FlowerIcon, PlusIcon } from "../components/Icons.tsx";
+import { Zap, Smartphone, Puzzle, Mail, Lock } from "lucide-react";
+import { useUserToken } from "../hooks/useUserToken.ts";
+import { FlowerIcon } from "../components/Icons.tsx";
 import useNotification from "../hooks/useNotification.tsx";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { changeToken } = useUserToken();
+  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle } = useUserToken();
   const { showNotification } = useNotification();
-  const [inputToken, setInputToken] = useState("");
 
-  // Manejar sincronización si vienen parámetros en la URL de Login
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tokenParam = params.get("token");
-    if (tokenParam) {
-      changeToken(tokenParam);
-      showNotification("Espacio sincronizado correctamente", false);
+    if (user) {
       navigate("/", { replace: true });
     }
-  }, [changeToken, navigate, showNotification]);
+  }, [user, navigate]);
 
-  // Crear espacio nuevo e ingresar
-  const handleCreateNewSpace = () => {
-    const newToken = generateToken();
-    changeToken(newToken);
-    showNotification(`¡Nuevo espacio creado!`, false);
-    navigate("/");
-  };
-
-  // Ingresar con un token existente
-  const handleEnterExistingSpace = (e: FormEvent) => {
+  const handleEmailAuth = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const trimmed = inputToken.trim();
-    if (!trimmed) {
-      showNotification("Por favor ingresa un código o token válido", true);
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
+      showNotification("Please, fill in the email and password", true);
       return;
     }
-    changeToken(trimmed);
-    showNotification("Espacio cargado exitosamente", false);
-    navigate("/");
+
+    setSubmitting(true);
+    if (isSignUp) {
+      const { data, error } = await signUpWithEmail(trimmedEmail, password);
+      setSubmitting(false);
+      if (error) {
+        showNotification(error.message || "Error while registering", true);
+      } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        showNotification("Email already in use", true);
+      } else {
+        showNotification("Account created successfully. Please check your email.", false);
+      }
+    } else {
+      const { error } = await signInWithEmail(trimmedEmail, password);
+      setSubmitting(false);
+      if (error) {
+        showNotification(error.message || "Invalid credentials", true);
+      } else {
+        showNotification("Logged in successfully", false);
+        navigate("/");
+      }
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    setSubmitting(true);
+    const { error } = await signInWithGoogle();
+    setSubmitting(false);
+    if (error) {
+      showNotification(error.message || "Error while signing in with Google", true);
+    }
   };
 
   return (
@@ -64,7 +82,7 @@ export default function Login() {
               ClipSync
             </h1>
             <span className="text-xs text-petal-muted">
-              Capture and sync without passwords
+              Capture and sync seamlessly with Supabase Auth
             </span>
           </div>
         </div>
@@ -86,79 +104,131 @@ export default function Login() {
               className="text-2xl font-serif leading-tight pt-2"
               style={{ fontFamily: "var(--font-display)", color: "#1C1914" }}
             >
-              Your notes space
+              {isSignUp ? "Create an account in ClipSync" : "Your note space"}
             </h2>
             <p className="text-xs text-petal-muted leading-relaxed max-w-xs mx-auto">
-              Save web page selections and sync your devices without forms or passwords.
+              Save your selections and sync your devices securely with Email or Google.
             </p>
           </div>
+
           <div className="space-y-3 pt-2">
             <button
-              onClick={handleCreateNewSpace}
-              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 group"
-              style={{ background: "#4A7856" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#3D6647")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#4A7856")}
+              onClick={handleGoogleAuth}
+              disabled={submitting}
+              type="button"
+              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-slate-800 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 border disabled:opacity-50"
+              style={{ background: "#FFFFFF", borderColor: "#E5DED0" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F1E9")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#FFFFFF")}
             >
-              <PlusIcon size={16} />
-              <span>Create a new instant space</span>
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Continue with Google</span>
             </button>
-            <p className="text-[0.72rem] text-center text-petal-muted">
-              It will generate a unique random code to start immediately.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 py-1">
             <div className="flex-1 h-px bg-petal-border" />
             <span className="text-xs text-petal-muted uppercase font-medium tracking-wider">
-              or enter with your code
+              or sign up with email
             </span>
             <div className="flex-1 h-px bg-petal-border" />
           </div>
 
-          <form onSubmit={handleEnterExistingSpace} className="space-y-3">
+          <form onSubmit={handleEmailAuth} className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="space-token">
-                Space code or token:
+              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="email">
+                Email address:
               </label>
-              <input
-                type="text"
-                id="space-token"
-                value={inputToken}
-                onChange={(e) => setInputToken(e.target.value)}
-                placeholder="Ej: clip_a8f92b"
-                className="w-full px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors"
-                style={{
-                  background: "#FFFFFF",
-                  borderColor: "#E5DED0",
-                  color: "#1C1914",
-                  fontFamily: "monospace",
-                }}
-              />
+              <div className="relative flex items-center">
+                <Mail className="absolute left-3 w-4 h-4 text-petal-muted" />
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors"
+                  style={{
+                    background: "#FFFFFF",
+                    borderColor: "#E5DED0",
+                    color: "#1C1914",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="password">
+                Password:
+              </label>
+              <div className="relative flex items-center">
+                <Lock className="absolute left-3 w-4 h-4 text-petal-muted" />
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors"
+                  style={{
+                    background: "#FFFFFF",
+                    borderColor: "#E5DED0",
+                    color: "#1C1914",
+                  }}
+                />
+              </div>
             </div>
 
             <button
               type="submit"
-              disabled={!inputToken.trim()}
-              className="w-full py-2.5 px-4 rounded-xl text-sm font-medium border transition-colors disabled:opacity-50"
-              style={{
-                background: "#FFFFFF",
-                borderColor: "#E5DED0",
-                color: "#1C1914",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F1E9")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#FFFFFF")}
+              disabled={submitting || !email.trim() || !password}
+              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ background: "#4A7856" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#3D6647")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#4A7856")}
             >
-              Enter my space
+              {isSignUp ? "Sign Up" : "Log In"}
             </button>
           </form>
+
+          <div className="text-center pt-1">
+            <button
+              type="button"
+              onClick={() => setIsSignUp((prev) => !prev)}
+              className="text-xs font-medium text-[#4A7856] hover:underline"
+            >
+              {isSignUp
+                ? "Already have an account? Sign in here"
+                : "Don't have an account? Sign up here"}
+            </button>
+          </div>
+
           <div
             className="pt-4 border-t grid grid-cols-3 gap-2 text-center"
             style={{ borderColor: "#E5DED0" }}
           >
             <div className="flex flex-col items-center space-y-1">
               <Zap size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">No Registration</p>
+              <p className="text-[0.68rem] text-petal-muted">Supabase Security</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Smartphone size={18} className="text-petal-green" />
@@ -166,14 +236,14 @@ export default function Login() {
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Puzzle size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Extension Web</p>
+              <p className="text-[0.68rem] text-petal-muted">Web Extension</p>
             </div>
           </div>
         </div>
       </main>
 
       <footer className="text-center text-xs text-petal-muted py-4">
-        ClipSync &copy; {new Date().getFullYear()} — Free login synchronization
+        ClipSync &copy; {new Date().getFullYear()} — Secure Supabase Authentication
       </footer>
     </div>
   );
