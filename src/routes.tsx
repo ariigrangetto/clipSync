@@ -1,8 +1,12 @@
 import { createBrowserRouter } from "react-router";
-import Dashboard from "./pages/Dashboard.tsx";
-import Login from "./pages/Login.tsx";
-import NoteDetail from "./pages/NoteDetail.tsx";
-import ErrorPage from "./pages/ErrorPage.tsx";
+import { lazy, Suspense } from "react";
+
+const Login = lazy(() => import("./pages/Login.tsx"));
+const NoteDetail = lazy(() => import("./pages/NoteDetail.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage.tsx"));
+
+
 
 
 export const Router = createBrowserRouter([
