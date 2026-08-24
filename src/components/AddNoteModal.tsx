@@ -70,6 +70,7 @@ export default function AddNoteModal({
         onClick={onClose}
       />
       <div
+        data-testid="add-note-modal"
         className="relative w-full max-w-lg rounded-2xl p-6 shadow-xl z-10 animate-in fade-in zoom-in duration-150"
         style={{
           background: "#FAFAF7",
@@ -94,7 +95,7 @@ export default function AddNoteModal({
             type="button"
             onClick={onClose}
             className="p-1 rounded-lg hover:bg-[#EDE8E0] transition-colors text-[#8C8681] cursor-pointer"
-            aria-label="Cerrar"
+            aria-label="Close"
           >
             <svg
               width="20"
@@ -197,6 +198,7 @@ export default function AddNoteModal({
             </button>
             <button
               type="submit"
+              aria-label="Save Note Button"
               disabled={submitting}
               className="px-4 py-2 rounded-xl text-xs font-medium text-white transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
               style={{ background: "#4A7856" }}

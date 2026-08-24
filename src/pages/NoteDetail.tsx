@@ -41,6 +41,7 @@ export default function NoteDetail() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditingText])
 
   const handleEditNote = () => {
@@ -75,10 +76,10 @@ export default function NoteDetail() {
     try {
       await navigator.clipboard.writeText(note.text);
       setCopied(true);
-      showNotification("Copiado al portapapeles", false);
+      showNotification("Copy to clipboard", false);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      showNotification("No se pudo copiar el texto", true);
+      showNotification("Error copying to clipboard", true);
     }
   };
 
@@ -166,7 +167,7 @@ export default function NoteDetail() {
                   handleEditNote()
                 }}
                 className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-petal-border bg-white text-xs font-medium text-petal-text hover:border-petal-green hover:text-petal-green hover:bg-petal-green-light/40 active:scale-95 transition-all duration-200 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-petal-green/20"
-                title="Editar nota"
+                title="Edit note"
               >
                 <Edit size={14} className="transition-transform duration-200 group-hover:scale-110 group-hover:rotate-6 text-petal-muted group-hover:text-petal-green" />
                 <span>Edit</span>
@@ -176,7 +177,7 @@ export default function NoteDetail() {
                 onClick={handleToggleFavorite}
                 className="p-2 rounded-lg border border-petal-border bg-white hover:border-petal-green transition-all"
                 style={{ color: note.favorite ? '#4A7856' : '#928D84' }}
-                title={note.favorite ? "Quitar de favoritos" : "Marcar como favorito"}
+                title={note.favorite ? "Remove from favorites" : "Mark as favorite"}
               >
                 <HeartIcon size={16} filled={note.favorite} />
               </button>
@@ -185,7 +186,7 @@ export default function NoteDetail() {
                 onClick={handleDelete}
                 disabled={isDeleting}
                 className="p-2 rounded-lg border border-petal-border bg-white text-red-500 hover:bg-red-50 hover:border-red-200 transition-all"
-                title="Eliminar nota"
+                title="Delete note"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="3 6 5 6 21 6" />
