@@ -59,7 +59,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 if (response.success) {
                     setNotes(response.data);
                 } else {
-                    showNotification("Error al cargar las notas", true);
+                    showNotification("Error loading notes", true);
                 }
                 setLoading(false);
             }
@@ -104,12 +104,13 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
             isMounted = false;
             supabase.removeChannel(channel);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
     const addNote = useCallback(
         async (noteParams: Omit<InsertNoteParams, "userToken">): Promise<{ success: boolean, error: string | null, data: Note | null }> => {
             if (!token) {
-                showNotification("No authenticated", true);
+                showNotification("User is not authenticated", true);
                 return { success: false, error: "No user authenticated", data: null };
             }
             const response = await insertText({ ...noteParams, userToken: token });
@@ -122,10 +123,10 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                     return [newNote, ...prev];
                 });
 
-                showNotification("Guardado en ClipSync", false);
+                showNotification("Saved to ClipSync", false);
                 return { success: true, error: null, data: response.data };
             } else {
-                showNotification(response.error || "Error al guardar la nota", true);
+                showNotification(response.error || "Error saving note", true);
                 return { success: false, error: response.error || "Error al guardar la nota", data: null };
             }
 
@@ -144,10 +145,10 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
             if (response.success) {
                 setNotes((prev) => prev.filter((n) => n.id !== id));
-                showNotification("Nota eliminada", false);
+                showNotification("Note deleted", false);
                 return true;
             } else {
-                showNotification("Error al eliminar la nota", true);
+                showNotification("Error deleting note", true);
                 return false;
             }
         },
@@ -156,7 +157,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
     const toggleFavorite = useCallback(
         async (id: string): Promise<void> => {
-            if (!token) return showNotification("No authenticated", true);
+            if (!token) return showNotification("User is not authenticated", true);
             const targetNote = notes.find((n) => n.id === id);
             if (!targetNote) return;
 
@@ -170,7 +171,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 );
                 return;
             } else {
-                showNotification("Error al actualizar la nota", true);
+                showNotification("Error updating note", true);
                 return;
             }
         },
@@ -179,15 +180,15 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
     const updateTags = useCallback(
         async (id: string, tags: string[]): Promise<void> => {
-            if (!token) return showNotification("No authenticated", true);
+            if (!token) return showNotification("User is not authenticated", true);
             const response = await apiUpdateTags(id, token, tags);
             if (response.success) {
                 setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, tags } : n)));
-                showNotification("Tags actualizados", false);
+                showNotification("Tags updated", false);
                 return;
 
             } else {
-                showNotification("Error al actualizar los tags", true);
+                showNotification("Error updating tags", true);
                 return;
             }
         },
@@ -196,17 +197,17 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
     const updateTitle = useCallback(
         async (id: string, title: string): Promise<void> => {
-            if (!token) return showNotification("No authenticated", true);
+            if (!token) return showNotification("User is not authenticated", true);
 
             const response = await apiUpdateTitle(id, token, title);
             if (response.success && response.data) {
                 const updatedNote = response.data;
                 setNotes((prev) => prev.map((n) => (n.id === id ? updatedNote : n)));
-                showNotification("Título actualizado correctamente", false);
+                showNotification("Title updated successfully", false);
                 return;
 
             } else {
-                showNotification("Error al actualizar el título de la nota", true);
+                showNotification("Error updating note title", true);
                 return;
             }
         },
@@ -216,7 +217,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
     const updateNote = useCallback(
         async (text: string, source?: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> => {
             if (!token) {
-                showNotification("No user authenticated", true);
+                showNotification("User is not authenticated", true);
                 return { success: false, error: "user not authenticated", data: null };
             }
 
@@ -227,10 +228,10 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 setNotes((prev) =>
                     prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
                 );
-                showNotification("Nota actualizada", false);
+                showNotification("Note updated", false);
                 return { success: true, error: null, data: updatedNote };
             } else {
-                showNotification(response.error || "Error al actualizar la nota", true);
+                showNotification(response.error || "Error updating note", true);
                 return { success: false, error: response.error || "Error al actualizar la nota", data: null };
             }
         },
@@ -238,7 +239,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
     );
 
     const updateCat = useCallback(async (id: string, category: string): Promise<void> => {
-        if (!token) return showNotification("No user authenticated", true);
+        if (!token) return showNotification("User is not authenticated", true);
 
         const response = await apiUpdateCat(id, token, category);
 
@@ -247,10 +248,10 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
             setNotes((prev) =>
                 prev.map((n) => (n.id === id) ? updatedNote : n)
             )
-            showNotification("Categoría actualizada correctamente", false);
+            showNotification("Category updated successfully", false);
             return;
         } else {
-            showNotification(response.error || "Error al actualizar la categoría", true);
+            showNotification(response.error || "Error updating category", true);
             return;
         }
 
