@@ -32,10 +32,13 @@ interface NotesContextType {
 export const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export default function NotesProvider({ children }: { children: React.ReactNode }) {
-    const { token } = useUserToken();
-    const [notes, setNotes] = useState<Note[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { token, loading: authLoading } = useUserToken();
+    const [rawNotes, setNotes] = useState<Note[]>([]);
+    const [notesLoading, setNotesLoading] = useState<boolean>(true);
     const { showNotification } = useNotification();
+
+    const notes = useMemo(() => (token ? rawNotes : []), [token, rawNotes]);
+    const loading = authLoading || (Boolean(token) && notesLoading);
 
     const cat = useMemo(() => {
         const categories = notes
@@ -46,14 +49,17 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
     }, [notes]);
 
     useEffect(() => {
+        if (authLoading || !token) {
+            return;
+        }
+
         let isMounted = true;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let channel: any = null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let supabaseClient: any = null;
+
         const loadInitialNotes = async (): Promise<void> => {
-            if (!token) {
-                setNotes([]);
-                setLoading(false);
-                return;
-            }
-            setLoading(true);
             const response = await fetchNotes(token);
             if (isMounted) {
                 if (response.success) {
@@ -61,14 +67,14 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 } else {
                     showNotification("Error loading notes", true);
                 }
-                setLoading(false);
+                setNotesLoading(false);
             }
         };
 
         loadInitialNotes();
 
-        const supabase = getSupabaseClient(token);
-        const channel = supabase
+        supabaseClient = getSupabaseClient(token);
+        channel = supabaseClient
             .channel(`realtime:notes:${token}`)
             .on(
                 "postgres_changes",
@@ -78,7 +84,8 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                     table: "Notes",
                     filter: `user_token=eq.${token}`,
                 },
-                (payload) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (payload: any) => {
                     if (!isMounted) return;
 
                     if (payload.eventType === "INSERT") {
@@ -102,10 +109,11 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
         return () => {
             isMounted = false;
-            supabase.removeChannel(channel);
+            if (supabaseClient && channel) {
+                supabaseClient.removeChannel(channel);
+            }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
+    }, [token, authLoading, showNotification]);
 
     const addNote = useCallback(
         async (noteParams: Omit<InsertNoteParams, "userToken">): Promise<{ success: boolean, error: string | null, data: Note | null }> => {

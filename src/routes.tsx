@@ -1,13 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter } from "react-router";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const Login = lazy(() => import("./pages/Login.tsx"));
 const NoteDetail = lazy(() => import("./pages/NoteDetail.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage.tsx"));
-
-
-
 
 export const Router = createBrowserRouter([
     {
@@ -17,12 +16,20 @@ export const Router = createBrowserRouter([
     },
     {
         path: "/",
-        element: <Dashboard />,
+        element: (
+            <ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>
+        ),
         errorElement: <ErrorPage />
     },
     {
         path: "/note/:id",
-        element: <NoteDetail />,
+        element: (
+            <ProtectedRoute>
+                <NoteDetail />
+            </ProtectedRoute>
+        ),
         errorElement: <ErrorPage />
     },
     {

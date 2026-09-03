@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, test, vi, beforeEach } from "vitest";
 import Login from "../../pages/Login.tsx";
@@ -9,12 +8,22 @@ const mockSignInWithEmail = vi.fn().mockResolvedValue({ error: null });
 const mockSignUpWithEmail = vi.fn().mockResolvedValue({ error: null });
 const mockSignInWithGoogle = vi.fn().mockResolvedValue({ error: null });
 
-let mockUser: { id: string; email: string } | null = null;
+vi.mock("../../hooks/useUserToken.ts", () => ({
+    useUserToken: () => ({
+        user: null,
+        session: null,
+        token: null,
+        loading: false,
+        signInWithEmail: mockSignInWithEmail,
+        signUpWithEmail: mockSignUpWithEmail,
+        signInWithGoogle: mockSignInWithGoogle,
+        signOut: vi.fn(),
+    }),
+}));
 
 describe("Login Page Unit Tests", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockUser = null;
     });
 
     test("login page should render all initial UI elements correctly in Log In mode", () => {

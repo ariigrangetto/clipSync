@@ -7,6 +7,10 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // RLS con encabezado HTTP personalizado
 export function getSupabaseClient(userToken: string) {
   return createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
     global: {
       headers: {
         "x-user-token": userToken,

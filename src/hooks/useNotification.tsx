@@ -1,24 +1,18 @@
+import { useCallback } from "react";
+
 export default function useNotification() {
-
-    function showNotification(message: string, isError: boolean = false) {
-
+    const showNotification = useCallback((message: string, isError: boolean = false) => {
         const host = document.createElement("div");
         host.id = "clipsync-toast-host";
-
-        //Posicionamiento flotante
         host.style.position = "fixed";
         host.style.bottom = "20px";
         host.style.right = "20px";
         host.style.zIndex = "99999999";
 
-        //Crear shadow para aislar los esitlos css
-        const shadow = host.attachShadow({ mode: "closed" });
+        const shadow = host.attachShadow({ mode: "open" });
 
-        //Crear toast
         const toast = document.createElement("div");
         toast.innerText = message;
-
-        //Estilos visuales
 
         Object.assign(toast.style, {
             backgroundColor: isError ? "#ef4444" : "#10b981",
@@ -37,21 +31,21 @@ export default function useNotification() {
         shadow.appendChild(toast);
         document.body.appendChild(host);
 
-        //Animacion
+        // Animacion
         requestAnimationFrame(() => {
             toast.style.opacity = "1";
             toast.style.transform = "translateY(0)";
         });
 
-        //Desaparición tras 3 segundos
-
+        // Desaparición tras 3 segundos
         setTimeout(() => {
             toast.style.opacity = "0";
             toast.style.transform = "translateY(10px)";
             setTimeout(() => {
                 host.remove();
-            }, 300)
+            }, 300);
         }, 3000);
-    }
-    return { showNotification }
+    }, []);
+
+    return { showNotification };
 }
