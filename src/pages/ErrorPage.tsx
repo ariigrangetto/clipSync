@@ -1,4 +1,4 @@
-import { useRouteError, isRouteErrorResponse, Link } from "react-router";
+import { useRouteError, Link, isRouteErrorResponse } from "react-router";
 import { FlowerIcon } from "../components/Icons.tsx";
 
 export default function ErrorPage() {
@@ -11,13 +11,11 @@ export default function ErrorPage() {
     if (isRouteErrorResponse(error)) {
         statusCode = error.status.toString();
         statusText = error.statusText || statusText;
-        if (error.data?.message) {
-            errorMessage = error.data.message;
-        }
     } else if (error instanceof Error) {
         statusCode = "500";
-        statusText = "Error del Sistema";
-        errorMessage = error.message;
+        statusText = "Internal Server Error";
+        errorMessage = "An unexpected error ocurred. Please try again later.";
+        console.error("Unhandle Application Error:", error);
     }
 
     return (
@@ -42,7 +40,7 @@ export default function ErrorPage() {
                 </Link>
             </header>
             <main className="relative z-10 max-w-lg w-full text-center my-auto py-10">
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-petal-border shadow-lg relative overflow-hidden">
+                <div className="bg-[#181B19]/90 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-petal-border shadow-lg relative overflow-hidden">
                     <div className="relative mb-6 inline-block">
                         <div className="w-24 h-24 rounded-3xl bg-petal-green-light text-petal-green flex items-center justify-center mx-auto shadow-inner transition-transform hover:scale-105 duration-300">
                             <FlowerIcon size={56} className="logo-flower" />
@@ -71,7 +69,7 @@ export default function ErrorPage() {
 
                         <button
                             onClick={() => window.location.reload()}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-petal-text text-sm font-medium px-5 py-3 rounded-xl border border-petal-border hover:bg-petal-bg transition-all duration-150"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#1E2220] text-petal-text text-sm font-medium px-5 py-3 rounded-xl border border-petal-border hover:bg-[#252A27] transition-all duration-150 cursor-pointer"
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="23 4 23 10 17 10" />

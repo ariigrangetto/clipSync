@@ -66,16 +66,16 @@ export default function AddNoteModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       <div
         data-testid="add-note-modal"
         className="relative w-full max-w-lg rounded-2xl p-6 shadow-xl z-10 animate-in fade-in zoom-in duration-150"
         style={{
-          background: "#FAFAF7",
-          border: "1px solid #E5DED0",
-          color: "#1C1914",
+          background: "#1A1E1C",
+          border: "1px solid #2C322E",
+          color: "#EDEDEA",
           fontFamily: "var(--font-body)",
         }}
       >
@@ -83,7 +83,7 @@ export default function AddNoteModal({
           <div>
             <h2
               className="text-lg font-semibold"
-              style={{ fontFamily: "var(--font-display)", color: "#1C1914" }}
+              style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               Add new note
             </h2>
@@ -94,7 +94,7 @@ export default function AddNoteModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-[#EDE8E0] transition-colors text-[#8C8681] cursor-pointer"
+            className="p-1 rounded-lg hover:bg-[#232825] transition-colors text-[#9E9B93] cursor-pointer"
             aria-label="Close"
           >
             <svg
@@ -115,7 +115,7 @@ export default function AddNoteModal({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-[#6B6560] mb-1">
+            <label className="block text-xs font-medium text-[#9E9B93] mb-1">
               Title
             </label>
             <input
@@ -123,11 +123,11 @@ export default function AddNoteModal({
               placeholder="Eg. Project meeting notes, book title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-petal-input focus:bg-white focus:border-petal-green outline-none transition-all"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-[#141615] text-[#EDEDEA] placeholder-[#6E6B65] focus:bg-[#181C1A] focus:border-petal-green outline-none transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B6560] mb-1">
+            <label className="block text-xs font-medium text-[#9E9B93] mb-1">
               Category
             </label>
             <div className="flex flex-wrap gap-2">
@@ -138,11 +138,11 @@ export default function AddNoteModal({
                     key={cat}
                     type="button"
                     onClick={() => setCategory(cat)}
-                    className="px-3 py-1 rounded-full text-xs font-medium transition-all capitalize"
+                    className="px-3 py-1 rounded-full text-xs font-medium transition-all capitalize cursor-pointer"
                     style={{
-                      background: isActive ? "#4A7856" : "#EDE8E0",
-                      color: isActive ? "#FFFFFF" : "#6B6560",
-                      border: isActive ? "1px solid #4A7856" : "1px solid #E5DED0",
+                      background: isActive ? "#5E9E6E" : "#232825",
+                      color: isActive ? "#FFFFFF" : "#9E9B93",
+                      border: isActive ? "1px solid #5E9E6E" : "1px solid #2C322E",
                     }}
                   >
                     {cat}
@@ -152,7 +152,7 @@ export default function AddNoteModal({
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B6560] mb-1">
+            <label className="block text-xs font-medium text-[#9E9B93] mb-1">
               Note content <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -161,11 +161,11 @@ export default function AddNoteModal({
               placeholder="Write the content or text snippet here..."
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-petal-input focus:bg-white focus:border-petal-green outline-none transition-all resize-none"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-[#141615] text-[#EDEDEA] placeholder-[#6E6B65] focus:bg-[#181C1A] focus:border-petal-green outline-none transition-all resize-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B6560] mb-1">
+            <label className="block text-xs font-medium text-[#9E9B93] mb-1">
               Tags (separated by comma)
             </label>
             <input
@@ -173,11 +173,11 @@ export default function AddNoteModal({
               placeholder="Eg. react, startups, figma"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-petal-input focus:bg-white focus:border-petal-green outline-none transition-all"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-[#141615] text-[#EDEDEA] placeholder-[#6E6B65] focus:bg-[#181C1A] focus:border-petal-green outline-none transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-[#6B6560] mb-1">
+            <label className="block text-xs font-medium text-[#9E9B93] mb-1">
               Source / URL (Optional)
             </label>
             <input
@@ -185,14 +185,14 @@ export default function AddNoteModal({
               placeholder="Eg. https://miweb.com or Manual entry"
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-petal-input focus:bg-white focus:border-petal-green outline-none transition-all"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-petal-border bg-[#141615] text-[#EDEDEA] placeholder-[#6E6B65] focus:bg-[#181C1A] focus:border-petal-green outline-none transition-all"
             />
           </div>
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-petal-border">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-medium text-[#6B6560] hover:bg-[#EDE8E0] transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-medium text-[#9E9B93] hover:bg-[#232825] hover:text-[#EDEDEA] transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -201,7 +201,7 @@ export default function AddNoteModal({
               aria-label="Save Note Button"
               disabled={submitting}
               className="px-4 py-2 rounded-xl text-xs font-medium text-white transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
-              style={{ background: "#4A7856" }}
+              style={{ background: "#5E9E6E" }}
             >
               {submitting ? "Saving..." : "Save Note"}
             </button>

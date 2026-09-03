@@ -2,19 +2,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-petal-bg: #F0EDE4;
-  --color-petal-sidebar: #FAFAF7;
-  --color-petal-card: #FFFFFF;
-  --color-petal-green: #4A7856;
-  --color-petal-green-hover: #3D6647;
-  --color-petal-green-light: #EBF2ED;
-  --color-petal-green-mid: #C4D9CA;
-  --color-petal-text: #1C1914;
-  --color-petal-muted: #928D84;
-  --color-petal-border: #E5DED0;
-  --color-petal-tag-1: #E8F0EA;
-  --color-petal-tag-2: #EEE8F2;
-  --color-petal-tag-3: #F2EDE4;
+  --color-petal-bg: #121413;
+  --color-petal-sidebar: #181B19;
+  --color-petal-card: #1E2220;
+  --color-petal-green: #5E9E6E;
+  --color-petal-green-hover: #72B583;
+  --color-petal-green-light: #1D3323;
+  --color-petal-green-mid: #3A6845;
+  --color-petal-text: #EDEDEA;
+  --color-petal-muted: #9E9B93;
+  --color-petal-border: #2C322E;
+  --color-petal-input: #181C1A;
+  --color-petal-tag-1: #192E20;
+  --color-petal-tag-2: #281C33;
+  --color-petal-tag-3: #2E2214;
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
 }
@@ -30,6 +31,8 @@ body,
 #root {
   height: 100%;
   margin: 0;
+  background-color: #121413;
+  color-scheme: dark;
 }
 
 body {

@@ -4,22 +4,22 @@ import { getTagPalette } from "./TagsColor.tsx";
 import { ExternalLinkIcon, FlowerIcon, HeartIcon } from "./Icons.tsx";
 
 function formatRelativeTime(dateString?: string): string {
-    if (!dateString) return "";
+    if (!dateString) return "Not date";
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
+    if (isNaN(date.getTime())) return "Not date";
 
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (diffInSeconds < 60) return "Hace un momento";
+    if (diffInSeconds < 60) return "Just now";
     const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `Hace ${diffInMinutes} min`;
+    if (diffInMinutes < 60) return `${diffInMinutes} ${diffInMinutes === 1 ? 'min' : 'mins'} ago`;
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `Hace ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
+    if (diffInHours < 24) return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 30) return `Hace ${diffInDays} ${diffInDays === 1 ? 'día' : 'días'}`;
+    if (diffInDays < 30) return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
 
-    return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export default function NoteCard({
@@ -50,7 +50,7 @@ export default function NoteCard({
                 <div className="flex items-center gap-2 min-w-0">
                     <div
                         className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-white"
-                        style={{ backgroundColor: '#4A7856' }}
+                        style={{ backgroundColor: '#5E9E6E' }}
                     >
                         <FlowerIcon size={12} />
                     </div>
@@ -60,7 +60,7 @@ export default function NoteCard({
                     {note.category && (
                         <span
                             className="text-[10px] px-2 py-0.5 rounded-full font-medium capitalize shrink-0"
-                            style={{ background: '#F2EDE4', color: '#8A6B3D', fontFamily: 'var(--font-body)' }}
+                            style={{ background: '#332717', color: '#F6C368', fontFamily: 'var(--font-body)' }}
                         >
                             {note.category}
                         </span>
@@ -72,15 +72,15 @@ export default function NoteCard({
                             e.stopPropagation();
                             onToggleFavorite(note.id);
                         }}
-                        className="p-1 rounded-lg transition-all duration-150"
+                        className="p-1 rounded-lg transition-all duration-150 cursor-pointer"
                         style={{
-                            color: note.favorite ? '#4A7856' : '#C5BFB5',
+                            color: note.favorite ? '#5E9E6E' : '#6E6B65',
                         }}
                         onMouseEnter={e => {
-                            if (!note.favorite) (e.currentTarget as HTMLButtonElement).style.color = '#4A7856'
+                            if (!note.favorite) (e.currentTarget as HTMLButtonElement).style.color = '#5E9E6E'
                         }}
                         onMouseLeave={e => {
-                            if (!note.favorite) (e.currentTarget as HTMLButtonElement).style.color = '#C5BFB5'
+                            if (!note.favorite) (e.currentTarget as HTMLButtonElement).style.color = '#6E6B65'
                         }}
                         title={note.favorite ? "Remove from favorites" : "Add to favorites"}
                     >
@@ -92,7 +92,7 @@ export default function NoteCard({
                                 e.stopPropagation();
                                 onDeleteNote(note.id);
                             }}
-                            className="p-1 rounded-lg text-[#C5BFB5] hover:text-red-500 hover:bg-red-50 transition-all duration-150"
+                            className="p-1 rounded-lg text-[#6E6B65] hover:text-red-400 hover:bg-red-950/40 transition-all duration-150 cursor-pointer"
                             title="Delete note"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -109,17 +109,17 @@ export default function NoteCard({
                         className="font-display font-semibold text-base text-petal-text mb-1.5 leading-snug line-clamp-2"
                         style={{
                             fontFamily: 'var(--font-display)',
-                            color: '#1C1914',
+                            color: '#EDEDEA',
                         }}
                     >
                         {note.title}
                     </h3>
                 ) : (
                     <span
-                        className="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full font-medium border border-dashed border-[#D8D2C4] hover:border-petal-green hover:bg-petal-green-light hover:text-petal-green transition-all mb-2 cursor-pointer"
+                        className="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full font-medium border border-dashed border-[#3A403C] hover:border-petal-green hover:bg-petal-green-light hover:text-petal-green transition-all mb-2 cursor-pointer"
                         style={{
-                            background: '#FAF8F4',
-                            color: '#8C867C',
+                            background: '#1A1E1C',
+                            color: '#9E9B93',
                             fontFamily: 'var(--font-body)',
                             fontSize: '0.7rem',
                         }}
@@ -133,7 +133,7 @@ export default function NoteCard({
                         style={{
                             fontFamily: 'var(--font-display)',
                             fontStyle: 'italic',
-                            color: '#1C1914',
+                            color: '#EDEDEA',
                             fontSize: '0.9rem',
                             lineHeight: '1.65',
                         }}
@@ -145,8 +145,8 @@ export default function NoteCard({
                         className="text-xs leading-relaxed rounded-lg px-3 py-2 line-clamp-4"
                         style={{
                             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace',
-                            color: '#3D6647',
-                            background: '#EBF2ED',
+                            color: '#7EC691',
+                            background: '#14261B',
                             fontSize: '0.78rem',
                             lineHeight: '1.7',
                         }}
@@ -158,7 +158,7 @@ export default function NoteCard({
                         className="text-sm leading-relaxed line-clamp-4"
                         style={{
                             fontFamily: 'var(--font-body)',
-                            color: '#2A2722',
+                            color: '#D4D0C7',
                             fontSize: '0.875rem',
                             lineHeight: '1.65',
                         }}
@@ -192,10 +192,10 @@ export default function NoteCard({
                 ) : (
                     <div className="flex flex-wrap gap-1.5 mb-3">
                         <span
-                            className="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full font-medium border border-dashed border-[#D8D2C4] hover:border-petal-green hover:bg-petal-green-light hover:text-petal-green transition-all"
+                            className="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full font-medium border border-dashed border-[#3A403C] hover:border-petal-green hover:bg-petal-green-light hover:text-petal-green transition-all cursor-pointer"
                             style={{
-                                background: '#FAF8F4',
-                                color: '#8C867C',
+                                background: '#1A1E1C',
+                                color: '#9E9B93',
                                 fontFamily: 'var(--font-body)',
                                 fontSize: '0.7rem',
                             }}
@@ -206,8 +206,8 @@ export default function NoteCard({
                 )
             }
 
-            <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid #F0EAE0' }}>
-                <span className="text-xs" style={{ color: '#B5AFA6', fontFamily: 'var(--font-body)' }}>
+            <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid #2C322E' }}>
+                <span className="text-xs" style={{ color: '#7D7A73', fontFamily: 'var(--font-body)' }}>
                     {formatRelativeTime(note.created_at)}
                 </span>
                 <button
@@ -215,10 +215,10 @@ export default function NoteCard({
                         e.stopPropagation();
                         navigate(`/note/${note.id}`);
                     }}
-                    className="flex items-center gap-1 text-xs rounded-lg px-2 py-1 transition-all duration-150 opacity-0 group-hover:opacity-100"
+                    className="flex items-center gap-1 text-xs rounded-lg px-2 py-1 transition-all duration-150 opacity-0 group-hover:opacity-100 cursor-pointer"
                     style={{
-                        color: '#4A7856',
-                        background: '#EBF2ED',
+                        color: '#7EC691',
+                        background: '#1D3323',
                         fontFamily: 'var(--font-body)',
                         fontSize: '0.72rem',
                     }}

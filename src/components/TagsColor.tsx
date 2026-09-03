@@ -1,31 +1,31 @@
 export const TAG_PALETTES: Record<string, { bg: string; text: string }> = {
-    startups: { bg: '#EBF2ED', text: '#3D6647' },
-    ideas: { bg: '#EEE8F2', text: '#6B4E8A' },
-    health: { bg: '#F2EDE4', text: '#8A6B3D' },
-    neuroscience: { bg: '#EBF2ED', text: '#3D6647' },
-    css: { bg: '#E8EBF2', text: '#3D4E8A' },
-    'web dev': { bg: '#E8EBF2', text: '#3D4E8A' },
-    philosophy: { bg: '#F2EAE4', text: '#8A4E3D' },
-    habits: { bg: '#EBF2ED', text: '#3D6647' },
-    design: { bg: '#EEE8F2', text: '#6B4E8A' },
-    ux: { bg: '#EEE8F2', text: '#6B4E8A' },
-    react: { bg: '#E8EBF2', text: '#3D4E8A' },
-    performance: { bg: '#E8EBF2', text: '#3D4E8A' },
-    finance: { bg: '#F2EDE4', text: '#8A6B3D' },
-    investing: { bg: '#F2EDE4', text: '#8A6B3D' },
-    leadership: { bg: '#EBF2ED', text: '#3D6647' },
-    teams: { bg: '#EBF2ED', text: '#3D6647' },
-    figma: { bg: '#EEE8F2', text: '#6B4E8A' },
-    'design systems': { bg: '#EEE8F2', text: '#6B4E8A' },
+    startups: { bg: '#1A3323', text: '#7EC691' },
+    ideas: { bg: '#2B1E38', text: '#C49BF0' },
+    health: { bg: '#332717', text: '#F6C368' },
+    neuroscience: { bg: '#1A3323', text: '#7EC691' },
+    css: { bg: '#1A293D', text: '#7DB3F7' },
+    'web dev': { bg: '#1A293D', text: '#7DB3F7' },
+    philosophy: { bg: '#38221B', text: '#F6957B' },
+    habits: { bg: '#1A3323', text: '#7EC691' },
+    design: { bg: '#2B1E38', text: '#C49BF0' },
+    ux: { bg: '#2B1E38', text: '#C49BF0' },
+    react: { bg: '#1A293D', text: '#7DB3F7' },
+    performance: { bg: '#1A293D', text: '#7DB3F7' },
+    finance: { bg: '#332717', text: '#F6C368' },
+    investing: { bg: '#332717', text: '#F6C368' },
+    leadership: { bg: '#1A3323', text: '#7EC691' },
+    teams: { bg: '#1A3323', text: '#7EC691' },
+    figma: { bg: '#2B1E38', text: '#C49BF0' },
+    'design systems': { bg: '#2B1E38', text: '#C49BF0' },
 };
 
 const EXTRA_PALETTES = [
-    { bg: '#EBF2ED', text: '#3D6647' }, // Verde
-    { bg: '#EEE8F2', text: '#6B4E8A' }, // Púrpura
-    { bg: '#F2EDE4', text: '#8A6B3D' }, // Ámbar
-    { bg: '#E8EBF2', text: '#3D4E8A' }, // Azul
-    { bg: '#F2EAE4', text: '#8A4E3D' }, // Terracota
-    { bg: '#FCEEF2', text: '#8C3A5C' }, // Rosa pastel
+    { bg: '#1A3323', text: '#7EC691' }, // Verde
+    { bg: '#2B1E38', text: '#C49BF0' }, // Púrpura
+    { bg: '#332717', text: '#F6C368' }, // Ámbar
+    { bg: '#1A293D', text: '#7DB3F7' }, // Azul
+    { bg: '#38221B', text: '#F6957B' }, // Terracota
+    { bg: '#381C28', text: '#F48BAF' }, // Rosa
 ];
 
 export const defaultTag = EXTRA_PALETTES[0];

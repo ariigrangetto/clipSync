@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import useNotification from "../hooks/useNotification.tsx";
-import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, GlobeIcon, KeyIcon } from "../components/Icons.tsx";
+import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, KeyIcon } from "../components/Icons.tsx";
 import NoteCard from "../components/NoteCard.tsx";
 import AddNoteModal from "../components/AddNoteModal.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
@@ -19,7 +19,7 @@ export default function Dashboard() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const { showNotification } = useNotification();
     const navigate = useNavigate();
-    const { user, token, signOut, loading: userLoading } = useUserToken();
+    const { user, signOut, loading: userLoading } = useUserToken();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const isLoading = notesLoading || userLoading;
@@ -128,34 +128,29 @@ export default function Dashboard() {
         return () => window.removeEventListener("mouseup", handlePointerUp);
     }, [autoSaveEnabled, addNote, updateNote, notes]);
 
-    const handleCopySyncLink = () => {
-        navigator.clipboard.writeText(window.location.origin);
-        showNotification("Link copied to clipboard", false);
-    };
-
     return (
         <>
             <div
                 className="flex h-screen overflow-hidden"
-                style={{ background: '#F0EDE4', fontFamily: 'var(--font-body)' }}
+                style={{ background: '#121413', fontFamily: 'var(--font-body)' }}
             >
                 <aside
                     className="w-56 flex flex-col shrink-0 border-r"
                     style={{
-                        background: '#FAFAF7',
-                        borderColor: '#E5DED0',
+                        background: '#181B19',
+                        borderColor: '#2C322E',
                     }}
                 >
                     <div className="px-5 pt-6 pb-5 flex items-center gap-2.5">
                         <div
                             className="w-8 h-8 rounded-xl flex items-center justify-center"
-                            style={{ background: '#4A7856' }}
+                            style={{ background: '#5E9E6E' }}
                         >
                             <FlowerIcon size={18} className="logo-flower" style={{ color: '#ffffff' } as CSSProperties} />
                         </div>
                         <span
                             className="text-base font-semibold tracking-tight"
-                            style={{ fontFamily: 'var(--font-display)', color: '#1C1914', fontWeight: 500 }}
+                            style={{ fontFamily: 'var(--font-display)', color: '#EDEDEA', fontWeight: 500 }}
                         >
                             ClipSync
                         </span>
@@ -171,8 +166,8 @@ export default function Dashboard() {
                                     onClick={() => setActiveNav(i)}
                                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all duration-150 cursor-pointer"
                                     style={{
-                                        background: isActive ? '#EBF2ED' : 'transparent',
-                                        color: isActive ? '#4A7856' : '#6B6560',
+                                        background: isActive ? '#1D3323' : 'transparent',
+                                        color: isActive ? '#7EC691' : '#9E9B93',
                                         fontSize: '0.825rem',
                                         fontWeight: isActive ? 500 : 400,
                                     }}
@@ -183,8 +178,8 @@ export default function Dashboard() {
                                         <span
                                             className="text-xs rounded-full px-1.5 py-0.5 min-w-5 text-center"
                                             style={{
-                                                background: isActive ? '#C4D9CA' : '#EDE8E0',
-                                                color: isActive ? '#3D6647' : '#9B9590',
+                                                background: isActive ? '#284631' : '#232825',
+                                                color: isActive ? '#A3E3B5' : '#88847C',
                                                 fontSize: '0.68rem',
                                             }}
                                         >
@@ -198,8 +193,8 @@ export default function Dashboard() {
                     <div
                         className="mx-3 mb-3 p-3 rounded-2xl transition-all duration-200"
                         style={{
-                            background: autoSaveEnabled ? '#EBF2ED' : '#F2EFEE',
-                            border: autoSaveEnabled ? '1px solid #C4D9CA' : '1px solid #E5DED0',
+                            background: autoSaveEnabled ? '#1A291E' : '#1F2421',
+                            border: autoSaveEnabled ? '1px solid #2F5238' : '1px solid #2C322E',
                         }}
                     >
                         <div className="flex items-center justify-between gap-2">
@@ -207,17 +202,17 @@ export default function Dashboard() {
                                 <div
                                     className="w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0"
                                     style={{
-                                        background: autoSaveEnabled ? '#4A7856' : '#9B9590',
+                                        background: autoSaveEnabled ? '#5E9E6E' : '#3A403C',
                                         color: '#FFFFFF',
                                     }}
                                 >
                                     <FlowerIcon size={14} />
                                 </div>
                                 <div className="truncate">
-                                    <p className="text-xs font-medium leading-tight truncate" style={{ color: '#1C1914', fontSize: '0.75rem' }}>
+                                    <p className="text-xs font-medium leading-tight truncate" style={{ color: '#EDEDEA', fontSize: '0.75rem' }}>
                                         Auto-save
                                     </p>
-                                    <p className="text-xs font-medium mt-0.5 truncate" style={{ color: autoSaveEnabled ? '#3D6647' : '#9B9590', fontSize: '0.66rem' }}>
+                                    <p className="text-xs font-medium mt-0.5 truncate" style={{ color: autoSaveEnabled ? '#7EC691' : '#7D7A73', fontSize: '0.66rem' }}>
                                         {autoSaveEnabled ? 'Enabled' : 'Disabled'}
                                     </p>
                                 </div>
@@ -229,7 +224,7 @@ export default function Dashboard() {
                                 title={autoSaveEnabled ? 'Disable auto-save' : 'Enable auto-save'}
                                 className="w-9 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out cursor-pointer relative shrink-0"
                                 style={{
-                                    background: autoSaveEnabled ? '#4A7856' : '#C7C2BC',
+                                    background: autoSaveEnabled ? '#5E9E6E' : '#3A403C',
                                 }}
                             >
                                 <span
@@ -244,29 +239,36 @@ export default function Dashboard() {
 
                     <div
                         className="mx-3 mb-3 p-3 rounded-xl"
-                        style={{ background: '#EBF2ED', border: '1px dashed #C4D9CA' }}
+                        style={{ background: '#1A291E', border: '1px dashed #2F5238' }}
                     >
                         <div className="flex items-center gap-2 mb-1.5">
-                            <FlowerIcon size={13} style={{ color: '#4A7856' } as CSSProperties} />
-                            <span className="text-xs font-medium" style={{ color: '#4A7856', fontSize: '0.72rem' }}>
+                            <FlowerIcon size={13} style={{ color: '#7EC691' } as CSSProperties} />
+                            <span className="text-xs font-medium" style={{ color: '#7EC691', fontSize: '0.72rem' }}>
                                 Capture Module
                             </span>
                         </div>
-                        <p style={{ color: '#7A9682', fontSize: '0.68rem', lineHeight: 1.5 }}>
+                        <p style={{ color: '#8BA693', fontSize: '0.68rem', lineHeight: 1.5 }}>
                             {autoSaveEnabled ? 'Everything you select will be saved automatically.' : 'Save disabled: select text freely.'}
                         </p>
                     </div>
 
                     <div
                         className="mx-3 mb-5 p-3 rounded-xl transition-all duration-200"
-                        style={{ background: '#FAF8F5', border: '1px solid #E5DED0' }}
+                        style={{ background: '#1F2421', border: '1px solid #2C322E' }}
                     >
-                        <div className="flex items-center justify-between gap-1 mb-2">
-                            <div className="flex items-center gap-1.5">
-                                <KeyIcon size={13} style={{ color: '#4A7856' } as CSSProperties} />
-                                <span className="text-xs font-medium" style={{ color: '#1C1914', fontSize: '0.72rem' }}>
-                                    Authenticated User
-                                </span>
+                        <div className="flex items-center justify-between gap-1">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                                <KeyIcon size={13} style={{ color: '#5E9E6E' } as CSSProperties} className="shrink-0" />
+                                <div className="truncate">
+                                    <span className="text-xs font-medium block truncate" style={{ color: '#EDEDEA', fontSize: '0.72rem' }}>
+                                        Authenticated User
+                                    </span>
+                                    {user?.email && (
+                                        <span className="text-[0.65rem] text-petal-muted block truncate" title={user.email}>
+                                            {user.email}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <button
                                 type="button"
@@ -274,11 +276,11 @@ export default function Dashboard() {
                                 disabled={isLoggingOut}
                                 title="Cerrar sesión"
                                 className="flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer hover:opacity-80 disabled:opacity-50"
-                                style={{ background: '#FCE8E6', color: '#C53030', fontSize: '0.66rem' }}
+                                style={{ background: '#3A1E1E', color: '#F87171', fontSize: '0.66rem' }}
                             >
                                 {isLoggingOut ? (
                                     <span className="flex items-center gap-1">
-                                        <span className="w-2.5 h-2.5 border border-[#C53030] border-t-transparent rounded-full animate-spin" />
+                                        <span className="w-2.5 h-2.5 border border-[#F87171] border-t-transparent rounded-full animate-spin" />
                                         <span>Logging out...</span>
                                     </span>
                                 ) : (
@@ -286,28 +288,22 @@ export default function Dashboard() {
                                 )}
                             </button>
                         </div>
-                        <div
-                            className="p-2 rounded-lg mb-2 font-sans select-all flex items-center justify-between overflow-hidden"
-                            style={{ background: '#F0EDE4', color: '#33302C', fontSize: '0.7rem', border: '1px solid #E5DED0' }}
-                        >
-                            <span className="truncate">{user?.email || token}</span>
-                        </div>
                     </div>
                 </aside>
 
                 <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     <header
                         className="flex items-center justify-between px-7 py-4 border-b shrink-0"
-                        style={{ borderColor: '#E5DED0', background: 'rgba(240,237,228,0.8)', backdropFilter: 'blur(8px)' }}
+                        style={{ borderColor: '#2C322E', background: 'rgba(18,20,19,0.85)', backdropFilter: 'blur(8px)' }}
                     >
                         <div>
                             <h1
                                 className="text-xl leading-tight"
-                                style={{ fontFamily: 'var(--font-display)', fontWeight: 500, color: '#1C1914' }}
+                                style={{ fontFamily: 'var(--font-display)', fontWeight: 500, color: '#EDEDEA' }}
                             >
                                 {activeNav === 1 ? 'Favorites' : 'My Clippings'}
                             </h1>
-                            <p style={{ color: '#A09A91', fontSize: '0.78rem', marginTop: 2 }}>
+                            <p style={{ color: '#9E9B93', fontSize: '0.78rem', marginTop: 2 }}>
                                 {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
                             </p>
                         </div>
@@ -316,12 +312,12 @@ export default function Dashboard() {
                             <div
                                 className="flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200"
                                 style={{
-                                    background: searchFocused ? '#FFFFFF' : '#F5F1E9',
-                                    borderColor: searchFocused ? '#C4D9CA' : '#E5DED0',
+                                    background: searchFocused ? '#1E2220' : '#181B19',
+                                    borderColor: searchFocused ? '#5E9E6E' : '#2C322E',
                                     width: searchFocused ? 240 : 180,
                                 }}
                             >
-                                <SearchIcon size={15} style={{ color: '#A09A91' } as CSSProperties} />
+                                <SearchIcon size={15} style={{ color: '#9E9B93' } as CSSProperties} />
                                 <input
                                     type="text"
                                     placeholder="Search notes, tags..."
@@ -329,24 +325,15 @@ export default function Dashboard() {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     onFocus={() => setSearchFocused(true)}
                                     onBlur={() => setSearchFocused(false)}
-                                    className="bg-transparent text-xs w-full outline-none placeholder-[#A09A91]"
-                                    style={{ color: '#1C1914' }}
+                                    className="bg-transparent text-xs w-full outline-none placeholder-[#6E6B65]"
+                                    style={{ color: '#EDEDEA' }}
                                 />
                             </div>
 
                             <button
-                                onClick={handleCopySyncLink}
-                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border border-petal-border text-[#6B6560] hover:bg-[#EDE8E0] transition-colors cursor-pointer"
-                                title="Copy link to open your session in another browser or device"
-                            >
-                                <GlobeIcon size={14} />
-                                <span>Sync</span>
-                            </button>
-
-                            <button
                                 onClick={() => setIsAddModalOpen(true)}
                                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95 cursor-pointer"
-                                style={{ background: '#4A7856' }}
+                                style={{ background: '#5E9E6E' }}
                             >
                                 <PlusIcon size={14} />
                                 <span>New Note</span>
@@ -354,7 +341,7 @@ export default function Dashboard() {
                         </div>
                     </header>
 
-                    <div className="px-7 py-3 border-b flex items-center justify-between gap-4" style={{ borderColor: '#E5DED0', background: '#FAF8F5' }}>
+                    <div className="px-7 py-3 border-b flex items-center justify-between gap-4" style={{ borderColor: '#2C322E', background: '#181B19' }}>
                         <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
                             {cat.map(c => {
                                 const isCatActive = activeCategory === c;
@@ -362,10 +349,10 @@ export default function Dashboard() {
                                     <button
                                         key={c}
                                         onClick={() => setActiveCategory(c)}
-                                        className="px-3.5 py-1.5 rounded-xl text-xs transition-all duration-150 capitalize whitespace-nowrap hover:bg-[#EDE8E0] hover:text-petal-text cursor-pointer"
+                                        className="px-3.5 py-1.5 rounded-xl text-xs transition-all duration-150 capitalize whitespace-nowrap hover:bg-[#232825] hover:text-[#EDEDEA] cursor-pointer"
                                         style={{
-                                            background: isCatActive ? '#4A7856' : 'transparent',
-                                            color: isCatActive ? '#FFFFFF' : '#7A746E',
+                                            background: isCatActive ? '#5E9E6E' : 'transparent',
+                                            color: isCatActive ? '#FFFFFF' : '#9E9B93',
                                             fontWeight: isCatActive ? 500 : 400,
                                         }}
                                     >
@@ -379,7 +366,7 @@ export default function Dashboard() {
                     <div className="flex-1 overflow-y-auto p-7">
                         {isLoading ? (
                             <div>
-                                <div className="flex items-center gap-2 text-xs font-medium mb-5" style={{ color: '#4A7856' }}>
+                                <div className="flex items-center gap-2 text-xs font-medium mb-5" style={{ color: '#7EC691' }}>
                                     <div className="w-4 h-4 border-2 border-petal-green border-t-transparent rounded-full animate-spin" />
                                     <span>Loading your clippings...</span>
                                 </div>
@@ -393,20 +380,20 @@ export default function Dashboard() {
                                         <div
                                             key={i}
                                             className="p-5 rounded-2xl animate-pulse flex flex-col justify-between h-44"
-                                            style={{ background: '#FAFAF7', border: '1px solid #E5DED0' }}
+                                            style={{ background: '#1E2220', border: '1px solid #2C322E' }}
                                         >
                                             <div className="space-y-2.5">
                                                 <div className="flex items-center justify-between">
-                                                    <div className="h-3 bg-[#E5DED0] rounded-md w-20" />
-                                                    <div className="h-3 bg-[#E5DED0] rounded-full w-12" />
+                                                    <div className="h-3 bg-[#2C322E] rounded-md w-20" />
+                                                    <div className="h-3 bg-[#2C322E] rounded-full w-12" />
                                                 </div>
-                                                <div className="h-4 bg-[#E5DED0] rounded-md w-3/4" />
-                                                <div className="h-3 bg-[#4A7856] opacity-30 rounded-md w-full" />
-                                                <div className="h-3 bg-[#4A7856] opacity-30 rounded-md w-2/3" />
+                                                <div className="h-4 bg-[#2C322E] rounded-md w-3/4" />
+                                                <div className="h-3 bg-[#5E9E6E] opacity-30 rounded-md w-full" />
+                                                <div className="h-3 bg-[#5E9E6E] opacity-30 rounded-md w-2/3" />
                                             </div>
-                                            <div className="flex items-center justify-between pt-3 border-t border-[#E5DED0]">
-                                                <div className="h-3 bg-[#E5DED0] rounded-md w-16" />
-                                                <div className="h-3 bg-[#E5DED0] rounded-md w-12" />
+                                            <div className="flex items-center justify-between pt-3 border-t border-[#2C322E]">
+                                                <div className="h-3 bg-[#2C322E] rounded-md w-16" />
+                                                <div className="h-3 bg-[#2C322E] rounded-md w-12" />
                                             </div>
                                         </div>
                                     ))}
@@ -416,21 +403,21 @@ export default function Dashboard() {
                             <div className="flex flex-col items-center justify-center h-64 text-center max-w-sm mx-auto">
                                 <div
                                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
-                                    style={{ background: '#EBF2ED' }}
+                                    style={{ background: '#1D3323' }}
                                 >
-                                    <FlowerIcon size={24} style={{ color: '#4A7856' } as CSSProperties} />
+                                    <FlowerIcon size={24} style={{ color: '#7EC691' } as CSSProperties} />
                                 </div>
                                 <h3 className="font-display font-medium text-base text-petal-text mb-1">
                                     There are no notes here yet.
                                 </h3>
-                                <p className="text-xs text-[#A09A91] mb-5">
+                                <p className="text-xs text-[#9E9B93] mb-5">
                                     Select text anywhere on the web or create a note manually to get started.
                                 </p>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => setIsAddModalOpen(true)}
-                                        className="px-4 py-2 rounded-xl text-xs font-medium text-white transition-colors"
-                                        style={{ background: '#4A7856' }}
+                                        className="px-4 py-2 rounded-xl text-xs font-medium text-white transition-colors cursor-pointer"
+                                        style={{ background: '#5E9E6E' }}
                                     >
                                         + New Manual Note
                                     </button>

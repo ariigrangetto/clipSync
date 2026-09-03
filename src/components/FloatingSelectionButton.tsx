@@ -46,15 +46,15 @@ export default function FloatingSelectionButton({
         title="Save in ClipSync"
         className="flex items-center gap-2 px-3 py-1.5 rounded-full shadow-lg border text-xs font-medium cursor-pointer transform hover:scale-105 active:scale-95 transition-all"
         style={{
-          background: "#1C1914",
-          color: "#FAFAF7",
-          borderColor: "rgba(255, 255, 255, 0.15)",
-          boxShadow: "0 8px 20px -4px rgba(28, 25, 20, 0.35)",
+          background: "#181B19",
+          color: "#EDEDEA",
+          borderColor: "#2C322E",
+          boxShadow: "0 8px 20px -4px rgba(0, 0, 0, 0.6)",
         }}
       >
         <span
           className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: "#4A7856" }}
+          style={{ background: "#5E9E6E" }}
         >
           <FlowerIcon size={12} className="text-white" />
         </span>

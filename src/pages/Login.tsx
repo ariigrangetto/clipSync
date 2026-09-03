@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Zap, Smartphone, Puzzle, Mail, Lock } from "lucide-react";
 import { useUserToken } from "../hooks/useUserToken.ts";
 import { FlowerIcon } from "../components/Icons.tsx";
@@ -7,7 +7,7 @@ import useNotification from "../hooks/useNotification.tsx";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle } = useUserToken();
+  const { user, loading, signInWithEmail, signUpWithEmail, signInWithGoogle } = useUserToken();
   const { showNotification } = useNotification();
 
   const [isSignUp, setIsSignUp] = useState(false);
@@ -20,6 +20,26 @@ export default function Login() {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
+
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center p-6 select-none"
+        style={{ background: "#121413", color: "#EDEDEA", fontFamily: "var(--font-body)" }}
+      >
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 animate-bounce"
+          style={{ background: "#1D3323" }}
+        >
+          <FlowerIcon size={26} style={{ color: "#7EC691" }} />
+        </div>
+        <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "#7EC691" }}>
+          <div className="w-3.5 h-3.5 border-2 border-[#7EC691] border-t-transparent rounded-full animate-spin" />
+          <span>Validating session...</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleEmailAuth = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,7 +64,11 @@ export default function Login() {
       const { error } = await signInWithEmail(trimmedEmail, password);
       setSubmitting(false);
       if (error) {
-        showNotification(error.message || "Invalid credentials", true);
+        const errorMessage =
+          error.message === "Invalid login credentials"
+            ? "User does not exist or invalid credentials"
+            : error.message || "User does not exist or invalid credentials";
+        showNotification(errorMessage, true);
       } else {
         showNotification("Logged in successfully", false);
         navigate("/");
@@ -64,20 +88,20 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex flex-col justify-between p-4 md:p-8 font-sans select-none"
-      style={{ background: "#F0EDE4", color: "#1C1914" }}
+      style={{ background: "#121413", color: "#EDEDEA" }}
     >
       <header className="max-w-5xl w-full mx-auto flex items-center justify-between py-4">
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm logo-flower"
-            style={{ background: "#4A7856" }}
+            style={{ background: "#5E9E6E" }}
           >
             <FlowerIcon size={22} style={{ color: "#FFFFFF" }} />
           </div>
           <div>
             <h1
               className="text-2xl leading-none font-medium"
-              style={{ fontFamily: "var(--font-display)", color: "#1C1914" }}
+              style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               ClipSync
             </h1>
@@ -91,18 +115,18 @@ export default function Login() {
       <main className="max-w-md w-full mx-auto my-auto py-8">
         <div
           className="rounded-3xl p-6 md:p-8 border shadow-sm space-y-6 animate-fadeSlideUp"
-          style={{ background: "#FAFAF7", borderColor: "#E5DED0" }}
+          style={{ background: "#181B19", borderColor: "#2C322E" }}
         >
           <div className="text-center space-y-2">
             <div
               className="w-12 h-12 rounded-2xl mx-auto flex items-center justify-center"
-              style={{ background: "#EBF2ED" }}
+              style={{ background: "#1D3323" }}
             >
-              <FlowerIcon size={26} style={{ color: "#4A7856" }} />
+              <FlowerIcon size={26} style={{ color: "#7EC691" }} />
             </div>
             <h2
               className="text-2xl font-serif leading-tight pt-2"
-              style={{ fontFamily: "var(--font-display)", color: "#1C1914" }}
+              style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               {isSignUp ? "Create an account in ClipSync" : "Your note space"}
             </h2>
@@ -116,10 +140,10 @@ export default function Login() {
               onClick={handleGoogleAuth}
               disabled={submitting}
               type="button"
-              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-slate-800 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 border disabled:opacity-50"
-              style={{ background: "#FFFFFF", borderColor: "#E5DED0" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F1E9")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#FFFFFF")}
+              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-[#EDEDEA] transition-all duration-200 shadow-sm flex items-center justify-center gap-2 border disabled:opacity-50 cursor-pointer"
+              style={{ background: "#1E2220", borderColor: "#2C322E" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#262B28")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#1E2220")}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -153,7 +177,7 @@ export default function Login() {
 
           <form onSubmit={handleEmailAuth} className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="email">
+              <label className="block text-xs font-medium text-[#9E9B93] mb-1.5" htmlFor="email">
                 Email address:
               </label>
               <div className="relative flex items-center">
@@ -165,18 +189,18 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:border-petal-green transition-colors placeholder-[#6E6B65]"
                   style={{
-                    background: "#FFFFFF",
-                    borderColor: "#E5DED0",
-                    color: "#1C1914",
+                    background: "#141615",
+                    borderColor: "#2C322E",
+                    color: "#EDEDEA",
                   }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#6B6560] mb-1.5" htmlFor="password">
+              <label className="block text-xs font-medium text-[#9E9B93] mb-1.5" htmlFor="password">
                 Password:
               </label>
               <div className="relative flex items-center">
@@ -188,11 +212,11 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors"
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:border-petal-green transition-colors placeholder-[#6E6B65]"
                   style={{
-                    background: "#FFFFFF",
-                    borderColor: "#E5DED0",
-                    color: "#1C1914",
+                    background: "#141615",
+                    borderColor: "#2C322E",
+                    color: "#EDEDEA",
                   }}
                 />
               </div>
@@ -201,10 +225,10 @@ export default function Login() {
             <button
               type="submit"
               disabled={submitting || !email.trim() || !password}
-              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
-              style={{ background: "#4A7856" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#3D6647")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#4A7856")}
+              className="w-full py-3 px-4 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              style={{ background: "#5E9E6E" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#72B583")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#5E9E6E")}
             >
               {isSignUp ? "Sign Up" : "Log In"}
             </button>
@@ -214,7 +238,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setIsSignUp((prev) => !prev)}
-              className="text-xs font-medium text-[#4A7856] hover:underline"
+              className="text-xs font-medium text-[#7EC691] hover:underline cursor-pointer"
             >
               {isSignUp
                 ? "Already have an account? Sign in here"
@@ -224,7 +248,7 @@ export default function Login() {
 
           <div
             className="pt-4 border-t grid grid-cols-3 gap-2 text-center"
-            style={{ borderColor: "#E5DED0" }}
+            style={{ borderColor: "#2C322E" }}
           >
             <div className="flex flex-col items-center space-y-1">
               <Zap size={18} className="text-petal-green" />
