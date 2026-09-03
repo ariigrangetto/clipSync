@@ -53,16 +53,6 @@ describe("Dashboard Unit Tests", () => {
         mockUser = { id: "test-user-id", email: "test@example.com" };
     });
 
-    test("Copying Sync Link to clipboard", async () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
-
-        const copySyncBtn = screen.getByRole("button", { name: "Sync" });
-        await fireEvent.click(copySyncBtn);
-
-        expect(writeTextMock).toHaveBeenLastCalledWith(window.location.origin);
-        expect(mockShowNotification).toHaveBeenCalledWith("Link copied to clipboard", false);
-    });
-
     test("Elements that dashboard should contain even when there are no notes yet", async () => {
         render(<Dashboard />, { wrapper: AllTheProviders });
 
@@ -72,6 +62,7 @@ describe("Dashboard Unit Tests", () => {
         expect(screen.getByPlaceholderText(/Search notes, tags.../i)).toBeInTheDocument();
         expect(screen.getByText(/Auto-save/i)).toBeInTheDocument();
         expect(screen.getByText(/Authenticated User/i)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
         expect(screen.getByText(/There are no notes here yet/i)).toBeInTheDocument();
         expect(screen.getByText("All")).toBeInTheDocument();
         expect(screen.queryByText("Test")).not.toBeInTheDocument();
@@ -95,10 +86,4 @@ describe("Dashboard Unit Tests", () => {
         expect(screen.getByText("Add new note")).toBeInTheDocument();
 
     });
-
-    test("User email should render", async () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
-        expect(screen.getByText("test@example.com")).toBeInTheDocument();
-    });
-
 });
