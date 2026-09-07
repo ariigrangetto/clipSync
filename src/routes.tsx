@@ -9,23 +9,8 @@ const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage.tsx"));
 const ExtensionPopup = lazy(() => import("./pages/ExtensionPopup.tsx"));
 
-const isExtension =
-    typeof window !== "undefined" &&
-    (window.location.protocol === "chrome-extension:" ||
-        window.location.pathname.endsWith("/index.html") ||
-        window.location.pathname === "/index.html");
-
-const isFullDashboard =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("view") === "dashboard";
-
-const defaultElement = isExtension && !isFullDashboard ? (
-    <ExtensionPopup />
-) : (
-    <ProtectedRoute>
-        <Dashboard />
-    </ProtectedRoute>
-);
+const isChromeExtension =
+    typeof window !== "undefined" && window.location.protocol === "chrome-extension:";
 
 export const Router = createBrowserRouter([
     {
@@ -35,7 +20,13 @@ export const Router = createBrowserRouter([
     },
     {
         path: "/index.html",
-        element: defaultElement,
+        element: isChromeExtension ? (
+            <ExtensionPopup />
+        ) : (
+            <ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>
+        ),
         errorElement: <ErrorPage />
     },
     {
@@ -45,7 +36,11 @@ export const Router = createBrowserRouter([
     },
     {
         path: "/",
-        element: defaultElement,
+        element: (
+            <ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>
+        ),
         errorElement: <ErrorPage />
     },
     {
@@ -59,7 +54,7 @@ export const Router = createBrowserRouter([
     },
     {
         path: "*",
-        element: isExtension && !isFullDashboard ? <ExtensionPopup /> : <ErrorPage />
+        element: <ErrorPage />
     }
 ]);
 

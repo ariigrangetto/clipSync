@@ -24,7 +24,6 @@ export default function ExtensionPopup() {
     const [isAddingQuick, setIsAddingQuick] = useState(false);
     const [savingQuick, setSavingQuick] = useState(false);
 
-    // Sync auto-save status with chrome.storage if available
     useEffect(() => {
         if (typeof chrome !== "undefined" && chrome?.storage?.local) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,21 +56,22 @@ export default function ExtensionPopup() {
         }
     };
 
-    const handleOpenFullDashboard = () => {
+    const APP_URL = (import.meta.env.VITE_APP_URL || "https://clipsyncc-ashen.vercel.app").replace(/\/$/, "");
+
+    const openApp = (path: string = "/") => {
+        const targetUrl = `${APP_URL}${path.startsWith("/") ? path : `/${path}`}`;
+        //verify if chrome object exists and has create API  
         if (typeof chrome !== "undefined" && chrome?.tabs?.create) {
-            chrome.tabs.create({ url: chrome.runtime.getURL("index.html?view=dashboard") });
+            //if it pass, execute chrome.tabs.create wich is the native way to open a new tab in chrome
+            chrome.tabs.create({ url: targetUrl });
         } else {
-            window.open("/?view=dashboard", "_blank");
+            //if it fail, use the old way (javaScript standard) to open a new tab in chrome
+            window.open(targetUrl, "_blank");
         }
     };
 
-    const handleOpenLogin = () => {
-        if (typeof chrome !== "undefined" && chrome?.tabs?.create) {
-            chrome.tabs.create({ url: chrome.runtime.getURL("index.html?view=dashboard#/login") });
-        } else {
-            window.open("/login", "_blank");
-        }
-    };
+    const handleOpenFullDashboard = () => openApp("/");
+    const handleOpenLogin = () => openApp("/login");
 
     const handleQuickSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -94,14 +94,13 @@ export default function ExtensionPopup() {
 
     return (
         <div
-            className="w-[380px] max-w-[400px] min-h-[500px] max-h-[600px] flex flex-col justify-between overflow-y-auto text-[#EDEDEA] select-none text-left"
+            className="w-95 max-w-100 min-h-125 max-h-150 flex flex-col justify-between overflow-y-auto text-petal-text select-none text-left"
             style={{
                 background: "#121413",
                 fontFamily: "var(--font-body)",
                 borderColor: "#2C322E",
             }}
         >
-            {/* Header */}
             <header
                 className="px-4 py-3 border-b flex items-center justify-between sticky top-0 z-20 backdrop-blur-md"
                 style={{ borderColor: "#2C322E", background: "rgba(18, 20, 19, 0.95)" }}
@@ -142,9 +141,7 @@ export default function ExtensionPopup() {
                 </button>
             </header>
 
-            {/* Main Content */}
             <main className="p-4 space-y-3.5 flex-1">
-                {/* 1. Brief App Introduction Card */}
                 <div
                     className="p-3 rounded-2xl border transition-all"
                     style={{ background: "#181B19", borderColor: "#2C322E" }}
@@ -157,17 +154,16 @@ export default function ExtensionPopup() {
                             <Zap size={14} />
                         </div>
                         <div className="space-y-1 min-w-0">
-                            <h3 className="text-xs font-medium text-[#EDEDEA]">
+                            <h3 className="text-xs font-medium text-petal-text">
                                 Instant Note Syncing
                             </h3>
-                            <p className="text-[11px] text-[#9E9B93] leading-relaxed">
+                            <p className="text-[11px] text-petal-muted leading-relaxed">
                                 Highlight any text on any webpage to save and sync it automatically to your ClipSync account.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* 2. Auto-Save Toggle (Activar / Desactivar) */}
                 <div
                     className="p-3.5 rounded-2xl border transition-all"
                     style={{
@@ -182,11 +178,11 @@ export default function ExtensionPopup() {
                                     className="w-2 h-2 rounded-full shrink-0"
                                     style={{ background: autoSaveEnabled ? "#4ADE80" : "#7D7A73" }}
                                 />
-                                <span className="text-xs font-semibold text-[#EDEDEA]">
+                                <span className="text-xs font-semibold text-petal-text">
                                     Auto-Save Selection
                                 </span>
                             </div>
-                            <p className="text-[10.5px] mt-0.5 text-[#9E9B93] leading-tight">
+                            <p className="text-[10.5px] mt-0.5 text-petal-muted leading-tight">
                                 {autoSaveEnabled
                                     ? "Active: Selected text on any web page will be saved"
                                     : "Paused: Free selection without automatic saving"}
@@ -212,11 +208,10 @@ export default function ExtensionPopup() {
                     </div>
                 </div>
 
-                {/* 3. User's Latest Notes (Últimas Notas) */}
                 <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-1.5">
-                            <h4 className="text-xs font-semibold text-[#EDEDEA]">
+                            <h4 className="text-xs font-semibold text-petal-text">
                                 Latest Notes
                             </h4>
                             {token && notes.length > 0 && (
@@ -241,7 +236,6 @@ export default function ExtensionPopup() {
                         )}
                     </div>
 
-                    {/* Quick note input form */}
                     {isAddingQuick && token && (
                         <form
                             onSubmit={handleQuickSave}
@@ -254,7 +248,7 @@ export default function ExtensionPopup() {
                                 onChange={(e) => setQuickNoteText(e.target.value)}
                                 placeholder="Type a quick note..."
                                 rows={2}
-                                className="w-full text-xs bg-transparent border-none outline-none resize-none text-[#EDEDEA] placeholder-[#6E6B65]"
+                                className="w-full text-xs bg-transparent border-none outline-none resize-none text-petal-text placeholder-[#6E6B65]"
                             />
                             <div className="flex justify-end gap-1.5">
                                 <button
@@ -268,7 +262,6 @@ export default function ExtensionPopup() {
                         </form>
                     )}
 
-                    {/* Notes List or Login Prompt */}
                     {authLoading ? (
                         <div className="p-6 text-center text-xs text-petal-muted animate-pulse">
                             Loading session...
@@ -278,10 +271,10 @@ export default function ExtensionPopup() {
                             className="p-4 rounded-2xl border text-center space-y-2.5"
                             style={{ background: "#181B19", borderColor: "#2C322E" }}
                         >
-                            <p className="text-xs text-[#EDEDEA] font-medium">
+                            <p className="text-xs text-petal-text font-medium">
                                 Sign in to access your notebook
                             </p>
-                            <p className="text-[11px] text-[#9E9B93] max-w-xs mx-auto">
+                            <p className="text-[11px] text-petal-muted max-w-xs mx-auto">
                                 Log in to sync clippings across all devices and view your notes here.
                             </p>
                             <button
@@ -311,8 +304,8 @@ export default function ExtensionPopup() {
                             className="p-4 rounded-2xl border text-center space-y-1 text-petal-muted"
                             style={{ background: "#181B19", borderColor: "#2C322E" }}
                         >
-                            <p className="text-xs text-[#EDEDEA]">No notes yet</p>
-                            <p className="text-[11px] text-[#9E9B93]">
+                            <p className="text-xs text-petal-text">No notes yet</p>
+                            <p className="text-[11px] text-petal-muted">
                                 Highlight any text on a webpage or click "+ Add Note" above.
                             </p>
                         </div>
@@ -342,7 +335,7 @@ export default function ExtensionPopup() {
                                                 type="button"
                                                 onClick={() => handleCopy(note.id, note.text)}
                                                 title="Copy to clipboard"
-                                                className="p-1 rounded text-[#9E9B93] hover:text-[#EDEDEA] hover:bg-[#232825] transition-colors cursor-pointer"
+                                                className="p-1 rounded text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer"
                                             >
                                                 {copiedId === note.id ? (
                                                     <Check size={12} className="text-petal-green" />
@@ -353,17 +346,17 @@ export default function ExtensionPopup() {
                                         </div>
 
                                         {note.title && (
-                                            <p className="text-xs font-semibold text-[#EDEDEA] truncate mb-0.5">
+                                            <p className="text-xs font-semibold text-petal-text truncate mb-0.5">
                                                 {note.title}
                                             </p>
                                         )}
 
-                                        <p className="text-[11.5px] text-[#C4C2BC] line-clamp-2 leading-relaxed">
+                                        <p className="text-[11.5px] text-petal-muted line-clamp-2 leading-relaxed">
                                             {note.text}
                                         </p>
 
                                         <div className="mt-1.5 flex items-center justify-between text-[10px] text-petal-muted">
-                                            <span className="truncate max-w-[160px]" title={note.source}>
+                                            <span className="truncate max-w-40" title={note.source}>
                                                 {hostname}
                                             </span>
                                             <span>
@@ -381,14 +374,13 @@ export default function ExtensionPopup() {
                 </div>
             </main>
 
-            {/* Footer */}
             <footer
                 className="px-4 py-2.5 border-t flex items-center justify-between text-[11px] text-petal-muted"
                 style={{ borderColor: "#2C322E", background: "#141615" }}
             >
                 {user ? (
                     <div className="flex items-center justify-between w-full">
-                        <span className="truncate max-w-[220px]" title={user.email}>
+                        <span className="truncate max-w-55" title={user.email}>
                             {user.email}
                         </span>
                         <button

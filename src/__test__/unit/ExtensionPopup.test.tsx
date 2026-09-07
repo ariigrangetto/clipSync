@@ -133,4 +133,27 @@ describe("ExtensionPopup Component Unit Tests", () => {
         expect(screen.getByText("Sign in to access your notebook")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /Sign In \/ Create Account/i })).toBeInTheDocument();
     });
+
+    test("opens root app route when Open App button is clicked", () => {
+        const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+        render(<ExtensionPopup />, { wrapper: AllTheProviders });
+
+        const openAppBtn = screen.getByRole("button", { name: /Open App/i });
+        fireEvent.click(openAppBtn);
+
+        expect(openSpy).toHaveBeenCalledWith("https://clipsyncc-ashen.vercel.app/", "_blank");
+        openSpy.mockRestore();
+    });
+
+    test("opens login route when Sign In button is clicked", () => {
+        mockUser = null;
+        const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+        render(<ExtensionPopup />, { wrapper: AllTheProviders });
+
+        const signInBtn = screen.getByRole("button", { name: /Sign In \/ Create Account/i });
+        fireEvent.click(signInBtn);
+
+        expect(openSpy).toHaveBeenCalledWith("https://clipsyncc-ashen.vercel.app/login", "_blank");
+        openSpy.mockRestore();
+    });
 });
