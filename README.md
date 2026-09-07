@@ -84,17 +84,3 @@ La aplicación web estará disponible en `http://localhost:5173`.
 3. Activa la casilla **Modo de desarrollador** (Developer mode) en la esquina superior derecha.
 4. Haz clic en **Cargar descomprimida** (Load unpacked) y selecciona la carpeta `dist/` de este proyecto.
 5. ¡Listo! El ícono de ClipSync aparecerá en tu barra de extensiones.
-
----
-
-## 🌐 Despliegue en Producción (Vercel)
-
-1. Conecta el repositorio a tu cuenta de **Vercel**.
-2. En la configuración del proyecto en Vercel (**Settings > Environment Variables**), agrega:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_PUBLISHABLE_KEY`
-3. El archivo `vercel.json` incluido en el repositorio gestionará automáticamente las reescrituras para el enrutamiento de la SPA.
-4. En el panel de **Supabase**:
-   - Ve a **Authentication > URL Configuration**.
-   - En **Site URL**, coloca el dominio público de tu despliegue (ej. `https://tu-app.vercel.app`).
-   - En **Redirect URLs**, añade la URL pública y `http://localhost:5173` para desarrollo.
