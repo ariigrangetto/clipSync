@@ -20,10 +20,19 @@ export interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const syncExtensionToken = (token: string) => {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+  const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+
   if (token) {
     localStorage.setItem("clipsync_user_token", token);
+    localStorage.setItem("clipsync_supabase_url", supabaseUrl);
+    localStorage.setItem("clipsync_supabase_key", supabaseKey);
     if (typeof chrome !== "undefined" && chrome.storage?.local) {
-      chrome.storage.local.set({ clipsync_user_token: token });
+      chrome.storage.local.set({
+        clipsync_user_token: token,
+        clipsync_supabase_url: supabaseUrl,
+        clipsync_supabase_key: supabaseKey,
+      });
     }
   } else {
     localStorage.removeItem("clipsync_user_token");
