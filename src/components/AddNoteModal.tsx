@@ -34,7 +34,7 @@ export default function AddNoteModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) {
-      showNotification("El contenido de la nota no puede estar vacío", true);
+      showNotification("Note content cannot be empty", true);
       return;
     }
 
@@ -49,7 +49,7 @@ export default function AddNoteModal({
       title: title.trim() || undefined,
       category: category === "All" ? "article" : category,
       tags: formattedTags,
-      source: source.trim() || "Entrada manual",
+      source: source.trim() || "Manual entry",
     });
 
     if (response.success) {

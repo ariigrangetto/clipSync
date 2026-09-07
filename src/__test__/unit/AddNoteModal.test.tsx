@@ -112,7 +112,7 @@ describe("AddNoteModal Component Unit Tests", () => {
       fireEvent.submit(form!);
 
       expect(mockShowNotification).toHaveBeenCalledWith(
-        "El contenido de la nota no puede estar vacío",
+        "Note content cannot be empty",
         true
       );
       expect(mockOnAddNote).not.toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe("AddNoteModal Component Unit Tests", () => {
           text: "Design patterns in React",
           category: "code",
           tags: ["react", "frontend"],
-          source: "Entrada manual",
+          source: "Manual entry",
           favorite: false,
           user_id: "user-1",
           created_at: new Date().toISOString(),
@@ -168,7 +168,7 @@ describe("AddNoteModal Component Unit Tests", () => {
           title: "Architecture notes",
           category: "code",
           tags: ["react", "frontend"],
-          source: "Entrada manual",
+          source: "Manual entry",
         });
         expect(mockOnClose).toHaveBeenCalledTimes(1);
       });

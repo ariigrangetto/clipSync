@@ -274,7 +274,7 @@ export default function Dashboard() {
                                 type="button"
                                 onClick={handleLogout}
                                 disabled={isLoggingOut}
-                                title="Cerrar sesión"
+                                title="Sign out"
                                 className="flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer hover:opacity-80 disabled:opacity-50"
                                 style={{ background: '#3A1E1E', color: '#F87171', fontSize: '0.66rem' }}
                             >

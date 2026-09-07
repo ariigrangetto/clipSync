@@ -35,7 +35,7 @@ export default function Login() {
         </div>
         <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "#7EC691" }}>
           <div className="w-3.5 h-3.5 border-2 border-[#7EC691] border-t-transparent rounded-full animate-spin" />
-          <span>Validating session...</span>
+          <span>Verifying session...</span>
         </div>
       </div>
     );
@@ -230,7 +230,14 @@ export default function Login() {
               onMouseEnter={(e) => (e.currentTarget.style.background = "#72B583")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#5E9E6E")}
             >
-              {isSignUp ? "Sign Up" : "Log In"}
+              {submitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>{isSignUp ? "Signing up..." : "Verifying..."}</span>
+                </span>
+              ) : (
+                <span>{isSignUp ? "Sign Up" : "Log In"}</span>
+              )}
             </button>
           </form>
 

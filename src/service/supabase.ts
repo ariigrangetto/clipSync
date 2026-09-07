@@ -49,7 +49,7 @@ export async function insertText(params: InsertNoteParams): Promise<{ success: b
       tags: formattedTags,
       category: params.category || "article",
       text: params.text,
-      source: params.source || "Entrada manual",
+      source: params.source || "Manual entry",
       user_token: token,
     })
     .select();

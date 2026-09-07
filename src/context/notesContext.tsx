@@ -135,7 +135,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 return { success: true, error: null, data: response.data };
             } else {
                 showNotification(response.error || "Error saving note", true);
-                return { success: false, error: response.error || "Error al guardar la nota", data: null };
+                return { success: false, error: response.error || "Error saving note", data: null };
             }
 
         },
@@ -240,7 +240,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                 return { success: true, error: null, data: updatedNote };
             } else {
                 showNotification(response.error || "Error updating note", true);
-                return { success: false, error: response.error || "Error al actualizar la nota", data: null };
+                return { success: false, error: response.error || "Error updating note", data: null };
             }
         },
         [token, showNotification]

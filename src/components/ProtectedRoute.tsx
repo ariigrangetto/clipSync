@@ -19,7 +19,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         </div>
         <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "#7EC691" }}>
           <div className="w-3.5 h-3.5 border-2 border-[#7EC691] border-t-transparent rounded-full animate-spin" />
-          <span>Validating session...</span>
+          <span>Verifying session...</span>
         </div>
       </div>
     );

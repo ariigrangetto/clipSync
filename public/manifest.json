@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ClipSync - Block de Notas en Tiempo Real",
+  "name": "ClipSync - Real-Time Notepad",
   "version": "1.0.0",
-  "description": "Selecciona cualquier texto en la web y guárdalo instantáneamente en tu block de notas de ClipSync con un solo clic flotante sincronizado con Supabase.",
+  "description": "Select any text on the web and instantly save it to your ClipSync notepad synced with Supabase.",
   "icons": {
     "16": "favicon.svg",
     "48": "favicon.svg",
@@ -10,7 +10,7 @@
   },
   "action": {
     "default_popup": "index.html",
-    "default_title": "Abrir ClipSync Block de Notas"
+    "default_title": "Open ClipSync Notepad"
   },
   "permissions": [
     "storage",

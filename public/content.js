@@ -103,7 +103,7 @@
         },
         (response) => {
           if (response?.success) {
-            showToast("¡Nota actualizada en ClipSync!");
+            showToast("Note updated in ClipSync!");
           }
         }
       );
@@ -114,7 +114,7 @@
     }
 
     try {
-      // 1. Comprobar si ya existe una nota guardada para la URL (source) actual de este usuario
+      // 1. Check if a note already exists for current URL and user
       const checkRes = await fetch(
         `${supabaseUrl}/rest/v1/Notes?source=eq.${encodeURIComponent(
           currentSource
@@ -132,7 +132,7 @@
       const existingNotes = checkRes.ok ? await checkRes.json() : [];
 
       if (existingNotes && existingNotes.length > 0) {
-        // 2. Si ya existe una nota con esa misma URL, se actualiza el texto de esa misma nota
+        // 2. If it exists, update existing note text
         const noteId = existingNotes[0].id;
         const updateRes = await fetch(
           `${supabaseUrl}/rest/v1/Notes?id=eq.${noteId}&user_token=eq.${encodeURIComponent(
@@ -151,10 +151,10 @@
         );
 
         if (updateRes.ok) {
-          showToast("¡Nota actualizada en ClipSync!");
+          showToast("Note updated in ClipSync!");
         }
       } else {
-        // 3. Si no existe ninguna nota para esta URL, se crea una nueva nota
+        // 3. Otherwise create a new note
         const createRes = await fetch(`${supabaseUrl}/rest/v1/Notes`, {
           method: "POST",
           headers: {
@@ -174,7 +174,7 @@
         });
 
         if (createRes.ok) {
-          showToast("¡Guardado en ClipSync!");
+          showToast("Saved to ClipSync!");
         }
       }
     } catch (error) {
