@@ -62,7 +62,6 @@ export default function Dashboard() {
         return matchesCategory && matchFavorites && matchSearch;
     });
 
-    // Alternar activar/desactivar guardado automático
     const toggleAutoSaveEnabled = () => {
         const newValue = !autoSaveEnabled;
         setAutoSaveEnabled(newValue);
@@ -81,8 +80,9 @@ export default function Dashboard() {
 
         async function handlePointerUp(e: MouseEvent) {
             const selection = window.getSelection();
+            console.log(selection);
             const selectedText = selection ? selection.toString().trim() : "";
-            const source = window.location.href;
+            const currentSource = selection ? window.getSelection().anchorNode.baseURI : window.location.href;
 
             const target = e.target as HTMLElement;
             if (
@@ -98,34 +98,39 @@ export default function Dashboard() {
                 return;
             }
 
-            const existingNote = notes.find((n) => (lastNoteIdRef.current ? n.id === lastNoteIdRef.current : n.source === source));
-            const targetNoteId = lastNoteIdRef.current || existingNote?.id;
+            //check if theres already a note with the same url
 
-            if (lastSourceRef.current === source || targetNoteId) {
-                lastSourceRef.current = source;
+            const existingNoteWithSource = notes.find((n) => n.source === currentSource);
+            console.log(existingNoteWithSource);
 
-                let textToSave = selectedText;
-                if (existingNote && existingNote.text) {
-                    textToSave = `${existingNote.text}\n\n${selectedText}`;
+            const targetNoteId = existingNoteWithSource ? existingNoteWithSource.id : null;
 
+            let textToSave = selectedText;
+
+            //if theres an existing note with the same url and with previous text, we append the new text
+            if (existingNoteWithSource && existingNoteWithSource.text) {
+                textToSave = `${existingNoteWithSource.text}\n\n${selectedText}`;
+                const response = await updateNote(textToSave, targetNoteId);
+                if (response.error) {
+                    showNotification("Failed to save the note. Please try again", true);
+                } else {
+                    showNotification("Text appended to existing note", false);
                 }
-
-                const response = await updateNote(textToSave, source, targetNoteId);
-                if (response?.data?.id) {
-                    lastNoteIdRef.current = response.data.id;
+                return;
+            }
+            else {
+                const response = await addNote({ text: textToSave, source: currentSource });
+                if (response.error) {
+                    showNotification("Failed to create new note", true);
+                } else {
+                    showNotification("New Note created", false);
                 };
-
-            } else {
-                lastSourceRef.current = source;
-                const response = await addNote({ text: selectedText, source });
-                if (response?.data?.id) {
-                    lastNoteIdRef.current = response.data.id;
-                }
             }
         }
 
         window.addEventListener("mouseup", handlePointerUp);
         return () => window.removeEventListener("mouseup", handlePointerUp);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [autoSaveEnabled, addNote, updateNote, notes]);
 
     return (

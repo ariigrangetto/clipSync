@@ -76,18 +76,16 @@ describe("ExtensionPopup Component Unit Tests", () => {
     test("renders header, app introduction, and auto-save toggle", () => {
         render(<ExtensionPopup />, { wrapper: AllTheProviders });
 
-        // Header & brand
         expect(screen.getByText("ClipSync")).toBeInTheDocument();
         expect(screen.getByText("Web Clipper Extension")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /Open App/i })).toBeInTheDocument();
 
-        // 1. Brief App Introduction
         expect(screen.getByText("Instant Note Syncing")).toBeInTheDocument();
         expect(
             screen.getByText(/Highlight any text on any webpage to save and sync it automatically/i)
         ).toBeInTheDocument();
 
-        // 2. Auto-save toggle
+
         expect(screen.getByText("Auto-Save Selection")).toBeInTheDocument();
         expect(screen.getByTitle(/Disable Auto-Save/i)).toBeInTheDocument();
     });

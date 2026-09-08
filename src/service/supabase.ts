@@ -184,23 +184,17 @@ export async function updateTitle(id: string, userToken: string, title: string):
   return { success: true, error: null, data: data?.[0] as Note };
 };
 
-export async function updateNote(userToken: string, text: string, source?: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
+export async function updateNote(userToken: string, text: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
   if (!userToken) {
     return { success: false, error: "Token or ID missing", data: null };
   }
 
   const supabase = getSupabaseClient(userToken);
 
-  let query = supabase.from("Notes").update({ text });
-
-  if (noteId) {
-    query = query.eq("id", noteId);
-  } else if (source) {
-    query = query.eq("source", source);
-  };
-
-  const { data, error } = await query
+  const { data, error } = await supabase.from("Notes")
+    .update({ text })
     .eq("user_token", userToken)
+    .eq("id", noteId)
     .select();
 
   if (error) {
@@ -210,6 +204,7 @@ export async function updateNote(userToken: string, text: string, source?: strin
 
   return { success: true, error: null, data: data?.[0] as Note };
 }
+
 
 export async function updateCat(id: string, userToken: string, category: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
   if (!userToken || !id) {

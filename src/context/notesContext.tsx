@@ -44,7 +44,6 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
         const categories = notes
             .map((n) => n.category)
             .filter((c) => Boolean(c) && typeof c === "string");
-        //new Set para eliminar duplicados
         return ["All", ...Array.from(new Set(categories))];
     }, [notes]);
 
@@ -223,27 +222,31 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
     );
 
     const updateNote = useCallback(
-        async (text: string, source?: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> => {
+        async (text: string, noteId: string): Promise<{ success: boolean, error: string | null, data: Note | null }> => {
             if (!token) {
                 showNotification("User is not authenticated", true);
                 return { success: false, error: "user not authenticated", data: null };
             }
 
-            const response = await apiUpdateNote(token, text, source, noteId);
+            const response = await apiUpdateNote(token, text, noteId);
 
             if (response.success && response.data) {
                 const updatedNote = response.data;
-                setNotes((prev) =>
-                    prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
-                );
-                showNotification("Note updated", false);
-                return { success: true, error: null, data: updatedNote };
+
+                //optimistic update
+                const findedNote = notes.find(n => n.id === updatedNote.id);
+
+                if (findedNote) {
+                    setNotes(prev => prev.map((n) => n.id === noteId ? { ...n, text } : n));
+                    showNotification("Note updated", false);
+                    return { success: true, error: null, data: updatedNote };
+                }
             } else {
                 showNotification(response.error || "Error updating note", true);
                 return { success: false, error: response.error || "Error updating note", data: null };
             }
         },
-        [token, showNotification]
+        [token, showNotification, notes]
     );
 
     const updateCat = useCallback(async (id: string, category: string): Promise<void> => {
@@ -276,7 +279,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
             updateTitle,
             updateNote,
             updateCat,
-            cat
+            cat,
         };
     }, [
         notes,
@@ -288,7 +291,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
         updateTitle,
         updateNote,
         updateCat,
-        cat
+        cat,
     ]);
     return (
         <NotesContext.Provider value={value} >
