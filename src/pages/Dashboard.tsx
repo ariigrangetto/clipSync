@@ -76,7 +76,6 @@ export default function Dashboard() {
 
         async function handlePointerUp(e: MouseEvent) {
             const selection = window.getSelection();
-            console.log(selection);
             const selectedText = selection ? selection.toString().trim() : "";
             const currentSource = selection ? window.getSelection()?.anchorNode?.baseURI : window.location.href;
 
@@ -97,7 +96,6 @@ export default function Dashboard() {
             //check if theres already a note with the same url
 
             const existingNoteWithSource = notes.find((n) => n.source === currentSource);
-            console.log(existingNoteWithSource);
 
             const targetNoteId = existingNoteWithSource ? existingNoteWithSource.id : null;
 

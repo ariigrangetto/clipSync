@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, useCallback, createContext, useMemo } from "react";
 import type { Note } from "../types/note.ts";
@@ -53,9 +54,9 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
         }
 
         let isMounted = true;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         let channel: any = null;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         let supabaseClient: any = null;
 
         const loadInitialNotes = async (): Promise<void> => {
@@ -83,7 +84,7 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                     table: "Notes",
                     filter: `user_token=eq.${token}`,
                 },
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
                 (payload: any) => {
                     if (!isMounted) return;
 
