@@ -124,36 +124,36 @@ jobs:
 
       # PREVIEW
 
-      - name: Pull Vercel Enviroment Information (Preview)
+      - name: Pull Vercel Environment Information (Preview)
         if: github.event_name == 'pull_request'
         run: |
-          vercel pull --preview --yes --environment=preview
-          echo "Vercel Enviroment Information pulled successfully"
+          vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          echo "Vercel Environment Information pulled successfully"
 
       - name: Build Project Artifacts (Preview)
         if: github.event_name == 'pull_request'
-        run: vercel build
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel (Preview)
         if: github.event_name == 'pull_request'
-        run: vercel deploy --prebuilt
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
         # Production
 
-      - name: Pull Vercel Enviroment Information (Production)
+      - name: Pull Vercel Environment Information (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          vercel pull --yes --environment=production
-          echo "Vercel Enviroment Information pulled successfully"
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          echo "Vercel Environment Information pulled successfully"
 
       - name: Build Project Artifacts (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          vercel build --prod
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           echo "Project Artifacts built successfully"
 
       - name: Deploy Project Artifacts to Vercel (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          vercel deploy --prebuilt --prod
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
           echo "Project Artifacts deployed successfully 🚀"
