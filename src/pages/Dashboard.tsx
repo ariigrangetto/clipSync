@@ -40,10 +40,6 @@ export default function Dashboard() {
         return saved === null ? true : saved === "true";
     });
 
-    // Refs para mantener el estado de auto-guardado sin que se reinicie al re-renderizar
-    const lastSourceRef = useRef<string>("");
-    const lastNoteIdRef = useRef<string | undefined>(undefined);
-
     const favoriteCount = notes.reduce((acc, note) => acc + (note.favorite ? 1 : 0), 0);
 
     const NAV_ITEMS = [
