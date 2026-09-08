@@ -78,9 +78,13 @@ jobs:
   deploy:
     name: Deploy & Release Artifacts
     needs: [validate, e2e]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - name: Download repository
@@ -96,14 +100,17 @@ jobs:
         run: npm ci
 
       - name: Compile for production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npm run build
 
       - name: Package Browser Extension (.zip)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           cd dist
           zip -r ../clipsync-extension.zip .
 
       - name: Upload Extension Artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
           name: clipsync-extension
@@ -114,6 +121,8 @@ jobs:
         run: |
           npm install --global vercel@latest
           echo "Vercel CLI installed successfully"
+
+      # PREVIEW
 
       - name: Pull Vercel Enviroment Information (Preview)
         if: github.event_name == 'pull_request'
@@ -129,10 +138,12 @@ jobs:
         if: github.event_name == 'pull_request'
         run: vercel deploy --prebuilt
 
+        # Production
+
       - name: Pull Vercel Enviroment Information (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          vercel pull --yes --enviroment=production
+          vercel pull --yes --environment=production
           echo "Vercel Enviroment Information pulled successfully"
 
       - name: Build Project Artifacts (Production)
