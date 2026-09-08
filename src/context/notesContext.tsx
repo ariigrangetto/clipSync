@@ -104,10 +104,27 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
                     }
                 }
             )
-            .subscribe();
+            .subscribe((status: string, err: any) => {
+                if (status === "SUBSCRIBED") {
+                    console.log("[ClipSync Realtime] Subscribed to notes channel");
+                } else if (status === "CHANNEL_ERROR") {
+                    console.warn("[ClipSync Realtime] Channel error:", err);
+                }
+            });
+
+        const handleSyncOnFocus = () => {
+            if (document.visibilityState === "visible") {
+                loadInitialNotes();
+            }
+        };
+
+        window.addEventListener("focus", handleSyncOnFocus);
+        document.addEventListener("visibilitychange", handleSyncOnFocus);
 
         return () => {
             isMounted = false;
+            window.removeEventListener("focus", handleSyncOnFocus);
+            document.removeEventListener("visibilitychange", handleSyncOnFocus);
             if (supabaseClient && channel) {
                 supabaseClient.removeChannel(channel);
             }

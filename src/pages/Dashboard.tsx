@@ -103,9 +103,10 @@ export default function Dashboard() {
 
             let textToSave = selectedText;
 
-            //if theres an existing note with the same url and with previous text, we append the new text
-            if (existingNoteWithSource && existingNoteWithSource.text && targetNoteId) {
-                textToSave = `${existingNoteWithSource.text}\n\n${selectedText}`;
+            //if theres an existing note with the same url, we append the new text
+            if (existingNoteWithSource && targetNoteId) {
+                const previousText = existingNoteWithSource.text || "";
+                textToSave = previousText ? `${previousText}\n\n${selectedText}` : selectedText;
                 const response = await updateNote(textToSave, targetNoteId);
                 if (response.error) {
                     showNotification("Failed to save the note. Please try again", true);

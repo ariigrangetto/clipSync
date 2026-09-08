@@ -94,6 +94,15 @@
   async function saveSelectionToClipSync(text) {
     const currentSource = window.location.href;
 
+    // Do not run content script autosave if already inside the ClipSync web app
+    // to prevent duplicate saves and race conditions with Dashboard.tsx
+    if (
+      document.title === "ClipSync" &&
+      document.getElementById("root")
+    ) {
+      return;
+    }
+
     // Si la extensión se comunica con la app mediante mensajes runtime
     if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
       chrome.runtime.sendMessage(
@@ -114,11 +123,11 @@
     }
 
     try {
-      // 1. Check if a note already exists for current URL and user
+      // 1. Check if a note already exists for current URL and user (requesting id AND text)
       const checkRes = await fetch(
         `${supabaseUrl}/rest/v1/Notes?source=eq.${encodeURIComponent(
           currentSource
-        )}&user_token=eq.${encodeURIComponent(activeUserToken)}&select=id`,
+        )}&user_token=eq.${encodeURIComponent(activeUserToken)}&select=id,text`,
         {
           method: "GET",
           headers: {
@@ -132,8 +141,12 @@
       const existingNotes = checkRes.ok ? await checkRes.json() : [];
 
       if (existingNotes && existingNotes.length > 0) {
-        // 2. If it exists, update existing note text
-        const noteId = existingNotes[0].id;
+        // 2. If it exists, append new text to existing note text
+        const existingNote = existingNotes[0];
+        const noteId = existingNote.id;
+        const previousText = existingNote.text || "";
+        const combinedText = previousText ? `${previousText}\n\n${text}` : text;
+
         const updateRes = await fetch(
           `${supabaseUrl}/rest/v1/Notes?id=eq.${noteId}&user_token=eq.${encodeURIComponent(
             activeUserToken
@@ -146,7 +159,7 @@
               "x-user-token": activeUserToken,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ text: text }),
+            body: JSON.stringify({ text: combinedText }),
           }
         );
 
