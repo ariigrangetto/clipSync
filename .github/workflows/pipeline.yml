@@ -109,3 +109,40 @@ jobs:
           name: clipsync-extension
           path: clipsync-extension.zip
           retention-days: 30
+
+      - name: Install Vercel CLI
+        run: |
+          npm install --global vercel@latest
+          echo "Vercel CLI installed successfully"
+
+      - name: Pull Vercel Enviroment Information (Preview)
+        if: github.event_name == 'pull_request'
+        run: |
+          vercel pull --preview --yes --environment=preview
+          echo "Vercel Enviroment Information pulled successfully"
+
+      - name: Build Project Artifacts (Preview)
+        if: github.event_name == 'pull_request'
+        run: vercel build
+
+      - name: Deploy Project Artifacts to Vercel (Preview)
+        if: github.event_name == 'pull_request'
+        run: vercel deploy --prebuilt
+
+      - name: Pull Vercel Enviroment Information (Production)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          vercel pull --yes --enviroment=production
+          echo "Vercel Enviroment Information pulled successfully"
+
+      - name: Build Project Artifacts (Production)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          vercel build --prod
+          echo "Project Artifacts built successfully"
+
+      - name: Deploy Project Artifacts to Vercel (Production)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          vercel deploy --prebuilt --prod
+          echo "Project Artifacts deployed successfully 🚀"

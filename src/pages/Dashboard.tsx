@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type CSSProperties } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, KeyIcon } from "../components/Icons.tsx";
 import NoteCard from "../components/NoteCard.tsx";
