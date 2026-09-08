@@ -192,7 +192,7 @@ export async function updateNote(userToken: string, text: string, noteId?: strin
   const supabase = getSupabaseClient(userToken);
 
   const { data, error } = await supabase.from("Notes")
-    .update({ text })
+    .update({ text: text })
     .eq("user_token", userToken)
     .eq("id", noteId)
     .select();

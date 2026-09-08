@@ -26,7 +26,7 @@ export default function NoteDetail() {
 
   const handleUpdateText = async (text: string) => {
     if (!note) return;
-    await updateNote(text, note.source, note.id);
+    await updateNote(text, note.id);
     setIsEditingText(false);
   };
 

@@ -78,7 +78,7 @@ export default function Dashboard() {
             const selection = window.getSelection();
             console.log(selection);
             const selectedText = selection ? selection.toString().trim() : "";
-            const currentSource = selection ? window.getSelection().anchorNode.baseURI : window.location.href;
+            const currentSource = selection ? window.getSelection()?.anchorNode?.baseURI : window.location.href;
 
             const target = e.target as HTMLElement;
             if (
@@ -104,7 +104,7 @@ export default function Dashboard() {
             let textToSave = selectedText;
 
             //if theres an existing note with the same url and with previous text, we append the new text
-            if (existingNoteWithSource && existingNoteWithSource.text) {
+            if (existingNoteWithSource && existingNoteWithSource.text && targetNoteId) {
                 textToSave = `${existingNoteWithSource.text}\n\n${selectedText}`;
                 const response = await updateNote(textToSave, targetNoteId);
                 if (response.error) {

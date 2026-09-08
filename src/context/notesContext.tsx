@@ -24,7 +24,7 @@ interface NotesContextType {
     toggleFavorite: (id: string) => Promise<void>;
     updateTags: (id: string, tags: string[]) => Promise<void>;
     updateTitle: (id: string, title: string) => Promise<void>;
-    updateNote: (text: string, source?: string, noteId?: string) => Promise<{ success: boolean, error: string | null, data: Note | null }>;
+    updateNote: (text: string, noteId: string) => Promise<{ success: boolean, error: string | null, data: Note | null }>;
     updateCat: (id: string, category: string) => Promise<void>;
     cat: string[];
 }
@@ -232,21 +232,15 @@ export default function NotesProvider({ children }: { children: React.ReactNode 
 
             if (response.success && response.data) {
                 const updatedNote = response.data;
-
-                //optimistic update
-                const findedNote = notes.find(n => n.id === updatedNote.id);
-
-                if (findedNote) {
-                    setNotes(prev => prev.map((n) => n.id === noteId ? { ...n, text } : n));
-                    showNotification("Note updated", false);
-                    return { success: true, error: null, data: updatedNote };
-                }
+                setNotes(prev => prev.map((n) => n.id === noteId ? { ...n, text } : n));
+                showNotification("Note updated", false);
+                return { success: true, error: null, data: updatedNote };
             } else {
                 showNotification(response.error || "Error updating note", true);
                 return { success: false, error: response.error || "Error updating note", data: null };
             }
         },
-        [token, showNotification, notes]
+        [token, showNotification]
     );
 
     const updateCat = useCallback(async (id: string, category: string): Promise<void> => {
