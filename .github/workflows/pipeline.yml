@@ -143,7 +143,7 @@ jobs:
       - name: Pull Vercel Environment Information (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --debug
           echo "Vercel Environment Information pulled successfully"
 
       - name: Build Project Artifacts (Production)
