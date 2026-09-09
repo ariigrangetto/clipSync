@@ -4,13 +4,20 @@
   "version": "1.0.0",
   "description": "Select any text on the web and instantly save it to your ClipSync notepad synced with Supabase.",
   "icons": {
-    "16": "favicon.svg",
-    "48": "favicon.svg",
-    "128": "favicon.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
   "action": {
     "default_popup": "index.html",
-    "default_title": "Open ClipSync Notepad"
+    "default_title": "Open ClipSync Notepad",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "permissions": [
     "storage",

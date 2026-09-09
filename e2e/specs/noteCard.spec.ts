@@ -82,7 +82,7 @@ test.describe("NoteCard Component with existing notes", () => {
     });
 
     test("should display note details correctly when note exists", async ({ page }) => {
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
         await expect(page.getByText("Important Note")).toBeVisible();
         await expect(page.getByText("This is the complete content of the note for the detail view.")).toBeVisible();
         await expect(page.locator("span", { hasText: "Article" })).toBeVisible();
@@ -144,7 +144,7 @@ test.describe("NoteCard component with non-existing notes", () => {
     });
 
     test("should display a message when no notes are found", async ({ page }) => {
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
         await expect(page.getByText("There are no notes here yet")).toBeVisible();
         await expect(page.getByText("Select text anywhere on the web or create a note manually to get started")).toBeVisible();
         await expect(page.getByRole("button", { name: "+ New Manual Note" })).toBeVisible();

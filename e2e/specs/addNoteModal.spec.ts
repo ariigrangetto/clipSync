@@ -93,7 +93,7 @@ test.describe("AddNoteModal Component", () => {
                 JSON.stringify(mockSession)
             );
         }, mockedUser);
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
     });
 
     test("should open the AddNoteModal when clicking 'New Note' button", async ({ page }) => {

@@ -112,7 +112,7 @@ test.describe("NoteDetail Page", () => {
     });
 
     test("should display note details correctly when note exists", async ({ page }) => {
-        await page.goto("http://localhost:5173/note/note-1");
+        await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
         await expect(page.getByText("Important Note")).toBeVisible();
         await expect(page.getByText("This is the complete content of the note for the detail view.")).toBeVisible();
         await expect(page.getByText("ARTICLE")).toBeVisible();
@@ -131,7 +131,7 @@ test.describe("NoteDetail Page", () => {
     });
 
     test("should be able to toggle favorite", async ({ page }) => {
-        await page.goto("http://localhost:5173/note/note-1");
+        await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
         const toggleFavorite = page.getByTitle("Mark as favorite");
         await expect(toggleFavorite).toBeVisible();
         await toggleFavorite.click();
@@ -149,7 +149,7 @@ test.describe("NoteDetail Page", () => {
             });
         });
 
-        await page.goto("http://localhost:5173/note/note-1");
+        await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
         const copyButton = page.getByRole("button", { name: "Copy" });
         await expect(copyButton).toBeVisible();
         await copyButton.click();
@@ -158,7 +158,7 @@ test.describe("NoteDetail Page", () => {
 
 
     test("note should be deleted when delete button is clicked", async ({ page }) => {
-        await page.goto("http://localhost:5173/note/note-1");
+        await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
         const deleteButton = page.getByTitle("Delete");
         await expect(deleteButton).toBeVisible();
         await deleteButton.click();
@@ -168,7 +168,7 @@ test.describe("NoteDetail Page", () => {
 
 
     test("should be able to edit the note successfully", async ({ page }) => {
-        await page.goto("http://localhost:5173/note/note-1");
+        await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
         const editBtn = page.getByRole("button", { name: "Edit" });
         await expect(editBtn).toBeVisible();
         await editBtn.click();
@@ -186,7 +186,7 @@ test.describe("NoteDetail Page", () => {
     });
 
     test("should display 'Note not found' when note ID does not exist", async ({ page }) => {
-        await page.goto("http://localhost:5173/note/inexistente-999");
+        await page.goto("http://localhost:5173/note/inexistente-999", { waitUntil: "domcontentloaded" });
         await expect(page.getByText("Note not found")).toBeVisible();
         await expect(page.getByText("The note you are trying to view does not exist or has been deleted.")).toBeVisible();
         await expect(page.getByRole("link", { name: "Return to Home" })).toBeVisible();

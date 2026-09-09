@@ -13,7 +13,7 @@
 | **Compilación / Build** | 🟢 Pasando | Vite + TypeScript (`tsc -b`) | `npm run build` |
 | **Linter** | 🟢 Pasando | ESLint 10 | `npm run lint` |
 | **Tests Unitarios** | 🟢 Pasando (51/51) | Vitest (`pool: threads`) + React Testing Library | `npm run test` |
-| **Tests End-to-End** | 🟢 Pasando (22/22) | Playwright | `npx playwright test` |
+| **Tests End-to-End** | 🟢 Pasando (66/66) | Playwright (Chromium, Firefox, WebKit) | `npx playwright test` |
 
 ---
 
@@ -57,13 +57,17 @@
   - `src/__test__/unit/AddNoteModal.test.tsx`
   - `src/__test__/unit/ExtensionPopup.test.tsx`
   - `src/__test__/unit/Providers.tsx`
-- [x] **Pruebas End-to-End implementadas y aprobadas (Playwright - 22/22 tests pasando):**
-  - `login.spec.ts` (flujo login/signup, validaciones y errores)
+- [x] **Pruebas End-to-End implementadas y aprobadas (Playwright - 66/66 tests pasando en Chromium, Firefox y WebKit):**
+  - `login.spec.ts` (flujo login/signup, validaciones, visibilidad de marca y errores)
   - `dashboard.spec.ts` (estados con y sin notas, elementos base)
   - `noteCard.spec.ts` (renderizado de tarjetas, tags y estado vacío)
   - `noteDetail.spec.ts` (detalle, favoritos, copiar, borrar y edición de texto)
   - `errorPage.spec.ts` (manejo de rutas 404 y redirección a home)
   - `addNoteModal.spec.ts` (apertura, cierre y creación de notas)
+  - **Optimización de estabilidad E2E:** Configurado `server.host: true` en `vite.config.ts`, límite de 4 workers locales y 1 reintento en `playwright.config.ts`, y navegación con `{ waitUntil: "domcontentloaded" }` para eliminar bloqueos de sockets y timeouts en Firefox headless.
+- [x] **Iconografía completa para la Extensión de Chrome:**
+  - Generación de iconos rasterizados PNG en `public/icons/` (16x16, 32x32, 48x48 y 128x128 píxeles).
+  - Configuración estricta en `manifest.json` y `public/manifest.json` (`icons` y `action.default_icon`) requerida por Chrome Manifest V3 para mostrar el icono en la barra de herramientas del navegador y menú de extensiones.
 - [x] Inicio de sesión del usuario por medio de Google OAuth, email y contraseña.
 - [x] **Configuración de CI/CD y despliegue a producción:**
   - Configuración del pipeline en `.github/workflows/pipeline.yml` (validaciones, tests, E2E, Vercel y GitHub Releases).

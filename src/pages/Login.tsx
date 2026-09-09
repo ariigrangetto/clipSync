@@ -105,7 +105,7 @@ export default function Login() {
             >
               ClipSync
             </h1>
-            <span className="text-xs text-petal-muted hidden xs:block">
+            <span className="text-xs text-petal-muted">
               Capture and sync seamlessly with Supabase Auth
             </span>
           </div>

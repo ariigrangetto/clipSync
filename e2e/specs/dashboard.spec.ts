@@ -57,7 +57,7 @@ test.describe("Dashboard page test", () => {
     });
 
     test("Default dashboard elements", async ({ page }) => {
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
         await expect(page).toHaveTitle(/ClipSync/);
         await expect(page.getByText("All Notes")).toBeVisible();
         await expect(page.getByText("Favorites")).toBeVisible();
@@ -70,7 +70,7 @@ test.describe("Dashboard page test", () => {
     });
 
     test("Dashboard without notes", async ({ page }) => {
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
 
         await expect(page.getByText("There are no notes here yet")).toBeVisible();
         await expect(page.getByText("Select text anywhere on the web or create a note manually to get started")).toBeVisible();
@@ -99,7 +99,7 @@ test.describe("Dashboard page test", () => {
             });
         });
 
-        await page.goto("http://localhost:5173");
+        await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
 
         await expect(page.getByRole("heading", { name: "First E2E Note" })).toBeVisible();
         await expect(page.getByText("This is the content of the first E2E note.")).toBeVisible();
