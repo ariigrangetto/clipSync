@@ -64,14 +64,14 @@ export default function AddNoteModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div
         className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
       <div
         data-testid="add-note-modal"
-        className="relative w-full max-w-lg rounded-2xl p-6 shadow-xl z-10 animate-in fade-in zoom-in duration-150"
+        className="relative w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-xl z-10 my-auto max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-150"
         style={{
           background: "#1A1E1C",
           border: "1px solid #2C322E",
@@ -79,10 +79,10 @@ export default function AddNoteModal({
           fontFamily: "var(--font-body)",
         }}
       >
-        <div className="flex items-center justify-between pb-4 border-b border-petal-border">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-petal-border">
           <div>
             <h2
-              className="text-lg font-semibold"
+              className="text-base sm:text-lg font-semibold"
               style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               Add new note
@@ -91,6 +91,7 @@ export default function AddNoteModal({
               Create a manual note associated with your ClipSync account
             </p>
           </div>
+
           <button
             type="button"
             onClick={onClose}

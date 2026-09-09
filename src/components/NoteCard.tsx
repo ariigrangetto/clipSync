@@ -44,7 +44,7 @@ export default function NoteCard({
     return (
         <div
             onClick={handleCardClick}
-            className="note-card bg-petal-card rounded-2xl p-5 border border-petal-border cursor-pointer group relative"
+            className="note-card bg-petal-card rounded-2xl p-4 sm:p-5 border border-petal-border cursor-pointer group relative flex flex-col justify-between"
         >
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2 min-w-0">
@@ -54,7 +54,7 @@ export default function NoteCard({
                     >
                         <FlowerIcon size={12} />
                     </div>
-                    <span className="text-xs text-petal-muted truncate" style={{ fontFamily: 'var(--font-body)' }}>
+                    <span className="text-xs text-petal-muted truncate max-w-[140px] sm:max-w-[170px]" style={{ fontFamily: 'var(--font-body)' }}>
                         {sourceText}
                     </span>
                     {note.category && (
@@ -72,7 +72,7 @@ export default function NoteCard({
                             e.stopPropagation();
                             onToggleFavorite(note.id);
                         }}
-                        className="p-1 rounded-lg transition-all duration-150 cursor-pointer"
+                        className="p-1.5 rounded-lg transition-all duration-150 cursor-pointer"
                         style={{
                             color: note.favorite ? '#5E9E6E' : '#6E6B65',
                         }}
@@ -92,7 +92,7 @@ export default function NoteCard({
                                 e.stopPropagation();
                                 onDeleteNote(note.id);
                             }}
-                            className="p-1 rounded-lg text-[#6E6B65] hover:text-red-400 hover:bg-red-950/40 transition-all duration-150 cursor-pointer"
+                            className="p-1.5 rounded-lg text-[#6E6B65] hover:text-red-400 hover:bg-red-950/40 transition-all duration-150 cursor-pointer"
                             title="Delete note"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -106,13 +106,14 @@ export default function NoteCard({
             <div className="mb-4">
                 {note.title ? (
                     <h3
-                        className="font-display font-semibold text-base text-petal-text mb-1.5 leading-snug line-clamp-2"
+                        className="font-display font-semibold text-base text-petal-text mb-1.5 leading-snug line-clamp-2 break-words"
                         style={{
                             fontFamily: 'var(--font-display)',
                             color: '#EDEDEA',
                         }}
                     >
                         {note.title}
+
                     </h3>
                 ) : (
                     <span
@@ -129,7 +130,7 @@ export default function NoteCard({
                 )}
                 {isQuote ? (
                     <p
-                        className="text-sm leading-relaxed line-clamp-4"
+                        className="text-sm leading-relaxed line-clamp-4 break-words"
                         style={{
                             fontFamily: 'var(--font-display)',
                             fontStyle: 'italic',
@@ -142,7 +143,7 @@ export default function NoteCard({
                     </p>
                 ) : isCode ? (
                     <p
-                        className="text-xs leading-relaxed rounded-lg px-3 py-2 line-clamp-4"
+                        className="text-xs leading-relaxed rounded-lg px-3 py-2 line-clamp-4 break-words"
                         style={{
                             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace',
                             color: '#7EC691',
@@ -155,7 +156,7 @@ export default function NoteCard({
                     </p>
                 ) : (
                     <p
-                        className="text-sm leading-relaxed line-clamp-4"
+                        className="text-sm leading-relaxed line-clamp-4 break-words"
                         style={{
                             fontFamily: 'var(--font-body)',
                             color: '#D4D0C7',
@@ -215,7 +216,7 @@ export default function NoteCard({
                         e.stopPropagation();
                         navigate(`/note/${note.id}`);
                     }}
-                    className="flex items-center gap-1 text-xs rounded-lg px-2 py-1 transition-all duration-150 opacity-0 group-hover:opacity-100 cursor-pointer"
+                    className="flex items-center gap-1 text-xs rounded-lg px-2 py-1 transition-all duration-150 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 cursor-pointer"
                     style={{
                         color: '#7EC691',
                         background: '#1D3323',

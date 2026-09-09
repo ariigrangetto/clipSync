@@ -19,12 +19,12 @@ export default function ErrorPage() {
     }
 
     return (
-        <div className="min-h-screen bg-petal-bg text-petal-text flex flex-col justify-between items-center p-6 font-body select-none">
+        <div className="min-h-screen bg-petal-bg text-petal-text flex flex-col justify-between items-center p-4 sm:p-6 font-body select-none">
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-petal-green-light/40 blur-3xl" />
                 <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-petal-tag-2/50 blur-3xl" />
             </div>
-            <header className="w-full max-w-5xl flex items-center justify-between py-4 relative z-10">
+            <header className="w-full max-w-5xl flex items-center justify-between py-3 sm:py-4 relative z-10">
                 <Link role="link" to="/" className="flex items-center gap-2.5 group">
                     <div className="w-9 h-9 rounded-xl bg-petal-green text-white flex items-center justify-center shadow-xs logo-flower">
                         <FlowerIcon size={20} />
@@ -39,19 +39,20 @@ export default function ErrorPage() {
                     </div>
                 </Link>
             </header>
-            <main className="relative z-10 max-w-lg w-full text-center my-auto py-10">
-                <div className="bg-[#181B19]/90 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-petal-border shadow-lg relative overflow-hidden">
+            <main className="relative z-10 max-w-lg w-full text-center my-auto py-6 sm:py-10">
+                <div className="bg-[#181B19]/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 border border-petal-border shadow-lg relative overflow-hidden">
                     <div className="relative mb-6 inline-block">
-                        <div className="w-24 h-24 rounded-3xl bg-petal-green-light text-petal-green flex items-center justify-center mx-auto shadow-inner transition-transform hover:scale-105 duration-300">
-                            <FlowerIcon size={56} className="logo-flower" />
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-petal-green-light text-petal-green flex items-center justify-center mx-auto shadow-inner transition-transform hover:scale-105 duration-300">
+                            <FlowerIcon size={48} className="logo-flower" />
                         </div>
                         <span className="absolute -bottom-2 -right-2 bg-petal-green text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                             {statusCode}
                         </span>
                     </div>
-                    <h1 className="font-display font-semibold text-2xl md:text-3xl text-petal-text mb-3 leading-tight">
+                    <h1 className="font-display font-semibold text-xl sm:text-2xl md:text-3xl text-petal-text mb-3 leading-tight">
                         {statusText}
                     </h1>
+
                     <p className="text-sm text-petal-muted leading-relaxed mb-8 max-w-sm mx-auto">
                         {errorMessage}
                     </p>

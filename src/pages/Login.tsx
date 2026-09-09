@@ -87,34 +87,34 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-between p-4 md:p-8 font-sans select-none"
+      className="min-h-screen flex flex-col justify-between p-3 sm:p-6 md:p-8 font-sans select-none"
       style={{ background: "#121413", color: "#EDEDEA" }}
     >
-      <header className="max-w-5xl w-full mx-auto flex items-center justify-between py-4">
-        <div className="flex items-center gap-3">
+      <header className="max-w-5xl w-full mx-auto flex items-center justify-between py-3 sm:py-4">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <div
-            className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm logo-flower"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shadow-sm logo-flower shrink-0"
             style={{ background: "#5E9E6E" }}
           >
-            <FlowerIcon size={22} style={{ color: "#FFFFFF" }} />
+            <FlowerIcon size={20} style={{ color: "#FFFFFF" }} />
           </div>
           <div>
             <h1
-              className="text-2xl leading-none font-medium"
+              className="text-xl sm:text-2xl leading-none font-medium"
               style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               ClipSync
             </h1>
-            <span className="text-xs text-petal-muted">
+            <span className="text-xs text-petal-muted hidden xs:block">
               Capture and sync seamlessly with Supabase Auth
             </span>
           </div>
         </div>
       </header>
 
-      <main className="max-w-md w-full mx-auto my-auto py-8">
+      <main className="max-w-md w-full mx-auto my-auto py-4 sm:py-8">
         <div
-          className="rounded-3xl p-6 md:p-8 border shadow-sm space-y-6 animate-fadeSlideUp"
+          className="rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 border shadow-sm space-y-5 sm:space-y-6 animate-fadeSlideUp"
           style={{ background: "#181B19", borderColor: "#2C322E" }}
         >
           <div className="text-center space-y-2">
@@ -125,7 +125,7 @@ export default function Login() {
               <FlowerIcon size={26} style={{ color: "#7EC691" }} />
             </div>
             <h2
-              className="text-2xl font-serif leading-tight pt-2"
+              className="text-xl sm:text-2xl font-serif leading-tight pt-2"
               style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
             >
               {isSignUp ? "Create an account in ClipSync" : "Your note space"}
@@ -134,6 +134,7 @@ export default function Login() {
               Save your selections and sync your devices securely with Email or Google.
             </p>
           </div>
+
 
           <div className="space-y-3 pt-2">
             <button
@@ -254,20 +255,20 @@ export default function Login() {
           </div>
 
           <div
-            className="pt-4 border-t grid grid-cols-3 gap-2 text-center"
+            className="pt-4 border-t grid grid-cols-3 gap-1.5 sm:gap-2 text-center"
             style={{ borderColor: "#2C322E" }}
           >
             <div className="flex flex-col items-center space-y-1">
               <Zap size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Supabase Security</p>
+              <p className="text-[0.62rem] sm:text-[0.68rem] text-petal-muted leading-tight">Supabase Security</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Smartphone size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Multi-device</p>
+              <p className="text-[0.62rem] sm:text-[0.68rem] text-petal-muted leading-tight">Multi-device</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
               <Puzzle size={18} className="text-petal-green" />
-              <p className="text-[0.68rem] text-petal-muted">Web Extension</p>
+              <p className="text-[0.62rem] sm:text-[0.68rem] text-petal-muted leading-tight">Web Extension</p>
             </div>
           </div>
         </div>

@@ -118,38 +118,38 @@ export default function NoteDetail() {
 
   return (
     <div className="min-h-screen bg-petal-bg text-petal-text flex flex-col font-body">
-      <header className="sticky top-0 z-20 bg-petal-bg/80 backdrop-blur-md border-b border-petal-border px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-20 bg-petal-bg/80 backdrop-blur-md border-b border-petal-border px-3 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               to="/"
-              className="flex items-center gap-2 text-sm font-medium text-petal-muted hover:text-petal-green transition-colors px-3 py-1.5 rounded-lg hover:bg-petal-green-light/50"
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-petal-muted hover:text-petal-green transition-colors px-2 sm:px-3 py-1.5 rounded-lg hover:bg-petal-green-light/50"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
-              Return
+              <span className="hidden sm:inline">Return</span>
             </Link>
-            <div className="h-4 w-px bg-petal-border" />
-            <Link to="/" className="flex items-center gap-2 group">
-              <FlowerIcon className="logo-flower text-petal-green" size={20} />
-              <span className="font-display font-semibold text-lg text-petal-text">ClipSync</span>
+            <div className="h-4 w-px bg-petal-border hidden sm:block" />
+            <Link to="/" className="flex items-center gap-1.5 sm:gap-2 group">
+              <FlowerIcon className="logo-flower text-petal-green shrink-0" size={18} />
+              <span className="font-display font-semibold text-base sm:text-lg text-petal-text">ClipSync</span>
             </Link>
           </div>
 
           {note && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={handleCopyText}
-                className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] hover:border-petal-green hover:text-petal-green transition-all cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-medium px-2.5 sm:px-3 py-1.5 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] hover:border-petal-green hover:text-petal-green transition-all cursor-pointer"
                 title="Copy text">
                 {copied ? (
                   <>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E9E6E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    <span>Copied</span>
+                    <span className="hidden sm:inline">Copied</span>
                   </>
 
                 ) : (
@@ -158,7 +158,7 @@ export default function NoteDetail() {
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                     </svg>
-                    <span>Copy</span>
+                    <span className="hidden sm:inline">Copy</span>
                   </>
                 )}
               </button>
@@ -166,16 +166,16 @@ export default function NoteDetail() {
                 onClick={() => {
                   handleEditNote()
                 }}
-                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] text-xs font-medium text-petal-text hover:border-petal-green hover:text-petal-green active:scale-95 transition-all duration-200 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-petal-green/20"
+                className="group flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] text-xs font-medium text-petal-text hover:border-petal-green hover:text-petal-green active:scale-95 transition-all duration-200 shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-petal-green/20"
                 title="Edit note"
               >
                 <Edit size={14} className="transition-transform duration-200 group-hover:scale-110 group-hover:rotate-6 text-petal-muted group-hover:text-petal-green" />
-                <span>Edit</span>
+                <span className="hidden sm:inline">Edit</span>
               </button>
 
               <button
                 onClick={handleToggleFavorite}
-                className="p-2 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] hover:border-petal-green transition-all cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-lg border border-petal-border bg-petal-card hover:bg-[#252A27] hover:border-petal-green transition-all cursor-pointer"
                 style={{ color: note.favorite ? '#5E9E6E' : '#9E9B93' }}
                 title={note.favorite ? "Remove from favorites" : "Mark as favorite"}
               >
@@ -185,7 +185,7 @@ export default function NoteDetail() {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="p-2 rounded-lg border border-petal-border bg-petal-card text-red-400 hover:bg-red-950/40 hover:border-red-800 transition-all cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-lg border border-petal-border bg-petal-card text-red-400 hover:bg-red-950/40 hover:border-red-800 transition-all cursor-pointer"
                 title="Delete note"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -198,9 +198,9 @@ export default function NoteDetail() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-4xl w-full mx-auto p-6 md:p-10">
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 md:p-10">
         {loading ? (
-          <div className="bg-petal-card rounded-3xl p-8 border border-petal-border shadow-sm animate-pulse space-y-6">
+          <div className="bg-petal-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-petal-border shadow-sm animate-pulse space-y-5 sm:space-y-6">
             <div className="flex items-center justify-between">
               <div className="h-6 w-32 bg-petal-border/50 rounded-full" />
               <div className="h-4 w-24 bg-petal-border/40 rounded" />
@@ -213,7 +213,7 @@ export default function NoteDetail() {
             </div>
           </div>
         ) : !note ? (
-          <div className="bg-petal-card rounded-3xl p-12 border border-petal-border text-center max-w-md mx-auto my-12">
+          <div className="bg-petal-card rounded-2xl sm:rounded-3xl p-6 sm:p-12 border border-petal-border text-center max-w-md mx-auto my-8 sm:my-12">
             <div className="w-16 h-16 rounded-full bg-petal-green-light text-petal-green flex items-center justify-center mx-auto mb-4">
               <FlowerIcon size={32} />
             </div>
@@ -229,9 +229,9 @@ export default function NoteDetail() {
             </Link>
           </div>
         ) : (
-          <article className="bg-petal-card rounded-3xl p-8 md:p-12 border border-petal-border shadow-sm relative overflow-hidden transition-all">
-            <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-petal-border">
-              <div className="flex items-center gap-3">
+          <article className="bg-petal-card rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 border border-petal-border shadow-sm relative overflow-hidden transition-all">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-5 sm:pb-6 mb-6 sm:mb-8 border-b border-petal-border">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
                 <span
                   className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium uppercase tracking-wider"
                   style={{
@@ -247,7 +247,7 @@ export default function NoteDetail() {
                         handleEditCategory(note.id, catInput);
                         setIsEditingCat(false);
                       }}
-                      className="flex items-center gap-1.5 bg-petal-input border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all w-fit"
+                      className="flex items-center gap-1.5 bg-petal-input border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all w-fit max-w-full"
                     >
                       <input
                         type="text"
@@ -255,7 +255,7 @@ export default function NoteDetail() {
                         value={catInput}
                         onChange={(e) => setCatInput(e.target.value)}
                         placeholder="Add category"
-                        className="text-xs bg-transparent border-none outline-none w-36 text-petal-text"
+                        className="text-xs bg-transparent border-none outline-none w-28 sm:w-36 text-petal-text"
                         style={{ fontFamily: 'var(--font-body)' }}
                       />
                       <button
@@ -295,25 +295,25 @@ export default function NoteDetail() {
                       href={note.source}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-petal-green hover:underline flex items-center gap-1 font-medium truncate max-w-xs"
+                      className="text-petal-green hover:underline flex items-center gap-1 font-medium truncate max-w-[150px] sm:max-w-xs"
                     >
                       {new URL(note.source).hostname}
                       <ExternalLinkIcon size={12} />
                     </a>
                   ) : (
-                    <span className="font-medium text-petal-text">{note.source || 'Manual Entry'}</span>
+                    <span className="font-medium text-petal-text truncate max-w-[180px] sm:max-w-xs">{note.source || 'Manual Entry'}</span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-petal-muted">
+              <div className="flex items-center gap-3 sm:gap-4 text-xs text-petal-muted">
                 <span>{readingTime} min read</span>
                 <span>•</span>
                 <span>{new Date(note.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
               </div>
             </div>
             {note.title ? (
-              <h1 className="font-display text-2xl md:text-3xl font-semibold text-petal-text mb-6 leading-tight tracking-tight">
+              <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-semibold text-petal-text mb-4 sm:mb-6 leading-tight tracking-tight break-words">
                 {note.title}
               </h1>
             ) : isEditingTitle ? (
@@ -324,7 +324,7 @@ export default function NoteDetail() {
                     handleAddTitle(titleInput);
                     setIsEditingTitle(false);
                   }}
-                  className="flex items-center gap-1.5 bg-petal-input border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all w-fit"
+                  className="flex items-center gap-1.5 bg-petal-input border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all w-fit max-w-full"
                 >
                   <input
                     type="text"
@@ -332,7 +332,7 @@ export default function NoteDetail() {
                     value={titleInput}
                     onChange={(e) => setTitleInput(e.target.value)}
                     placeholder="Add title"
-                    className="text-xs bg-transparent border-none outline-none w-36 text-petal-text"
+                    className="text-xs bg-transparent border-none outline-none w-28 sm:w-36 text-petal-text"
                     style={{ fontFamily: 'var(--font-body)' }}
                   />
                   <button
@@ -369,7 +369,7 @@ export default function NoteDetail() {
                 </button>
               </div>
             )}
-            <div className="mb-10">
+            <div className="mb-8 sm:mb-10">
               {isEditingText ? (
                 <form
                   onSubmit={(e) => {
@@ -378,18 +378,18 @@ export default function NoteDetail() {
                   }}
                   className="space-y-4 animate-in fade-in duration-200"
                 >
-                  <div className="relative rounded-2xl border-2 border-petal-green/80 bg-[#141615] p-4 md:p-5 shadow-sm transition-all focus-within:ring-4 focus-within:ring-petal-green/15 focus-within:border-petal-green">
+                  <div className="relative rounded-2xl border-2 border-petal-green/80 bg-[#141615] p-3 sm:p-4 md:p-5 shadow-sm transition-all focus-within:ring-4 focus-within:ring-petal-green/15 focus-within:border-petal-green">
                     <textarea
                       autoFocus
-                      rows={note.category === "code" ? 10 : 6}
+                      rows={note.category === "code" ? 8 : 5}
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
                       placeholder="Write or edit the content of the note..."
                       className={`w-full bg-transparent border-none outline-none resize-y text-petal-text ${note.category === "code"
                         ? "font-mono text-sm leading-relaxed text-[#7EC691]"
                         : note.category === "quote"
-                          ? "font-display text-xl italic leading-relaxed"
-                          : "font-body text-base md:text-lg leading-relaxed"
+                          ? "font-display text-lg sm:text-xl italic leading-relaxed"
+                          : "font-body text-sm sm:text-base md:text-lg leading-relaxed"
                         }`}
                       style={{ lineHeight: "1.8" }}
                     />
@@ -421,7 +421,7 @@ export default function NoteDetail() {
                     </button>
                   </div>
                   <pre
-                    className="text-sm rounded-2xl p-6 overflow-x-auto border border-petal-green/20"
+                    className="text-xs sm:text-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 overflow-x-auto border border-petal-green/20"
                     style={{
                       fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace',
                       color: '#7EC691',
@@ -433,9 +433,9 @@ export default function NoteDetail() {
                   </pre>
                 </div>
               ) : note.category === "quote" ? (
-                <blockquote className="my-4 pl-6 border-l-4 border-petal-green py-2">
+                <blockquote className="my-4 pl-4 sm:pl-6 border-l-4 border-petal-green py-2">
                   <p
-                    className="text-xl md:text-2xl leading-relaxed italic text-petal-text"
+                    className="text-lg sm:text-xl md:text-2xl leading-relaxed italic text-petal-text break-words"
                     style={{ fontFamily: 'var(--font-display)' }}
                   >
                     "{note.text}"
@@ -443,7 +443,7 @@ export default function NoteDetail() {
                 </blockquote>
               ) : (
                 <div
-                  className="text-base md:text-lg leading-relaxed text-petal-text whitespace-pre-wrap font-normal"
+                  className="text-sm sm:text-base md:text-lg leading-relaxed text-petal-text whitespace-pre-wrap font-normal break-words"
                   style={{ lineHeight: '1.8' }}
                 >
                   {note.text}
@@ -452,7 +452,7 @@ export default function NoteDetail() {
               }
             </div>
 
-            <div className="pt-6 border-t border-petal-border/60 flex flex-wrap items-center justify-between gap-4">
+            <div className="pt-5 sm:pt-6 border-t border-petal-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
               <div className="flex flex-wrap items-center gap-2">
                 {note.tags && note.tags.length > 0 ? (
                   <>
@@ -497,7 +497,7 @@ export default function NoteDetail() {
                       e.preventDefault();
                       handleUpdateTags(tagsInput);
                     }}
-                    className="flex items-center gap-1.5 bg-[#181C1A] border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all"
+                    className="flex items-center gap-1.5 bg-[#181C1A] border border-petal-green p-1 pl-3 rounded-full shadow-md transition-all max-w-full"
                   >
                     <input
                       type="text"
@@ -505,7 +505,7 @@ export default function NoteDetail() {
                       value={tagsInput}
                       onChange={(e) => setTagsInput(e.target.value)}
                       placeholder="react, css, figma..."
-                      className="text-xs bg-transparent border-none outline-none w-36 text-petal-text"
+                      className="text-xs bg-transparent border-none outline-none w-28 sm:w-36 text-petal-text"
                       style={{ fontFamily: 'var(--font-body)' }}
                     />
                     <button

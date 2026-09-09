@@ -81,6 +81,8 @@ jobs:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -109,6 +111,35 @@ jobs:
           cd dist
           zip -r ../clipsync-extension.zip .
 
+      - name: Extract extension version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: "ClipSync Extension v${{ steps.get_version.outputs.version }}"
+          body: |
+            ## 🚀 ClipSync Chrome Extension v${{ steps.get_version.outputs.version }}
+
+            ### 📦 ¿Cómo instalar la extensión en Google Chrome / Brave / Edge?
+            1. Descarga el archivo **`clipsync-extension.zip`** desde la sección de **Assets** aquí abajo.
+            2. Descomprímelo en tu computadora.
+            3. Abre tu navegador y ve a `chrome://extensions/` (o `edge://extensions/`).
+            4. Activa el interruptor **Modo de desarrollador** (en la esquina superior derecha).
+            5. Haz clic en **Cargar descomprimida** (*Load unpacked*).
+            6. Selecciona la carpeta que acabas de descomprimir. ¡Y listo! 🎉
+          files: clipsync-extension.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Extension Artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
@@ -116,6 +147,7 @@ jobs:
           name: clipsync-extension
           path: clipsync-extension.zip
           retention-days: 30
+
 
       - name: Install Vercel CLI
         run: |

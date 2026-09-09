@@ -120,3 +120,12 @@ body {
   outline: none;
   box-shadow: 0 0 0 2px var(--color-petal-green-mid);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -94,7 +94,7 @@ export default function ExtensionPopup() {
 
     return (
         <div
-            className="w-95 max-w-100 min-h-125 max-h-150 flex flex-col justify-between overflow-y-auto text-petal-text select-none text-left"
+            className="w-full max-w-sm sm:w-95 min-h-125 max-h-150 flex flex-col justify-between overflow-y-auto text-petal-text select-none text-left mx-auto"
             style={{
                 background: "#121413",
                 fontFamily: "var(--font-body)",

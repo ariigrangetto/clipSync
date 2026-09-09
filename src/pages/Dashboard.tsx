@@ -1,6 +1,6 @@
 import { useState, useEffect, type CSSProperties } from "react";
 import useNotification from "../hooks/useNotification.tsx";
-import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, KeyIcon } from "../components/Icons.tsx";
+import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, KeyIcon, MenuIcon, CloseIcon } from "../components/Icons.tsx";
 import NoteCard from "../components/NoteCard.tsx";
 import AddNoteModal from "../components/AddNoteModal.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
@@ -17,6 +17,7 @@ export default function Dashboard() {
     const [activeCategory, setActiveCategory] = useState<string>("All");
     const [searchFocused, setSearchFocused] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { showNotification } = useNotification();
     const navigate = useNavigate();
     const { user, signOut, loading: userLoading } = useUserToken();
@@ -25,7 +26,9 @@ export default function Dashboard() {
     const isLoading = notesLoading || userLoading;
 
     const handleLogout = async () => {
+        setIsMobileMenuOpen(false);
         setIsLoggingOut(true);
+
         try {
             await signOut();
         } finally {
@@ -134,26 +137,47 @@ export default function Dashboard() {
                 className="flex h-screen overflow-hidden"
                 style={{ background: '#121413', fontFamily: 'var(--font-body)' }}
             >
+                {/* Mobile sidebar backdrop overlay */}
+                {isMobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        aria-hidden="true"
+                    />
+                )}
+
                 <aside
-                    className="w-56 flex flex-col shrink-0 border-r"
+                    className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] flex flex-col shrink-0 border-r bg-[#181B19] transition-transform duration-200 ease-in-out md:static md:w-56 md:translate-x-0 ${
+                        isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+                    }`}
                     style={{
                         background: '#181B19',
                         borderColor: '#2C322E',
                     }}
                 >
-                    <div className="px-5 pt-6 pb-5 flex items-center gap-2.5">
-                        <div
-                            className="w-8 h-8 rounded-xl flex items-center justify-center"
-                            style={{ background: '#5E9E6E' }}
-                        >
-                            <FlowerIcon size={18} className="logo-flower" style={{ color: '#ffffff' } as CSSProperties} />
+                    <div className="px-5 pt-6 pb-5 flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                            <div
+                                className="w-8 h-8 rounded-xl flex items-center justify-center"
+                                style={{ background: '#5E9E6E' }}
+                            >
+                                <FlowerIcon size={18} className="logo-flower" style={{ color: '#ffffff' } as CSSProperties} />
+                            </div>
+                            <span
+                                className="text-base font-semibold tracking-tight"
+                                style={{ fontFamily: 'var(--font-display)', color: '#EDEDEA', fontWeight: 500 }}
+                            >
+                                ClipSync
+                            </span>
                         </div>
-                        <span
-                            className="text-base font-semibold tracking-tight"
-                            style={{ fontFamily: 'var(--font-display)', color: '#EDEDEA', fontWeight: 500 }}
+                        <button
+                            type="button"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="md:hidden p-1 rounded-lg text-petal-muted hover:text-petal-text hover:bg-[#232825] cursor-pointer"
+                            aria-label="Close navigation"
                         >
-                            ClipSync
-                        </span>
+                            <CloseIcon size={18} />
+                        </button>
                     </div>
 
                     <nav className="flex-1 px-3 space-y-0.5">
@@ -163,7 +187,10 @@ export default function Dashboard() {
                             return (
                                 <button
                                     key={item.label}
-                                    onClick={() => setActiveNav(i)}
+                                    onClick={() => {
+                                        setActiveNav(i);
+                                        setIsMobileMenuOpen(false);
+                                    }}
                                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all duration-150 cursor-pointer"
                                     style={{
                                         background: isActive ? '#1D3323' : 'transparent',
@@ -293,31 +320,40 @@ export default function Dashboard() {
 
                 <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     <header
-                        className="flex items-center justify-between px-7 py-4 border-b shrink-0"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 md:px-7 py-3 sm:py-4 border-b shrink-0"
                         style={{ borderColor: '#2C322E', background: 'rgba(18,20,19,0.85)', backdropFilter: 'blur(8px)' }}
                     >
-                        <div>
-                            <h1
-                                className="text-xl leading-tight"
-                                style={{ fontFamily: 'var(--font-display)', fontWeight: 500, color: '#EDEDEA' }}
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-2 -ml-1 rounded-xl text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer shrink-0"
+                                aria-label="Open navigation menu"
                             >
-                                {activeNav === 1 ? 'Favorites' : 'My Clippings'}
-                            </h1>
-                            <p style={{ color: '#9E9B93', fontSize: '0.78rem', marginTop: 2 }}>
-                                {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
-                            </p>
+                                <MenuIcon size={20} />
+                            </button>
+                            <div>
+                                <h1
+                                    className="text-lg sm:text-xl leading-tight"
+                                    style={{ fontFamily: 'var(--font-display)', fontWeight: 500, color: '#EDEDEA' }}
+                                >
+                                    {activeNav === 1 ? 'Favorites' : 'My Clippings'}
+                                </h1>
+                                <p style={{ color: '#9E9B93', fontSize: '0.75rem', marginTop: 1 }}>
+                                    {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
                             <div
-                                className="flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200"
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 flex-1 sm:flex-initial"
                                 style={{
                                     background: searchFocused ? '#1E2220' : '#181B19',
                                     borderColor: searchFocused ? '#5E9E6E' : '#2C322E',
-                                    width: searchFocused ? 240 : 180,
                                 }}
                             >
-                                <SearchIcon size={15} style={{ color: '#9E9B93' } as CSSProperties} />
+                                <SearchIcon size={15} style={{ color: '#9E9B93' } as CSSProperties} className="shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Search notes, tags..."
@@ -325,14 +361,14 @@ export default function Dashboard() {
                                     onChange={e => setSearchQuery(e.target.value)}
                                     onFocus={() => setSearchFocused(true)}
                                     onBlur={() => setSearchFocused(false)}
-                                    className="bg-transparent text-xs w-full outline-none placeholder-[#6E6B65]"
+                                    className="bg-transparent text-xs w-full sm:w-36 md:w-44 focus:sm:w-56 outline-none placeholder-[#6E6B65] transition-all"
                                     style={{ color: '#EDEDEA' }}
                                 />
                             </div>
 
                             <button
                                 onClick={() => setIsAddModalOpen(true)}
-                                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95 cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
                                 style={{ background: '#5E9E6E' }}
                             >
                                 <PlusIcon size={14} />
@@ -341,15 +377,15 @@ export default function Dashboard() {
                         </div>
                     </header>
 
-                    <div className="px-7 py-3 border-b flex items-center justify-between gap-4" style={{ borderColor: '#2C322E', background: '#181B19' }}>
-                        <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+                    <div className="px-4 sm:px-6 md:px-7 py-2.5 sm:py-3 border-b flex items-center justify-between gap-4" style={{ borderColor: '#2C322E', background: '#181B19' }}>
+                        <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar w-full">
                             {cat.map(c => {
                                 const isCatActive = activeCategory === c;
                                 return (
                                     <button
                                         key={c}
                                         onClick={() => setActiveCategory(c)}
-                                        className="px-3.5 py-1.5 rounded-xl text-xs transition-all duration-150 capitalize whitespace-nowrap hover:bg-[#232825] hover:text-[#EDEDEA] cursor-pointer"
+                                        className="px-3 sm:px-3.5 py-1.5 rounded-xl text-xs transition-all duration-150 capitalize whitespace-nowrap hover:bg-[#232825] hover:text-[#EDEDEA] cursor-pointer shrink-0"
                                         style={{
                                             background: isCatActive ? '#5E9E6E' : 'transparent',
                                             color: isCatActive ? '#FFFFFF' : '#9E9B93',
@@ -363,19 +399,14 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-7">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-7">
                         {isLoading ? (
                             <div>
                                 <div className="flex items-center gap-2 text-xs font-medium mb-5" style={{ color: '#7EC691' }}>
                                     <div className="w-4 h-4 border-2 border-petal-green border-t-transparent rounded-full animate-spin" />
                                     <span>Loading your clippings...</span>
                                 </div>
-                                <div
-                                    className="grid gap-4"
-                                    style={{
-                                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                                    }}
-                                >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                                     {[1, 2, 3, 4, 5, 6].map((i) => (
                                         <div
                                             key={i}
@@ -400,7 +431,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         ) : filteredNotes.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-64 text-center max-w-sm mx-auto">
+                            <div className="flex flex-col items-center justify-center min-h-[280px] text-center max-w-sm mx-auto px-4 py-8">
                                 <div
                                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
                                     style={{ background: '#1D3323' }}
@@ -424,12 +455,7 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         ) : (
-                            <div
-                                className="grid gap-4"
-                                style={{
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                                }}
-                            >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                                 {filteredNotes.map(note => (
                                     <NoteCard
                                         key={note.id}
@@ -443,6 +469,7 @@ export default function Dashboard() {
                     </div>
                 </main>
             </div>
+
 
             <AddNoteModal
                 isOpen={isAddModalOpen}
