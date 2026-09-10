@@ -236,11 +236,12 @@
     // Refrescar credenciales en tiempo real antes de validar (evita requerir recargar la página)
     await refreshCredentials();
 
-    // 1. Validar si hay credenciales válidas (evitar spamear toasts si aún no inició sesión)
+    // 1. Validar si hay credenciales válidas
     if (!supabaseUrl || !supabaseKey || !activeUserToken) {
-      // No bloquear la selección para que al iniciar sesión pueda volver a seleccionar el texto sin recargar
+      // No guardar nada en memoria ni en BD, pero alertar al usuario de que debe iniciar sesión primero
       lastSavedText = "";
       lastSavedSource = "";
+      showToast("Please log in to ClipSync to save notes", true);
       return;
     }
 
