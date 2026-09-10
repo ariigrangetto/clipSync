@@ -134,6 +134,16 @@ jobs:
             4. Activa el interruptor **Modo de desarrollador** (en la esquina superior derecha).
             5. Haz clic en **Cargar descomprimida** (*Load unpacked*).
             6. Selecciona la carpeta que acabas de descomprimir. ¡Y listo! 🎉
+
+            ---
+
+            ### 📦 How to install the extension in Google Chrome / Brave / Edge?
+            1. Download the **`clipsync-extension.zip`** file from the **Assets** section below.
+            2. Unzip it on your computer.
+            3. Open your browser and go to `chrome://extensions/` (or `edge://extensions/`).
+            4. Turn on the **Developer mode** toggle (in the top right corner).
+            5. Click on **Load unpacked**.
+            6. Select the folder you just unzipped. Done! 🎉
           files: clipsync-extension.zip
           draft: false
           prerelease: false
