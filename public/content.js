@@ -55,6 +55,85 @@
     supabaseUrl = localStorage.getItem("clipsync_supabase_url") || "";
     supabaseKey = localStorage.getItem("clipsync_supabase_key") || "";
   }
+  // Comprobar a través de la URL si el usuario se encuentra dentro de la web app ClipSync
+  function isClipSyncApp() {
+    try {
+      const hostname = window.location.hostname;
+      return (
+        hostname === "clipsyncc-ashen.vercel.app" ||
+        (hostname.endsWith(".vercel.app") && hostname.includes("clipsync")) ||
+        hostname === "localhost" ||
+        hostname === "127.0.0.1"
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  // Al no tener acceso a chrome.storage desde la app de ClipSync, se utiliza un intermedio que en este caso es content.js
+  // Se leerán los datos guardados dentro del localStorage de la app y luego se enviarán a través de chrome.storage
+  // Puente (Bridge): Sincronizar credenciales desde la web app de ClipSync hacia chrome.storage.local (únicamente en dominios de la app)
+  if (typeof window !== "undefined" && isClipSyncApp()) {
+    // 1. Sincronización inicial si ya existen credenciales guardadas en el localStorage de la web app
+    try {
+      const webToken = window.localStorage.getItem("clipsync_user_token");
+      const webUrl = window.localStorage.getItem("clipsync_supabase_url");
+      const webKey = window.localStorage.getItem("clipsync_supabase_key");
+      const webUser = window.localStorage.getItem("clipsync_user_data");
+
+      if (typeof chrome !== "undefined" && chrome.storage?.local) {
+        if (webToken) {
+          activeUserToken = webToken;
+          if (webUrl) supabaseUrl = webUrl;
+          if (webKey) supabaseKey = webKey;
+
+          chrome.storage.local.set({
+            clipsync_user_token: webToken,
+            clipsync_supabase_url: webUrl || supabaseUrl,
+            clipsync_supabase_key: webKey || supabaseKey,
+            clipsync_user_data: webUser || "",
+          });
+        } else {
+          // Si el usuario está deslogueado en la web app, limpiar el storage de la extensión
+          chrome.storage.local.remove([
+            "clipsync_user_token",
+            "clipsync_user_data",
+          ]);
+        }
+      }
+    } catch {
+    }
+
+    // 2. Escuchar cambios de autenticación en tiempo real desde la web app mediante window.postMessage (sin recargar la página)
+    window.addEventListener("message", (event) => {
+      if (event.source !== window || event.data?.type !== "CLIPSYNC_AUTH_STATE") {
+        return;
+      }
+
+      if (event.data.action === "LOGIN" && event.data.token) {
+        activeUserToken = event.data.token;
+        if (event.data.supabaseUrl) supabaseUrl = event.data.supabaseUrl;
+        if (event.data.supabaseKey) supabaseKey = event.data.supabaseKey;
+
+        if (typeof chrome !== "undefined" && chrome.storage?.local) {
+          chrome.storage.local.set({
+            clipsync_user_token: event.data.token,
+            clipsync_supabase_url: event.data.supabaseUrl || supabaseUrl,
+            clipsync_supabase_key: event.data.supabaseKey || supabaseKey,
+            clipsync_user_data: event.data.user ? JSON.stringify(event.data.user) : "",
+          });
+        }
+      } else if (event.data.action === "LOGOUT") {
+        activeUserToken = "";
+        if (typeof chrome !== "undefined" && chrome.storage?.local) {
+          chrome.storage.local.remove([
+            "clipsync_user_token",
+            "clipsync_user_data",
+          ]);
+        }
+      }
+    });
+  }
 
   function showToast(message, isError = false) {
     const existing = document.getElementById("clipsync-toast-msg");
@@ -94,30 +173,12 @@
   async function saveSelectionToClipSync(text) {
     const currentSource = window.location.href;
 
-    // Do not run content script autosave if already inside the ClipSync web app
-    // to prevent duplicate saves and race conditions with Dashboard.tsx
-    if (
-      document.title === "ClipSync" &&
-      document.getElementById("root")
-    ) {
+    // Evitar ejecutar autosave si el usuario ya está dentro de la web app ClipSync (comprobación por URL)
+    if (isClipSyncApp()) {
       return;
     }
 
-    // Si la extensión se comunica con la app mediante mensajes runtime
-    if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
-      chrome.runtime.sendMessage(
-        {
-          type: "CLIPSYNC_SAVE_NOTE",
-          payload: { text, source: currentSource },
-        },
-        (response) => {
-          if (response?.success) {
-            showToast("Note updated in ClipSync!");
-          }
-        }
-      );
-    }
-
+    // 1. Validar si hay credenciales válidas (evitar spamear toasts si aún no inició sesión)
     if (!supabaseUrl || !supabaseKey || !activeUserToken) {
       return;
     }
@@ -191,26 +252,47 @@
         }
       }
     } catch (error) {
-      // Ignorar errores silenciosamente
     }
   }
 
   function handleMouseUp(e) {
-    if (!isEnabled) return;
+    if (!isEnabled || isClipSyncApp()) return;
 
     const target = e.target;
-    if (
-      target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable ||
-      target.closest?.("button")
-    ) {
+    if (target?.closest?.("button")) {
       return;
     }
 
     setTimeout(() => {
-      const selection = window.getSelection();
-      const selectedText = selection ? selection.toString().trim() : "";
+      let selectedText = "";
+
+      // Si la selección ocurre en un input o textarea (excluyendo contraseñas por privacidad)
+      const activeEl = document.activeElement;
+      const inputEl =
+        target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
+          ? target
+          : activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")
+            ? activeEl
+            : null;
+
+      if (inputEl && inputEl.type !== "password") {
+        try {
+          const start = inputEl.selectionStart;
+          const end = inputEl.selectionEnd;
+          if (typeof start === "number" && typeof end === "number" && start !== end) {
+            selectedText = inputEl.value.substring(start, end).trim();
+          }
+        } catch {
+          // Ignorar tipos de input que no admiten selectionStart
+        }
+      }
+
+      // Si no se obtuvo de un input/textarea, obtener la selección del DOM (texto normal y contenteditable)
+      if (!selectedText) {
+        const selection = window.getSelection();
+        selectedText = selection ? selection.toString().trim() : "";
+      }
+
       const currentSource = window.location.href;
 
       if (

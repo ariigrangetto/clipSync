@@ -84,16 +84,25 @@ test.describe("Login Page E2E Tests", () => {
     });
 
     test("should handle failed login attempt with error notification", async ({ page }) => {
-        await page.route(/\/auth\/v1\/token/i, async (route) => {
-            await route.fulfill({
-                status: 400,
-                contentType: "application/json",
-                body: JSON.stringify({
-                    error: "invalid_grant",
-                    error_description: "Invalid login credentials",
-                    message: "Invalid login credentials",
-                }),
-            });
+        await page.route(/\/auth\/v1\//i, async (route) => {
+            const url = route.request().url();
+            if (url.includes("token")) {
+                await route.fulfill({
+                    status: 400,
+                    contentType: "application/json",
+                    body: JSON.stringify({
+                        error: "invalid_grant",
+                        error_description: "Invalid login credentials",
+                        message: "Invalid login credentials",
+                    }),
+                });
+            } else {
+                await route.fulfill({
+                    status: 200,
+                    contentType: "application/json",
+                    body: JSON.stringify({}),
+                });
+            }
         });
 
         await page.goto("http://localhost:5173/login", { waitUntil: "domcontentloaded" });
@@ -102,6 +111,7 @@ test.describe("Login Page E2E Tests", () => {
         await page.getByLabel("Password:").fill("wrongpassword");
 
         const submitBtn = page.getByRole("button", { name: "Log In" });
+        await expect(submitBtn).toBeEnabled();
         await submitBtn.click();
 
         // Toast notification host is attached to DOM and displays error message
@@ -125,19 +135,28 @@ test.describe("Login Page E2E Tests", () => {
         const validJwt =
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMmUtdXNlci1pZCIsImVtYWlsIjoic3VjY2Vzc0BleGFtcGxlLmNvbSIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiaWF0IjoxNTE2MjM5MDIyfQ.signature";
 
-        await page.route(/\/auth\/v1\/token/i, async (route) => {
-            await route.fulfill({
-                status: 200,
-                contentType: "application/json",
-                body: JSON.stringify({
-                    access_token: validJwt,
-                    token_type: "bearer",
-                    expires_in: 3600,
-                    expires_at: Math.floor(Date.now() / 1000) + 3600,
-                    refresh_token: "fake-refresh-token",
-                    user: mockUser,
-                }),
-            });
+        await page.route(/\/auth\/v1\//i, async (route) => {
+            const url = route.request().url();
+            if (url.includes("token")) {
+                await route.fulfill({
+                    status: 200,
+                    contentType: "application/json",
+                    body: JSON.stringify({
+                        access_token: validJwt,
+                        token_type: "bearer",
+                        expires_in: 3600,
+                        expires_at: Math.floor(Date.now() / 1000) + 3600,
+                        refresh_token: "fake-refresh-token",
+                        user: mockUser,
+                    }),
+                });
+            } else {
+                await route.fulfill({
+                    status: 200,
+                    contentType: "application/json",
+                    body: JSON.stringify(mockUser),
+                });
+            }
         });
 
         await page.route(/\/rest\/v1\/Notes/i, async (route) => {
@@ -154,6 +173,7 @@ test.describe("Login Page E2E Tests", () => {
         await page.getByLabel("Password:").fill("correctpassword123");
 
         const submitBtn = page.getByRole("button", { name: "Log In" });
+        await expect(submitBtn).toBeEnabled();
         await submitBtn.click();
 
         await expect(page.locator("#clipsync-toast-host")).toBeAttached();

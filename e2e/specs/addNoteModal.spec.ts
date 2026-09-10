@@ -94,6 +94,7 @@ test.describe("AddNoteModal Component", () => {
             );
         }, mockedUser);
         await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
+        await expect(page.getByRole("button", { name: "New Note" })).toBeVisible();
     });
 
     test("should open the AddNoteModal when clicking 'New Note' button", async ({ page }) => {

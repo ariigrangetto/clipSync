@@ -3,9 +3,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import type { User, Session, AuthError, AuthResponse, OAuthResponse } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase.ts";
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-declare const chrome: any;
-
 export interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -19,7 +16,10 @@ export interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const syncExtensionToken = (token: string) => {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+declare const chrome: any;
+
+const syncExtensionToken = (token: string, userObj?: User | null) => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
   const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
@@ -27,17 +27,35 @@ const syncExtensionToken = (token: string) => {
     localStorage.setItem("clipsync_user_token", token);
     localStorage.setItem("clipsync_supabase_url", supabaseUrl);
     localStorage.setItem("clipsync_supabase_key", supabaseKey);
-    if (typeof chrome !== "undefined" && chrome.storage?.local) {
-      chrome.storage.local.set({
-        clipsync_user_token: token,
-        clipsync_supabase_url: supabaseUrl,
-        clipsync_supabase_key: supabaseKey,
-      });
+    if (userObj) {
+      localStorage.setItem("clipsync_user_data", JSON.stringify(userObj));
+    }
+    // Notificar a content.js en tiempo real sin requerir APIs de Chrome en la app
+    if (typeof window !== "undefined") {
+      window.postMessage(
+        {
+          type: "CLIPSYNC_AUTH_STATE",
+          action: "LOGIN",
+          token,
+          supabaseUrl,
+          supabaseKey,
+          user: userObj,
+        },
+        "*"
+      );
     }
   } else {
     localStorage.removeItem("clipsync_user_token");
-    if (typeof chrome !== "undefined" && chrome.storage?.local) {
-      chrome.storage.local.remove("clipsync_user_token");
+    localStorage.removeItem("clipsync_user_data");
+    // Notificar logout a content.js en tiempo real
+    if (typeof window !== "undefined") {
+      window.postMessage(
+        {
+          type: "CLIPSYNC_AUTH_STATE",
+          action: "LOGOUT",
+        },
+        "*"
+      );
     }
   }
 };
@@ -50,13 +68,62 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
+    // Solo si estamos corriendo dentro del Popup de la extensión (chrome-extension://)
+    const isExtensionPopup =
+      typeof window !== "undefined" && window.location.protocol === "chrome-extension:";
+
+    if (isExtensionPopup && typeof chrome !== "undefined" && chrome?.storage?.local) {
+      chrome.storage.local.get(
+        ["clipsync_user_token", "clipsync_user_data"],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (res: any) => {
+          if (!isMounted) return;
+          if (res?.clipsync_user_token) {
+            try {
+              const parsedUser = res.clipsync_user_data
+                ? JSON.parse(res.clipsync_user_data)
+                : null;
+              setUser(parsedUser);
+            } catch {
+              setUser(null);
+            }
+          }
+          setLoading(false);
+        }
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const handleStorageChange = (changes: any) => {
+        if (!isMounted) return;
+        if (changes.clipsync_user_token) {
+          if (!changes.clipsync_user_token.newValue) {
+            setUser(null);
+          }
+        }
+        if (changes.clipsync_user_data?.newValue) {
+          try {
+            setUser(JSON.parse(changes.clipsync_user_data.newValue));
+          } catch {
+            setUser(null);
+          }
+        }
+      };
+
+      chrome.storage.onChanged.addListener(handleStorageChange);
+      return () => {
+        isMounted = false;
+        chrome.storage.onChanged.removeListener(handleStorageChange);
+      };
+    }
+
+    // Flujo normal de la Web App en el navegador
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (isMounted) {
         setSession(session);
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         const currentToken = currentUser?.id || currentUser?.email || "";
-        syncExtensionToken(currentToken);
+        syncExtensionToken(currentToken, currentUser);
         setLoading(false);
       }
     });
@@ -67,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         const currentToken = currentUser?.id || currentUser?.email || "";
-        syncExtensionToken(currentToken);
+        syncExtensionToken(currentToken, currentUser);
         setLoading(false);
       }
     });

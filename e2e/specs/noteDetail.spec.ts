@@ -84,8 +84,9 @@ test.describe("NoteDetail Page", () => {
                 });
             } else if (method === "DELETE") {
                 await route.fulfill({
-                    status: 204,
+                    status: 200,
                     contentType: "application/json",
+                    body: JSON.stringify([{ id: "note-1" }]),
                 });
                 return;
             } else {
@@ -159,11 +160,11 @@ test.describe("NoteDetail Page", () => {
 
     test("note should be deleted when delete button is clicked", async ({ page }) => {
         await page.goto("http://localhost:5173/note/note-1", { waitUntil: "domcontentloaded" });
-        const deleteButton = page.getByTitle("Delete");
+        const deleteButton = page.getByTitle("Delete note");
         await expect(deleteButton).toBeVisible();
         await deleteButton.click();
 
-        await expect(page).toHaveURL("http://localhost:5173");
+        await expect(page).toHaveURL("http://localhost:5173/");
     });
 
 
