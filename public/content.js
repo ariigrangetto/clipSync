@@ -7,54 +7,115 @@
   let lastSavedText = "";
   let lastSavedSource = "";
 
-  // Cargar configuración de forma dinámica únicamente desde el almacenamiento local del usuario
-  if (typeof chrome !== "undefined" && chrome.storage?.local) {
-    chrome.storage.local.get(
-      [
-        "clipsync_autosave_enabled",
-        "clipsync_user_token",
-        "clipsync_supabase_url",
-        "clipsync_supabase_key",
-      ],
-      (res) => {
-        if (res.clipsync_autosave_enabled !== undefined) {
-          isEnabled = res.clipsync_autosave_enabled;
+  // Cargar y actualizar configuración dinámicamente
+  function refreshCredentials() {
+    return new Promise((resolve) => {
+      if (typeof chrome !== "undefined" && chrome.storage?.local) {
+        chrome.storage.local.get(
+          [
+            "clipsync_autosave_enabled",
+            "clipsync_user_token",
+            "clipsync_supabase_url",
+            "clipsync_supabase_key",
+          ],
+          (res) => {
+            if (res) {
+              if (res.clipsync_autosave_enabled !== undefined) {
+                isEnabled =
+                  res.clipsync_autosave_enabled === true ||
+                  res.clipsync_autosave_enabled === "true";
+              }
+              if (res.clipsync_user_token) {
+                activeUserToken = res.clipsync_user_token;
+              }
+              if (res.clipsync_supabase_url) {
+                supabaseUrl = res.clipsync_supabase_url;
+              }
+              if (res.clipsync_supabase_key) {
+                supabaseKey = res.clipsync_supabase_key;
+              }
+            }
+            // Fallback secundario a localStorage si falta algún valor y existe
+            try {
+              if (!activeUserToken && window.localStorage?.getItem("clipsync_user_token")) {
+                activeUserToken = window.localStorage.getItem("clipsync_user_token") || "";
+              }
+              if (!supabaseUrl && window.localStorage?.getItem("clipsync_supabase_url")) {
+                supabaseUrl = window.localStorage.getItem("clipsync_supabase_url") || "";
+              }
+              if (!supabaseKey && window.localStorage?.getItem("clipsync_supabase_key")) {
+                supabaseKey = window.localStorage.getItem("clipsync_supabase_key") || "";
+              }
+            } catch {
+            }
+            resolve();
+          }
+        );
+      } else {
+        try {
+          const saved = localStorage.getItem("clipsync_autosave_enabled");
+          isEnabled = saved === null ? true : saved === "true";
+          activeUserToken = localStorage.getItem("clipsync_user_token") || "";
+          supabaseUrl = localStorage.getItem("clipsync_supabase_url") || "";
+          supabaseKey = localStorage.getItem("clipsync_supabase_key") || "";
+        } catch {
         }
-        if (res.clipsync_user_token) {
-          activeUserToken = res.clipsync_user_token;
-        }
-        if (res.clipsync_supabase_url) {
-          supabaseUrl = res.clipsync_supabase_url;
-        }
-        if (res.clipsync_supabase_key) {
-          supabaseKey = res.clipsync_supabase_key;
-        }
-      }
-    );
-
-    // Escuchar actualizaciones dinámicas de almacenamiento
-    chrome.storage.onChanged.addListener((changes) => {
-      if (changes.clipsync_autosave_enabled) {
-        isEnabled = changes.clipsync_autosave_enabled.newValue;
-      }
-      if (changes.clipsync_user_token) {
-        activeUserToken = changes.clipsync_user_token.newValue;
-      }
-      if (changes.clipsync_supabase_url) {
-        supabaseUrl = changes.clipsync_supabase_url.newValue;
-      }
-      if (changes.clipsync_supabase_key) {
-        supabaseKey = changes.clipsync_supabase_key.newValue;
+        resolve();
       }
     });
-  } else {
-    // Fallback dinámico usando localStorage (sin valores por defecto ni claves expuestas)
-    const saved = localStorage.getItem("clipsync_autosave_enabled");
-    isEnabled = saved === null ? true : saved === "true";
-    activeUserToken = localStorage.getItem("clipsync_user_token") || "";
-    supabaseUrl = localStorage.getItem("clipsync_supabase_url") || "";
-    supabaseKey = localStorage.getItem("clipsync_supabase_key") || "";
   }
+
+  // 1. Carga inicial
+  refreshCredentials();
+
+  // 2. Escuchar actualizaciones dinámicas de almacenamiento de Chrome
+  if (typeof chrome !== "undefined" && chrome.storage?.onChanged) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName && areaName !== "local") return;
+      if (changes.clipsync_autosave_enabled) {
+        isEnabled =
+          changes.clipsync_autosave_enabled.newValue === true ||
+          changes.clipsync_autosave_enabled.newValue === "true";
+      }
+      if (changes.clipsync_user_token) {
+        activeUserToken = changes.clipsync_user_token.newValue || "";
+      }
+      if (changes.clipsync_supabase_url) {
+        supabaseUrl = changes.clipsync_supabase_url.newValue || "";
+      }
+      if (changes.clipsync_supabase_key) {
+        supabaseKey = changes.clipsync_supabase_key.newValue || "";
+      }
+    });
+  }
+
+  // 3. Escuchar cambios de localStorage entre pestañas
+  window.addEventListener("storage", (e) => {
+    if (e.key === "clipsync_user_token") {
+      activeUserToken = e.newValue || "";
+    }
+    if (e.key === "clipsync_supabase_url") {
+      supabaseUrl = e.newValue || "";
+    }
+    if (e.key === "clipsync_supabase_key") {
+      supabaseKey = e.newValue || "";
+    }
+    if (e.key === "clipsync_autosave_enabled" && e.newValue !== null) {
+      isEnabled = e.newValue === "true";
+    }
+  });
+
+  // 4. Actualizar credenciales automáticamente cuando la pestaña gana foco o visibilidad
+  window.addEventListener("focus", () => {
+    refreshCredentials();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      refreshCredentials();
+    }
+  });
+
   // Comprobar a través de la URL si el usuario se encuentra dentro de la web app ClipSync
   function isClipSyncApp() {
     try {
@@ -93,12 +154,6 @@
             clipsync_supabase_key: webKey || supabaseKey,
             clipsync_user_data: webUser || "",
           });
-        } else {
-          // Si el usuario está deslogueado en la web app, limpiar el storage de la extensión
-          chrome.storage.local.remove([
-            "clipsync_user_token",
-            "clipsync_user_data",
-          ]);
         }
       }
     } catch {
@@ -178,8 +233,14 @@
       return;
     }
 
+    // Refrescar credenciales en tiempo real antes de validar (evita requerir recargar la página)
+    await refreshCredentials();
+
     // 1. Validar si hay credenciales válidas (evitar spamear toasts si aún no inició sesión)
     if (!supabaseUrl || !supabaseKey || !activeUserToken) {
+      // No bloquear la selección para que al iniciar sesión pueda volver a seleccionar el texto sin recargar
+      lastSavedText = "";
+      lastSavedSource = "";
       return;
     }
 
@@ -225,7 +286,11 @@
         );
 
         if (updateRes.ok) {
+          lastSavedText = text;
+          lastSavedSource = currentSource;
           showToast("Note updated in ClipSync!");
+        } else {
+          lastSavedText = "";
         }
       } else {
         // 3. Otherwise create a new note
@@ -248,10 +313,15 @@
         });
 
         if (createRes.ok) {
+          lastSavedText = text;
+          lastSavedSource = currentSource;
           showToast("Saved to ClipSync!");
+        } else {
+          lastSavedText = "";
         }
       }
     } catch (error) {
+      lastSavedText = "";
     }
   }
 
@@ -299,8 +369,6 @@
         selectedText.length >= 3 &&
         (selectedText !== lastSavedText || currentSource !== lastSavedSource)
       ) {
-        lastSavedText = selectedText;
-        lastSavedSource = currentSource;
         saveSelectionToClipSync(selectedText);
       }
     }, 20);

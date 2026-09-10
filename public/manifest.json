@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ClipSync - Real-Time Notepad",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Select any text on the web and instantly save it to your ClipSync notepad synced with Supabase.",
   "icons": {
     "16": "icons/icon-16.png",
