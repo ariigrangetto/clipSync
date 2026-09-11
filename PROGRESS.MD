@@ -84,6 +84,13 @@
   - Integración de instrucciones bilingües de instalación paso a paso en las notas automáticas de GitHub Releases (`.github/workflows/pipeline.yml`).
 - [x] **Incremento y sincronización de versión de la extensión (v1.0.3):**
   - Versionado actualizado y alineado en `manifest.json` y `public/manifest.json`.
+- [x] **Auditoría técnica senior, saneamiento de código muerto y robustez:**
+  - Depuración de componentes, funciones e iconos huérfanos (`FloatingSelectionButton.tsx`, `fetchNoteById`, `getCategories`, `GlobeIcon`, `TagIcon`, `CopyIcon`, `CheckIcon` y assets no utilizados).
+  - Corrección de estado bloqueante en `AddNoteModal.tsx` con patrón determinista `try ... finally`.
+  - Habilitación de edición multilínea y corrección de *stale closure* en el atajo de guardado de `NoteDetail.tsx`.
+  - Prevención de fugas de memoria y eliminación de advertencias concurrentes de GoTrueClient mediante caché de instancias en `src/service/supabase.ts`.
+  - Endurecimiento de seguridad en `public/content.js` erradicando `innerHTML` en notificaciones de la extensión para estricto cumplimiento Chrome MV3.
+  - Generación de informe exhaustivo de auditoría y mentoría en `CODE_AUDIT_REPORT.md`.
 
 ---
 

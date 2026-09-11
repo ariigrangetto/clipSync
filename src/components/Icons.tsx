@@ -47,24 +47,6 @@ export function GridIcon({ size = 16, className = '' }: { size?: number; classNa
     )
 }
 
-export function GlobeIcon({ size = 16, className = '' }: { size?: number; className?: string }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <circle cx="12" cy="12" r="10" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-    )
-}
-
-export function TagIcon({ size = 16, className = '' }: { size?: number; className?: string }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-            <line x1="7" y1="7" x2="7.01" y2="7" />
-        </svg>
-    )
-}
 
 export function ExternalLinkIcon({ size = 14, className = '' }: { size?: number; className?: string }) {
     return (
@@ -95,22 +77,6 @@ export function KeyIcon({ size = 16, className = '', style }: { size?: number; c
     )
 }
 
-export function CopyIcon({ size = 16, className = '', style }: { size?: number; className?: string; style?: CSSProperties }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-        </svg>
-    )
-}
-
-export function CheckIcon({ size = 16, className = '', style }: { size?: number; className?: string; style?: CSSProperties }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
-            <polyline points="20 6 9 17 4 12" />
-        </svg>
-    )
-}
 
 export function MenuIcon({ size = 18, className = '', style }: { size?: number; className?: string; style?: CSSProperties }) {
     return (

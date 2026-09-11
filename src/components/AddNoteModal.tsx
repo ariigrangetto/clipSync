@@ -39,27 +39,30 @@ export default function AddNoteModal({
     }
 
     setSubmitting(true);
-    const formattedTags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
+    try {
+      const formattedTags = tagsInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
 
-    const response = await onAddNote({
-      text: text.trim(),
-      title: title.trim() || undefined,
-      category: category === "All" ? "article" : category,
-      tags: formattedTags,
-      source: source.trim() || "Manual entry",
-    });
+      const response = await onAddNote({
+        text: text.trim(),
+        title: title.trim() || undefined,
+        category: category === "All" ? "article" : category,
+        tags: formattedTags,
+        source: source.trim() || "Manual entry",
+      });
 
-    if (response.success) {
+      if (response.success) {
+        setTitle("");
+        setText("");
+        setCategory("article");
+        setTagsInput("");
+        setSource("");
+        onClose();
+      }
+    } finally {
       setSubmitting(false);
-      setTitle("");
-      setText("");
-      setCategory("article");
-      setTagsInput("");
-      setSource("");
-      onClose();
     }
   };
 

@@ -212,10 +212,17 @@
     toast.style.gap = "8px";
     toast.style.fontFamily = "sans-serif";
 
-    toast.innerHTML = `
-      <span style="width: 8px; height: 8px; border-radius: 50%; background: ${isError ? "#EF4444" : "#4A7856"}"></span>
-      <span>${message}</span>
-    `;
+    const indicator = document.createElement("span");
+    indicator.style.width = "8px";
+    indicator.style.height = "8px";
+    indicator.style.borderRadius = "50%";
+    indicator.style.background = isError ? "#EF4444" : "#4A7856";
+
+    const label = document.createElement("span");
+    label.textContent = message;
+
+    toast.appendChild(indicator);
+    toast.appendChild(label);
 
     document.body.appendChild(toast);
     setTimeout(() => {

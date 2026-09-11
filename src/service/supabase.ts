@@ -1,12 +1,20 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Note } from "../types/note.ts";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Cache client instances by token to prevent GoTrueClient duplication and memory leaks
+const clientCache = new Map<string, SupabaseClient>();
+
 // RLS con encabezado HTTP personalizado
-export function getSupabaseClient(userToken: string) {
-  return createClient(supabaseUrl, supabaseKey, {
+export function getSupabaseClient(userToken: string): SupabaseClient {
+  const cached = clientCache.get(userToken);
+  if (cached) {
+    return cached;
+  }
+
+  const client = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -14,10 +22,13 @@ export function getSupabaseClient(userToken: string) {
     global: {
       headers: {
         "x-user-token": userToken,
-      }
-    }
-  })
-};
+      },
+    },
+  });
+
+  clientCache.set(userToken, client);
+  return client;
+}
 
 export interface InsertNoteParams {
   text: string;
@@ -117,26 +128,6 @@ export async function updateFavorite(id: string, userToken: string, favorite: bo
   return { success: true, error: null, data: data?.[0] as Note };
 }
 
-export async function fetchNoteById(id: string, userToken: string) {
-  if (!userToken || !id) {
-    return { success: false, error: "Token or ID missing", data: null };
-  }
-
-  const supabase = getSupabaseClient(userToken);
-  const { data, error } = await supabase
-    .from("Notes")
-    .select("*")
-    .eq("id", id)
-    .eq("user_token", userToken)
-    .single();
-
-  if (error) {
-    console.error("Error fetching note by id:", error);
-    return { success: false, error: error.message, data: null };
-  }
-
-  return { success: true, error: null, data: data as Note };
-}
 
 
 export async function updateTags(id: string, userToken: string, tags: string[]): Promise<{ success: boolean, error: string | null, data: Note | null }> {
@@ -185,7 +176,7 @@ export async function updateTitle(id: string, userToken: string, title: string):
 };
 
 export async function updateNote(userToken: string, text: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  if (!userToken) {
+  if (!userToken || !noteId) {
     return { success: false, error: "Token or ID missing", data: null };
   }
 
@@ -227,29 +218,3 @@ export async function updateCat(id: string, userToken: string, category: string)
 
   return { success: true, error: null, data: data?.[0] as Note };
 };
-
-export async function getCategories(token: string): Promise<{ success: boolean; error: string | null; data: string[] | null }> {
-  if (!token) {
-    return { success: false, error: "No token provided", data: null };
-  }
-
-  const supabase = getSupabaseClient(token);
-
-  const { data, error } = await supabase
-    .from("Notes")
-    .select("category")
-    .eq("user_token", token);
-
-  if (error) {
-    console.error("Error fetching categories:", error);
-    return { success: false, error: error.message, data: null };
-  }
-
-  const categories = data
-    .map((note) => note.category)
-    .filter((category) => category && typeof category === "string");
-
-  const uniqueCategories = ["All", ...new Set(categories)];
-
-  return { success: true, error: null, data: uniqueCategories };
-}

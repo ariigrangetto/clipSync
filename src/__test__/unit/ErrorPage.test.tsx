@@ -73,7 +73,7 @@ describe("Error page test", () => {
         expect(screen.getByText("Knowledge Base")).toBeInTheDocument();
         expect(screen.getByText("500")).toBeInTheDocument();
         expect(screen.getByText("Internal Server Error")).toBeInTheDocument();
-        expect(screen.getByText("An unexpected error ocurred. Please try again later.")).toBeInTheDocument();
+        expect(screen.getByText("An unexpected error occurred. Please try again later.")).toBeInTheDocument();
         expect(screen.getByRole("link", { name: "Return home" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
         expect(screen.getByText(/All rights reserved/i)).toBeInTheDocument();

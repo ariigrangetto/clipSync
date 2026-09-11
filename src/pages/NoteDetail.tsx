@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import useNotes from "../hooks/useNotes.tsx";
 import useNotification from "../hooks/useNotification.tsx";
@@ -24,25 +24,26 @@ export default function NoteDetail() {
 
   const note = notes.find((n) => n.id.toString() === id);
 
-  const handleUpdateText = async (text: string) => {
+  const handleUpdateText = useCallback(async (text: string) => {
     if (!note) return;
     await updateNote(text, note.id);
     setIsEditingText(false);
-  };
+  }, [note, updateNote]);
 
   useEffect(() => {
-
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Enter" && isEditingText) handleUpdateText(textInput)
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && isEditingText) {
+        e.preventDefault();
+        handleUpdateText(textInput);
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditingText])
+    };
+  }, [isEditingText, textInput, handleUpdateText]);
 
   const handleEditNote = () => {
     setTextInput(note?.text ?? "");

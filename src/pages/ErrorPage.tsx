@@ -14,8 +14,8 @@ export default function ErrorPage() {
     } else if (error instanceof Error) {
         statusCode = "500";
         statusText = "Internal Server Error";
-        errorMessage = "An unexpected error ocurred. Please try again later.";
-        console.error("Unhandle Application Error:", error);
+        errorMessage = "An unexpected error occurred. Please try again later.";
+        console.error("Unhandled Application Error:", error);
     }
 
     return (
