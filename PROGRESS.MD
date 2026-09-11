@@ -1,8 +1,8 @@
 # 📝 Progreso del Proyecto: ClipSync
 
 > **Documento de Estado del Proyecto y Contexto para Agentes y Desarrolladores.**  
-> *Última actualización:* 2026-09-09  
-> *Rama principal:* `main`
+> *Última actualización:* 2026-09-11  
+> *Rama principal:* `main` | *Versión Extensión:* `v1.0.3`
 
 ---
 
@@ -73,6 +73,17 @@
   - Configuración del pipeline en `.github/workflows/pipeline.yml` (validaciones, tests, E2E, Vercel y GitHub Releases).
   - Configuración de reescrituras para SPA en `vercel.json`.
   - Documentación completa en `README.md` y creación de `.env.example`.
+- [x] **Sincronización y persistencia de autenticación bidireccional en la extensión:**
+  - Comunicación por puente `window.postMessage` entre la aplicación SPA (`authContext.tsx`) y el content script (`content.js`) para propagar cambios de sesión en tiempo real.
+  - Detección y refresco dinámico de credenciales de Supabase ante eventos de selección de texto y foco de ventana (`window.onfocus`) sin necesidad de recargar la pestaña.
+  - Manejo robusto de usuarios no autenticados: notificación toast informativa al intentar seleccionar texto sin sesión y supresión de almacenamiento en `lastSavedText`.
+  - Normalización y corrección de validación de dominios y URLs en `content.js`.
+- [x] **Internacionalización y Documentación Multilingüe:**
+  - Traducción y publicación de la documentación completa en inglés (`README_EN.md`).
+  - Navegación e hipervínculos bilingües entre Español e Inglés en las cabeceras de `README.md` y `README_EN.md`.
+  - Integración de instrucciones bilingües de instalación paso a paso en las notas automáticas de GitHub Releases (`.github/workflows/pipeline.yml`).
+- [x] **Incremento y sincronización de versión de la extensión (v1.0.3):**
+  - Versionado actualizado y alineado en `manifest.json` y `public/manifest.json`.
 
 ---
 

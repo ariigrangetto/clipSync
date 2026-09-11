@@ -1,5 +1,7 @@
 # 📝 ClipSync
 
+[English](README_EN.md) | [Español](README.md)
+
 > **Block de notas inteligente y sincronizado en tiempo real** disponible como **Web Application** y **Extensión de Navegador Google Chrome (Manifest V3)**, potenciado por React 19, Tailwind CSS v4 y Supabase.
 
 ---
