@@ -196,51 +196,50 @@ export default function ExtensionPopup() {
                             </p>
                         </div>
 
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                            <button
-                                type="button"
-                                onClick={toggleAutoSave}
-                                disabled={!token}
-                                title={
-                                    !token
-                                        ? "User not logged in"
-                                        : isAutoSaveActive
-                                        ? "Disable Auto-Save"
-                                        : "Enable Auto-Save"
-                                }
-                                aria-label={
-                                    !token
-                                        ? "User not logged in"
-                                        : isAutoSaveActive
-                                        ? "Disable Auto-Save"
-                                        : "Enable Auto-Save"
-                                }
-                                className={`w-10 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out relative shrink-0 ${
-                                    !token ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-                                }`}
+                        <button
+                            type="button"
+                            onClick={toggleAutoSave}
+                            disabled={!token}
+                            title={
+                                !token
+                                    ? "User not logged in"
+                                    : isAutoSaveActive
+                                    ? "Disable Auto-Save"
+                                    : "Enable Auto-Save"
+                            }
+                            aria-label={
+                                !token
+                                    ? "User not logged in"
+                                    : isAutoSaveActive
+                                    ? "Disable Auto-Save"
+                                    : "Enable Auto-Save"
+                            }
+                            className={`w-10 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out relative shrink-0 ${
+                                !token ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                            }`}
+                            style={{
+                                background: isAutoSaveActive ? "#5E9E6E" : "#3A403C",
+                            }}
+                        >
+                            <span
+                                className="block w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out"
                                 style={{
-                                    background: isAutoSaveActive ? "#5E9E6E" : "#3A403C",
+                                    transform: isAutoSaveActive ? "translateX(20px)" : "translateX(0px)",
                                 }}
-                            >
-                                <span
-                                    className="block w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out"
-                                    style={{
-                                        transform: isAutoSaveActive ? "translateX(20px)" : "translateX(0px)",
-                                    }}
-                                />
-                            </button>
-                            {!token && (
-                                <div
-                                    className="flex items-center gap-1 text-[10px] text-red-400 font-medium animate-pulse select-none"
-                                    role="status"
-                                >
-                                    <CircleAlert size={12} className="shrink-0 text-red-400" />
-                                    <span className="whitespace-nowrap">User not logged in</span>
-                                </div>
-                            )}
-                        </div>
+                            />
+                        </button>
                     </div>
                 </div>
+
+                {!token && (
+                    <div
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-red-400 font-medium bg-red-950/25 border border-red-900/40 animate-pulse select-none"
+                        role="status"
+                    >
+                        <CircleAlert size={14} className="shrink-0 text-red-400" />
+                        <span>User not logged in</span>
+                    </div>
+                )}
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
