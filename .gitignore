@@ -35,3 +35,7 @@ dist-ssr
 
 .vercel
 .env*
+
+# HyperFrames cache & local agent skills
+.thumbnails/
+.agents/

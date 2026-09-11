@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "video:preview": "hyperframes play clipsync-video",
+    "video:render": "hyperframes render clipsync-video -o clipsync-video/clipsync-showcase.mp4"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

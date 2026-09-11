@@ -6,6 +6,16 @@
 
 ---
 
+## 🎬 Video Showcase
+
+[![ClipSync Showcase Preview](clipsync-video/snapshots/contact-sheet.jpg)](clipsync-video/clipsync-showcase.mp4)
+
+> 📹 **Video demostrativo (1080p / 16:9)**: [clipsync-video/clipsync-showcase.mp4](clipsync-video/clipsync-showcase.mp4)  
+> Creado de forma determinista y reproducible con **HyperFrames** y **GSAP**.
+
+
+---
+
 ## ⚡ Características Principales
 
 - 🔄 **Sincronización en Tiempo Real**: Base de datos PostgreSQL con suscripciones a cambios instantáneos mediante Supabase Realtime.
@@ -73,6 +83,8 @@ La aplicación web estará disponible en `http://localhost:5173`.
 | `npm run test` | Ejecuta las pruebas unitarias con Vitest. |
 | `npx playwright test` | Ejecuta la suite de pruebas End-to-End en navegadores reales. |
 | `npm run preview` | Previsualiza localmente el build generado en `dist/`. |
+| `npm run video:preview` | Abre el reproductor interactivo HyperFrames para previsualizar el showcase. |
+| `npm run video:render` | Renderiza el video MP4 (`clipsync-video/clipsync-showcase.mp4`). |
 
 ---
 

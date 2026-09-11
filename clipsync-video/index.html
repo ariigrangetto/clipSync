@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>ClipSync - App Showcase</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+      :root {
+        --color-petal-bg: #121413; --color-petal-sidebar: #181B19; --color-petal-card: #1E2220;
+        --color-petal-green: #68B47B; --color-petal-green-hover: #82CB94; --color-petal-green-light: #183321;
+        --color-petal-text: #EDEDEA; --color-petal-muted: #B8B5AD; --color-petal-border: #2C322E;
+        --font-display: 'Fraunces', Georgia, serif; --font-body: 'Inter', system-ui, sans-serif; --font-mono: 'JetBrains Mono', monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #121413;
+        font-family: var(--font-body); color: var(--color-petal-text); -webkit-font-smoothing: antialiased;
+      }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #121413; }
+      .ambient-glow {
+        position: absolute; width: 1000px; height: 1000px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(104, 180, 123, 0.18) 0%, rgba(18, 20, 19, 0) 70%); pointer-events: none;
+      }
+      .ambient-grid {
+        position: absolute; inset: 0; background-size: 60px 60px;
+        background-image: linear-gradient(to right, rgba(44, 50, 46, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(44, 50, 46, 0.25) 1px, transparent 1px);
+        opacity: 0.6; pointer-events: none;
+      }
+      .clip { position: absolute; inset: 0; width: 1920px; height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .lucide { display: inline-block; vertical-align: middle; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+      .app-flower-icon { display: inline-block; vertical-align: middle; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 9999px;
+        background: var(--color-petal-green-light); border: 1px solid rgba(104, 180, 123, 0.5);
+        color: var(--color-petal-green-hover); font-size: 14px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+      }
+      .scene-header { position: absolute; top: 60px; left: 120px; display: flex; flex-direction: column; gap: 12px; z-index: 10; }
+      .scene-title { font-family: var(--font-display); font-size: 48px; font-weight: 600; color: var(--color-petal-text); letter-spacing: -0.02em; line-height: 1.15; }
+      .scene-subtitle { font-size: 20px; color: var(--color-petal-muted); font-weight: 400; }
+      .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 1100px; z-index: 10; }
+      .hero-logo-box {
+        width: 84px; height: 84px; border-radius: 24px; background: #4A7856; display: flex; align-items: center; justify-content: center;
+        color: #FFFFFF; box-shadow: 0 0 50px rgba(104, 180, 123, 0.5); margin-bottom: 20px;
+      }
+      .brand-title { font-family: var(--font-display); font-size: 116px; font-weight: 700; color: #EDEDEA; letter-spacing: -0.03em; line-height: 1; margin: 0 0 20px; text-shadow: 0 0 60px rgba(104, 180, 123, 0.35); }
+      .brand-title .accent { color: var(--color-petal-green); }
+      .hero-desc { font-size: 26px; color: var(--color-petal-muted); line-height: 1.5; max-width: 860px; margin-bottom: 40px; }
+      .hero-pills { display: flex; gap: 20px; }
+      .pill {
+        display: flex; align-items: center; gap: 12px; padding: 14px 26px; background: var(--color-petal-card);
+        border: 1px solid var(--color-petal-border); border-radius: 16px; font-size: 17px; font-weight: 500; color: var(--color-petal-text); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      }
+      .pill-icon { color: var(--color-petal-green); }
+      .extension-container { display: flex; align-items: center; gap: 50px; width: 1680px; margin-top: 90px; z-index: 5; }
+      .browser-mock {
+        flex: 1; height: 640px; background: #181B19; border: 1px solid var(--color-petal-border); border-radius: 20px;
+        overflow: hidden; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; position: relative;
+      }
+      .browser-header { height: 52px; background: #121413; border-bottom: 1px solid var(--color-petal-border); display: flex; align-items: center; padding: 0 20px; gap: 16px; }
+      .window-dots { display: flex; gap: 8px; }
+      .dot { width: 12px; height: 12px; border-radius: 50%; }
+      .dot-red { background: #FF5F56; } .dot-yellow { background: #FFBD2E; } .dot-green { background: #27C93F; }
+      .address-bar {
+        flex: 1; height: 34px; background: #1E2220; border: 1px solid var(--color-petal-border); border-radius: 8px;
+        display: flex; align-items: center; padding: 0 14px; gap: 10px; font-size: 13px; color: var(--color-petal-muted); font-family: var(--font-mono);
+      }
+      .ext-icon-btn {
+        width: 32px; height: 32px; border-radius: 8px; background: #4A7856;
+        border: 1px solid var(--color-petal-green); display: flex; align-items: center; justify-content: center; color: #FFFFFF;
+      }
+      .browser-body { padding: 40px 50px; flex: 1; display: flex; flex-direction: column; gap: 20px; background: #151816; position: relative; }
+      .doc-tag { font-size: 13px; font-weight: 600; color: var(--color-petal-green); text-transform: uppercase; letter-spacing: 0.05em; }
+      .doc-h1 { font-family: var(--font-display); font-size: 38px; font-weight: 600; color: #EDEDEA; }
+      .doc-p { font-size: 21px; line-height: 1.7; color: #D1CEC7; position: relative; }
+      .highlight-text { position: relative; display: inline; border-radius: 4px; color: #FFFFFF; font-weight: 500; }
+      .highlight-bg { position: absolute; inset: 0; background: rgba(104, 180, 123, 0.45); border: 1px solid var(--color-petal-green); border-radius: 4px; z-index: 0; }
+      .cursor-elem { position: absolute; z-index: 30; color: #FFFFFF; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); pointer-events: none; }
+      .popup-mock {
+        width: 500px; height: 620px; background: #181B19; border: 1px solid var(--color-petal-border); border-radius: 24px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; padding: 24px; position: relative;
+      }
+      .popup-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid var(--color-petal-border); }
+      .popup-brand { display: flex; align-items: center; gap: 12px; }
+      .brand-circle { width: 38px; height: 38px; border-radius: 12px; background: #4A7856; display: flex; align-items: center; justify-content: center; color: #FFFFFF; }
+      .popup-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: #EDEDEA; }
+      .autosave-toggle {
+        display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: var(--color-petal-green-light);
+        border: 1px solid rgba(104, 180, 123, 0.4); border-radius: 9999px; font-size: 12px; font-weight: 600; color: var(--color-petal-green-hover);
+      }
+      .toggle-switch { width: 28px; height: 16px; background: var(--color-petal-green); border-radius: 9999px; position: relative; }
+      .toggle-dot { position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; background: #FFFFFF; border-radius: 50%; }
+      .popup-card { margin-top: 20px; background: var(--color-petal-card); border: 1px solid var(--color-petal-border); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+      .card-header-row { display: flex; align-items: center; justify-content: space-between; }
+      .source-pill { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-petal-muted); font-family: var(--font-mono); }
+      .category-pill { font-size: 11px; padding: 3px 10px; border-radius: 9999px; background: #3E2B12; color: #FFD270; font-weight: 600; text-transform: uppercase; }
+      .card-snippet-text { font-size: 16px; line-height: 1.5; color: #EDEDEA; }
+      .card-tags-row { display: flex; gap: 8px; }
+      .tag-item { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #152B1C; color: #82CB94; font-family: var(--font-mono); }
+      .toast-notification {
+        margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 14px 20px; background: #183321;
+        border: 1px solid var(--color-petal-green); border-radius: 14px; color: #FFFFFF; font-size: 14px; font-weight: 500; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      }
+      .dashboard-wrapper {
+        width: 1680px; height: 720px; margin-top: 100px; background: var(--color-petal-sidebar); border: 1px solid var(--color-petal-border);
+        border-radius: 24px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8); display: flex; overflow: hidden; z-index: 5;
+      }
+      .dash-sidebar { width: 320px; background: #151816; border-right: 1px solid var(--color-petal-border); padding: 30px 24px; display: flex; flex-direction: column; justify-content: space-between; }
+      .dash-brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-size: 26px; font-weight: 700; color: #EDEDEA; margin-bottom: 36px; }
+      .dash-nav-list { display: flex; flex-direction: column; gap: 10px; }
+      .dash-nav-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-radius: 12px; font-size: 15px; font-weight: 500; color: var(--color-petal-muted); }
+      .dash-nav-item.active { background: var(--color-petal-green-light); color: var(--color-petal-green-hover); font-weight: 600; }
+      .nav-count { font-size: 12px; padding: 2px 8px; border-radius: 9999px; background: rgba(255, 255, 255, 0.16); color: #EDEDEA; }
+      .category-filters { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; }
+      .filter-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-petal-muted); font-weight: 600; }
+      .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .filter-chip { font-size: 13px; padding: 6px 14px; border-radius: 9999px; background: #1E2220; color: #D1CEC7; border: 1px solid var(--color-petal-border); }
+      .filter-chip.active { background: var(--color-petal-green); color: #121413; font-weight: 600; border-color: var(--color-petal-green); }
+      .realtime-pill { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #1E2220; border: 1px solid var(--color-petal-border); border-radius: 14px; font-size: 13px; color: var(--color-petal-text); }
+      .live-dot { width: 10px; height: 10px; border-radius: 50%; background: #27C93F; box-shadow: 0 0 10px #27C93F; }
+      .dash-main { flex: 1; background: #121413; display: flex; flex-direction: column; padding: 30px 40px; }
+      .dash-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; gap: 20px; }
+      .search-box { flex: 1; max-width: 600px; height: 48px; background: #181C1A; border: 1px solid var(--color-petal-border); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; gap: 12px; color: var(--color-petal-muted); font-size: 15px; }
+      .search-text-typing { color: #EDEDEA; font-weight: 500; }
+      .search-cursor { display: inline-block; width: 2px; height: 18px; background: var(--color-petal-green); margin-left: 2px; }
+      .btn-new-note { display: flex; align-items: center; gap: 8px; padding: 12px 22px; background: var(--color-petal-green); color: #121413; font-weight: 600; font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(104, 180, 123, 0.3); }
+      .dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; flex: 1; }
+      .dash-card { background: var(--color-petal-card); border: 1px solid var(--color-petal-border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+      .dash-card.highlighted { border-color: var(--color-petal-green); box-shadow: 0 0 30px rgba(104, 180, 123, 0.2); }
+      .dash-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+      .card-icon-badge { width: 30px; height: 30px; border-radius: 50%; background: #4A7856; color: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+      .dash-card-content { font-size: 17px; line-height: 1.6; color: #EDEDEA; margin-bottom: 20px; }
+      .dash-card-footer { display: flex; align-items: center; justify-content: space-between; }
+      .fav-btn { color: var(--color-petal-muted); display: flex; align-items: center; }
+      .fav-btn.active { color: var(--color-petal-green-hover); }
+      .features-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; width: 1400px; margin-top: 100px; z-index: 10; }
+      .feature-box { background: var(--color-petal-card); border: 1px solid var(--color-petal-border); border-radius: 24px; padding: 36px; display: flex; gap: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); }
+      .feat-icon-wrap { width: 68px; height: 68px; border-radius: 20px; background: var(--color-petal-green-light); border: 1px solid rgba(104, 180, 123, 0.5); display: flex; align-items: center; justify-content: center; color: var(--color-petal-green-hover); flex-shrink: 0; }
+      .feat-text { display: flex; flex-direction: column; gap: 10px; }
+      .feat-h3 { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: #EDEDEA; }
+      .feat-p { font-size: 17px; line-height: 1.6; color: var(--color-petal-muted); }
+      .outro-content { display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 10; }
+      .outro-logo-circle { width: 100px; height: 100px; border-radius: 30px; background: #4A7856; display: flex; align-items: center; justify-content: center; color: #FFFFFF; box-shadow: 0 0 60px rgba(104, 180, 123, 0.6); margin-bottom: 24px; }
+      .stack-pills { display: flex; gap: 16px; margin-top: 40px; }
+      .stack-pill { padding: 8px 18px; border-radius: 9999px; background: #181C1A; border: 1px solid var(--color-petal-border); font-size: 14px; color: #D1CEC7; font-weight: 500; font-family: var(--font-mono); }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-sebc" id="root" data-composition-id="main" data-start="0" data-duration="28" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-eoe5" class="ambient-glow" style="top: -150px; left: -100px;"></div>
+      <div data-hf-id="hf-6vl8" class="ambient-glow" style="bottom: -200px; right: -100px;"></div>
+      <div data-hf-id="hf-dlix" class="ambient-grid"></div>
+
+      <!-- SCENE 1: HERO (0s - 5.5s) -->
+      <section data-hf-id="hf-ea7r" id="scene-intro" class="clip" data-start="0" data-duration="5.5">
+        <div data-hf-id="hf-vz54" class="hero-content">
+          <!-- ClipSync Official App Icon -->
+          <div data-hf-id="hf-77d0" id="intro-logo" class="hero-logo-box">
+            <svg data-hf-id="hf-toss" class="app-flower-icon" width="52" height="52" viewBox="0 0 24 24">
+              <path data-hf-id="hf-ht3w" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+              <circle data-hf-id="hf-jaod" cx="12" cy="12" r="2.5" fill="currentColor" />
+            </svg>
+          </div>
+          <div data-hf-id="hf-ty7n" id="intro-badge" class="badge">
+            <svg data-hf-id="hf-bv90" class="app-flower-icon" width="16" height="16" viewBox="0 0 24 24"><path data-hf-id="hf-f1xw" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" /><circle data-hf-id="hf-5cld" cx="12" cy="12" r="2.5" fill="currentColor" /></svg>
+            Smart Note-Taking &amp; Realtime Sync
+          </div>
+          <h1 data-hf-id="hf-wean" id="intro-title" class="brand-title">Clip<span data-hf-id="hf-uac0" class="accent">Sync</span></h1>
+          <p data-hf-id="hf-q6uy" id="intro-desc" class="hero-desc">
+            El block de notas inteligente para capturar ideas, fragmentos y citas desde cualquier rincón de la web con sincronización instantánea.
+          </p>
+          <div data-hf-id="hf-oxve" id="intro-pills" class="hero-pills">
+            <div data-hf-id="hf-kndt" class="pill">
+              <span data-hf-id="hf-nbzi" class="pill-icon"><svg data-hf-id="hf-jlzp" class="lucide lucide-zap" width="22" height="22" viewBox="0 0 24 24"><polygon data-hf-id="hf-oz1e" points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg></span>
+              <span data-hf-id="hf-1kn3">Sincronización en Tiempo Real</span>
+            </div>
+            <div data-hf-id="hf-ndrp" class="pill">
+              <span data-hf-id="hf-exki" class="pill-icon"><svg data-hf-id="hf-bvd0" class="lucide lucide-chrome" width="22" height="22" viewBox="0 0 24 24"><circle data-hf-id="hf-m1lh" cx="12" cy="12" r="10" /><circle data-hf-id="hf-kysq" cx="12" cy="12" r="4" /><line data-hf-id="hf-7sic" x1="21.17" x2="12" y1="8" /><line data-hf-id="hf-pj0l" x1="3.95" x2="8.54" y2="6.06" /><line data-hf-id="hf-3q3q" x1="10.88" x2="15.46" y2="21.94" /></svg></span>
+              <span data-hf-id="hf-rhlo">Extensión Chrome MV3</span>
+            </div>
+            <div data-hf-id="hf-okos" class="pill">
+              <span data-hf-id="hf-fbvj" class="pill-icon"><svg data-hf-id="hf-mc9o" class="lucide lucide-layers" width="22" height="22" viewBox="0 0 24 24"><path data-hf-id="hf-662i" d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" /><path data-hf-id="hf-5es0" d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2 12.5" /><path data-hf-id="hf-cyi0" d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2 17.5" /></svg></span>
+              <span data-hf-id="hf-81l0">Organización por Categorías</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 2: EXTENSION (5.5s - 13.0s) -->
+      <section data-hf-id="hf-lwi6" id="scene-extension" class="clip" data-start="5.5" data-duration="7.5">
+        <div data-hf-id="hf-xb8i" class="scene-header">
+          <div data-hf-id="hf-pis3" id="ext-badge" class="badge">
+            <svg data-hf-id="hf-yacm" class="lucide lucide-chrome" width="16" height="16" viewBox="0 0 24 24"><circle data-hf-id="hf-jqh5" cx="12" cy="12" r="10" /><circle data-hf-id="hf-gulq" cx="12" cy="12" r="4" /><line data-hf-id="hf-lru4" x1="21.17" x2="12" y1="8" /><line data-hf-id="hf-9l95" x1="3.95" x2="8.54" y2="6.06" /><line data-hf-id="hf-i25m" x1="10.88" x2="15.46" y2="21.94" /></svg>
+            Extensión Google Chrome (Manifest V3)
+          </div>
+          <h2 data-hf-id="hf-x514" id="ext-headline" class="scene-title">Captura al instante sin salir de tu lectura</h2>
+          <p data-hf-id="hf-b36k" id="ext-sub" class="scene-subtitle">Selecciona texto en cualquier sitio web y ClipSync lo sincroniza automáticamente.</p>
+        </div>
+        <div data-hf-id="hf-yujp" class="extension-container">
+          <div data-hf-id="hf-b5n1" id="ext-browser" class="browser-mock">
+            <div data-hf-id="hf-4e8i" class="browser-header">
+              <div data-hf-id="hf-hvbh" class="window-dots"><div data-hf-id="hf-5wte" class="dot dot-red"></div><div data-hf-id="hf-6a95" class="dot dot-yellow"></div><div data-hf-id="hf-0zde" class="dot dot-green"></div></div>
+              <div data-hf-id="hf-7k2c" class="address-bar">
+                <svg data-hf-id="hf-rz0c" class="lucide lucide-search" width="14" height="14" viewBox="0 0 24 24"><circle data-hf-id="hf-7tjq" cx="11" cy="11" r="8" /><path data-hf-id="hf-61mr" d="m21 21-4.3-4.3" /></svg>
+                https://react.dev/reference/react/useActionState
+              </div>
+              <div data-hf-id="hf-a3gm" class="browser-actions">
+                <!-- App Icon Pinned in Browser Toolbar -->
+                <div data-hf-id="hf-lp4u" class="ext-icon-btn">
+                  <svg data-hf-id="hf-b8qw" class="app-flower-icon" width="18" height="18" viewBox="0 0 24 24">
+                    <path data-hf-id="hf-dv0t" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                    <circle data-hf-id="hf-6jig" cx="12" cy="12" r="2.5" fill="currentColor" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-nizx" class="browser-body">
+              <div data-hf-id="hf-780w" class="doc-tag">React 19 Documentation</div>
+              <h3 data-hf-id="hf-dh2p" class="doc-h1">Optimistic UI &amp; Action States</h3>
+              <p data-hf-id="hf-7wl2" class="doc-p">Building modern web interfaces requires declarative patterns for server communication and client updates.</p>
+              <p data-hf-id="hf-28q6" class="doc-p" style="position: relative;">
+                <span data-hf-id="hf-kzl3" id="target-selection" class="highlight-text">
+                  <span data-hf-id="hf-lk3p" id="selection-bg" class="highlight-bg"></span>
+                  React 19 Server Actions facilitate asynchronous state transitions without manual pending state flags or repetitive boilerplate.
+                </span>
+              </p>
+              <p data-hf-id="hf-8tu7" class="doc-p" style="color: var(--color-petal-muted);">This architecture guarantees minimal re-renders and smooth real-time updates across client boundaries.</p>
+              <div data-hf-id="hf-24lo" id="mouse-cursor" class="cursor-elem">
+                <svg data-hf-id="hf-brja" class="lucide lucide-mouse-pointer-click" width="32" height="32" viewBox="0 0 24 24"><path data-hf-id="hf-mqck" d="m9 9 5 12 1.8-5.2L21 14Z" /><path data-hf-id="hf-w4sm" d="M7.2 2.2 8 5.1" /><path data-hf-id="hf-o90s" d="m5.1 8-2.9-.8" /><path data-hf-id="hf-hwai" d="M14 4.1 12 6" /><path data-hf-id="hf-a5sv" d="m6 12-1.9 2" /></svg>
+              </div>
+            </div>
+          </div>
+          <div data-hf-id="hf-5h7p" id="ext-popup" class="popup-mock">
+            <div data-hf-id="hf-7eg4" class="popup-top">
+              <div data-hf-id="hf-xu1e" class="popup-brand">
+                <!-- Official App Icon in Extension Popup -->
+                <div data-hf-id="hf-89ik" class="brand-circle">
+                  <svg data-hf-id="hf-0qw2" class="app-flower-icon" width="22" height="22" viewBox="0 0 24 24">
+                    <path data-hf-id="hf-e9bu" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                    <circle data-hf-id="hf-657f" cx="12" cy="12" r="2.5" fill="currentColor" />
+                  </svg>
+                </div>
+                <div data-hf-id="hf-yeow">
+                  <div data-hf-id="hf-t6hm" class="popup-title">ClipSync</div>
+                  <div data-hf-id="hf-xevy" style="font-size: 11px; color: var(--color-petal-muted);">Extension v1.0 (MV3)</div>
+                </div>
+              </div>
+              <div data-hf-id="hf-t2dj" class="autosave-toggle">
+                <svg data-hf-id="hf-kqqf" class="lucide lucide-zap" width="14" height="14" viewBox="0 0 24 24"><polygon data-hf-id="hf-i1ja" points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                <span data-hf-id="hf-rl54">Auto-Save</span>
+                <div data-hf-id="hf-eibt" class="toggle-switch"><div data-hf-id="hf-u16q" class="toggle-dot"></div></div>
+              </div>
+            </div>
+            <div data-hf-id="hf-1ton" id="popup-note-card" class="popup-card">
+              <div data-hf-id="hf-x10j" class="card-header-row">
+                <div data-hf-id="hf-fcjl" class="source-pill">
+                  <svg data-hf-id="hf-0ltw" class="lucide lucide-external-link" width="13" height="13" viewBox="0 0 24 24"><path data-hf-id="hf-qfus" d="M15 3h6v6" /><path data-hf-id="hf-o0dx" d="M10 14 21 3" /><path data-hf-id="hf-2osv" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+                  react.dev
+                </div>
+                <div data-hf-id="hf-h6s1" class="category-pill">code</div>
+              </div>
+              <div data-hf-id="hf-xfqh" class="card-snippet-text">"React 19 Server Actions facilitate asynchronous state transitions without manual pending state flags..."</div>
+              <div data-hf-id="hf-qreb" class="card-tags-row">
+                <span data-hf-id="hf-jg6t" class="tag-item">#react</span>
+                <span data-hf-id="hf-kkcy" class="tag-item">#frontend</span>
+                <span data-hf-id="hf-q5jf" class="tag-item">#extension</span>
+              </div>
+            </div>
+            <div data-hf-id="hf-q4jb" id="popup-toast" class="toast-notification">
+              <svg data-hf-id="hf-p5ah" class="lucide lucide-check" width="18" height="18" viewBox="0 0 24 24" style="color: #27C93F;"><polyline data-hf-id="hf-mlxs" points="20 6 9 17 4 12" /></svg>
+              <span data-hf-id="hf-85a9">Nota guardada y sincronizada al instante</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 3: DASHBOARD (13.0s - 20.5s) -->
+      <section data-hf-id="hf-kr5x" id="scene-dashboard" class="clip" data-start="13.0" data-duration="7.5">
+        <div data-hf-id="hf-ov0m" class="scene-header">
+          <div data-hf-id="hf-0sfc" id="dash-badge" class="badge">
+            <svg data-hf-id="hf-m7vh" class="lucide lucide-layout-grid" width="16" height="16" viewBox="0 0 24 24"><rect data-hf-id="hf-jbys" width="7" height="7" x="3" y="3" rx="1" /><rect data-hf-id="hf-4pxk" width="7" height="7" x="14" y="3" rx="1" /><rect data-hf-id="hf-0oia" width="7" height="7" x="14" y="14" rx="1" /><rect data-hf-id="hf-uzwe" width="7" height="7" x="3" y="14" rx="1" /></svg>
+            Dashboard Web &amp; Supabase Realtime
+          </div>
+          <h2 data-hf-id="hf-q2kw" id="dash-headline" class="scene-title">Organización inteligente con búsqueda instantánea</h2>
+          <p data-hf-id="hf-hnen" id="dash-sub" class="scene-subtitle">Tus notas están disponibles al segundo gracias a PostgreSQL y WebSockets.</p>
+        </div>
+        <div data-hf-id="hf-indh" id="dashboard-window" class="dashboard-wrapper">
+          <div data-hf-id="hf-7hnz" class="dash-sidebar">
+            <div data-hf-id="hf-y7yw">
+              <div data-hf-id="hf-lytw" class="dash-brand">
+                <!-- App Flower Icon in Dashboard Brand -->
+                <div data-hf-id="hf-jl5e" class="brand-circle" style="width: 34px; height: 34px; border-radius: 10px;">
+                  <svg data-hf-id="hf-40e6" class="app-flower-icon" width="20" height="20" viewBox="0 0 24 24">
+                    <path data-hf-id="hf-g8uz" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                    <circle data-hf-id="hf-45oa" cx="12" cy="12" r="2.5" fill="currentColor" />
+                  </svg>
+                </div>
+                <span data-hf-id="hf-ey7s">ClipSync</span>
+              </div>
+              <div data-hf-id="hf-fqkx" class="dash-nav-list">
+                <div data-hf-id="hf-5idm" class="dash-nav-item active">
+                  <div data-hf-id="hf-hikp" style="display: flex; align-items: center; gap: 10px;">
+                    <svg data-hf-id="hf-0h4z" class="lucide lucide-layout-grid" width="17" height="17" viewBox="0 0 24 24"><rect data-hf-id="hf-vbl8" width="7" height="7" x="3" y="3" rx="1" /><rect data-hf-id="hf-llfk" width="7" height="7" x="14" y="3" rx="1" /><rect data-hf-id="hf-fgba" width="7" height="7" x="14" y="14" rx="1" /><rect data-hf-id="hf-jj8i" width="7" height="7" x="3" y="14" rx="1" /></svg>
+                    <span data-hf-id="hf-o91x">All Notes</span>
+                  </div>
+                  <span data-hf-id="hf-k0ep" class="nav-count">12</span>
+                </div>
+                <div data-hf-id="hf-v1lo" class="dash-nav-item">
+                  <div data-hf-id="hf-i799" style="display: flex; align-items: center; gap: 10px;">
+                    <svg data-hf-id="hf-scd6" class="lucide lucide-heart" width="17" height="17" viewBox="0 0 24 24"><path data-hf-id="hf-2bye" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
+                    <span data-hf-id="hf-ga92">Favorites</span>
+                  </div>
+                  <span data-hf-id="hf-2wqa" class="nav-count">4</span>
+                </div>
+              </div>
+              <div data-hf-id="hf-b5sa" class="category-filters">
+                <span data-hf-id="hf-0uti" class="filter-title">Categorías</span>
+                <div data-hf-id="hf-e2n8" class="filter-chips">
+                  <span data-hf-id="hf-6vyn" class="filter-chip active">All</span>
+                  <span data-hf-id="hf-fo3r" class="filter-chip">Code</span>
+                  <span data-hf-id="hf-np5c" class="filter-chip">Article</span>
+                  <span data-hf-id="hf-tnol" class="filter-chip">Idea</span>
+                </div>
+              </div>
+            </div>
+            <div data-hf-id="hf-7pvd" class="realtime-pill"><div data-hf-id="hf-sv8g" class="live-dot"></div><span data-hf-id="hf-evy2">Supabase Realtime Live</span></div>
+          </div>
+          <div data-hf-id="hf-4i9a" class="dash-main">
+            <div data-hf-id="hf-g83d" class="dash-topbar">
+              <div data-hf-id="hf-pwj0" class="search-box">
+                <svg data-hf-id="hf-628c" class="lucide lucide-search" width="18" height="18" viewBox="0 0 24 24"><circle data-hf-id="hf-f22i" cx="11" cy="11" r="8" /><path data-hf-id="hf-8k03" d="m21 21-4.3-4.3" /></svg>
+                <span data-hf-id="hf-cgec" id="search-input-text" class="search-text-typing"></span>
+                <span data-hf-id="hf-707t" id="search-cursor" class="search-cursor"></span>
+              </div>
+              <div data-hf-id="hf-1t5a" class="btn-new-note">
+                <svg data-hf-id="hf-9ydk" class="lucide lucide-plus" width="18" height="18" viewBox="0 0 24 24"><path data-hf-id="hf-8gds" d="M5 12h14" /><path data-hf-id="hf-um4s" d="M12 5v14" /></svg>
+                <span data-hf-id="hf-yrt6">Nueva Nota</span>
+              </div>
+            </div>
+            <div data-hf-id="hf-cw0l" class="dash-grid">
+              <div data-hf-id="hf-hg09" id="card-1" class="dash-card">
+                <div data-hf-id="hf-x11t">
+                  <div data-hf-id="hf-vi87" class="dash-card-header">
+                    <div data-hf-id="hf-itvu" style="display: flex; align-items: center; gap: 8px;">
+                      <!-- Card Flower Icon as in NoteCard.tsx -->
+                      <div data-hf-id="hf-xb8m" class="card-icon-badge">
+                        <svg data-hf-id="hf-rdy0" class="app-flower-icon" width="14" height="14" viewBox="0 0 24 24">
+                          <path data-hf-id="hf-gn60" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                          <circle data-hf-id="hf-3rd9" cx="12" cy="12" r="2.5" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <span data-hf-id="hf-jq4w" style="font-size: 13px; color: var(--color-petal-muted); font-family: var(--font-mono);">react.dev</span>
+                      <span data-hf-id="hf-yljq" class="category-pill">code</span>
+                    </div>
+                    <div data-hf-id="hf-ycj8" id="card-1-fav" class="fav-btn active"><svg data-hf-id="hf-kofq" class="lucide lucide-heart" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path data-hf-id="hf-356y" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg></div>
+                  </div>
+                  <div data-hf-id="hf-x4re" class="dash-card-content">"React 19 Server Actions facilitate asynchronous state transitions without manual pending state flags."</div>
+                </div>
+                <div data-hf-id="hf-tghl" class="dash-card-footer">
+                  <div data-hf-id="hf-yv83" class="card-tags-row"><span data-hf-id="hf-en6x" class="tag-item">#react</span><span data-hf-id="hf-tdg6" class="tag-item">#frontend</span></div>
+                  <span data-hf-id="hf-3vs7" style="font-size: 12px; color: var(--color-petal-muted);">Just now</span>
+                </div>
+              </div>
+              <div data-hf-id="hf-le4a" id="card-2" class="dash-card">
+                <div data-hf-id="hf-xfcu">
+                  <div data-hf-id="hf-cppj" class="dash-card-header">
+                    <div data-hf-id="hf-32j2" style="display: flex; align-items: center; gap: 8px;">
+                      <div data-hf-id="hf-k6eu" class="card-icon-badge" style="background: #25472F;">
+                        <svg data-hf-id="hf-xvw0" class="app-flower-icon" width="14" height="14" viewBox="0 0 24 24">
+                          <path data-hf-id="hf-fg8x" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                          <circle data-hf-id="hf-4yac" cx="12" cy="12" r="2.5" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <span data-hf-id="hf-us23" style="font-size: 13px; color: var(--color-petal-muted); font-family: var(--font-mono);">supabase.com</span>
+                      <span data-hf-id="hf-pkoy" class="category-pill" style="background: #183321; color: #82CB94;">article</span>
+                    </div>
+                    <div data-hf-id="hf-51y0" class="fav-btn"><svg data-hf-id="hf-x4yg" class="lucide lucide-heart" width="16" height="16" viewBox="0 0 24 24"><path data-hf-id="hf-3jhz" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg></div>
+                  </div>
+                  <div data-hf-id="hf-pl4x" class="dash-card-content">"Configuración de Row Level Security (RLS) en PostgreSQL para aislamiento total entre inquilinos."</div>
+                </div>
+                <div data-hf-id="hf-rpfx" class="dash-card-footer">
+                  <div data-hf-id="hf-ygx2" class="card-tags-row"><span data-hf-id="hf-10ao" class="tag-item">#supabase</span><span data-hf-id="hf-5dqc" class="tag-item">#security</span></div>
+                  <span data-hf-id="hf-ojwv" style="font-size: 12px; color: var(--color-petal-muted);">2 hours ago</span>
+                </div>
+              </div>
+              <div data-hf-id="hf-pc8b" id="card-3" class="dash-card">
+                <div data-hf-id="hf-w8fr">
+                  <div data-hf-id="hf-cbei" class="dash-card-header">
+                    <div data-hf-id="hf-3gu3" style="display: flex; align-items: center; gap: 8px;">
+                      <div data-hf-id="hf-tud2" class="card-icon-badge" style="background: #3A234A;">
+                        <svg data-hf-id="hf-woyx" class="app-flower-icon" width="14" height="14" viewBox="0 0 24 24">
+                          <path data-hf-id="hf-fujy" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+                          <circle data-hf-id="hf-4jzb" cx="12" cy="12" r="2.5" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <span data-hf-id="hf-vnxy" style="font-size: 13px; color: var(--color-petal-muted); font-family: var(--font-mono);">tailwindcss.com</span>
+                      <span data-hf-id="hf-a15n" class="category-pill" style="background: #3A234A; color: #DCB1FF;">idea</span>
+                    </div>
+                    <div data-hf-id="hf-4q5s" class="fav-btn"><svg data-hf-id="hf-wzow" class="lucide lucide-heart" width="16" height="16" viewBox="0 0 24 24"><path data-hf-id="hf-3xt0" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg></div>
+                  </div>
+                  <div data-hf-id="hf-7cfa" class="dash-card-content">"Paleta Petal Dark: tonos esmeralda #68B47B con fondo carbón #121413 para máxima legibilidad."</div>
+                </div>
+                <div data-hf-id="hf-swd0" class="dash-card-footer">
+                  <div data-hf-id="hf-y2m1" class="card-tags-row"><span data-hf-id="hf-gr2k" class="tag-item">#design</span><span data-hf-id="hf-odwc" class="tag-item">#ui</span></div>
+                  <span data-hf-id="hf-ib9b" style="font-size: 12px; color: var(--color-petal-muted);">Yesterday</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4: FEATURES (20.5s - 24.5s) -->
+      <section data-hf-id="hf-e447" id="scene-features" class="clip" data-start="20.5" data-duration="4.0">
+        <div data-hf-id="hf-p9bn" class="scene-header">
+          <div data-hf-id="hf-2zq4" id="feat-badge" class="badge">
+            <svg data-hf-id="hf-86vj" class="lucide lucide-zap" width="16" height="16" viewBox="0 0 24 24"><polygon data-hf-id="hf-ifub" points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+            Funcionalidades Principales
+          </div>
+          <h2 data-hf-id="hf-y79x" id="feat-headline" class="scene-title">Diseñado para la velocidad y la concentración</h2>
+        </div>
+        <div data-hf-id="hf-dtfb" class="features-container">
+          <div data-hf-id="hf-jud2" id="feat-1" class="feature-box">
+            <div data-hf-id="hf-zkpf" class="feat-icon-wrap"><svg data-hf-id="hf-xsd8" class="lucide lucide-refresh-cw" width="34" height="34" viewBox="0 0 24 24"><path data-hf-id="hf-i1j2" d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path data-hf-id="hf-pseq" d="M21 3v5h-5" /><path data-hf-id="hf-56nx" d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path data-hf-id="hf-8lg6" d="M8 16H3v5" /></svg></div>
+            <div data-hf-id="hf-ssq0" class="feat-text">
+              <h3 data-hf-id="hf-wwko" class="feat-h3">Sincronización Realtime</h3>
+              <p data-hf-id="hf-2gur" class="feat-p">Base de datos PostgreSQL con suscripciones a cambios instantáneos mediante Supabase Realtime.</p>
+            </div>
+          </div>
+          <div data-hf-id="hf-don9" id="feat-2" class="feature-box">
+            <div data-hf-id="hf-yxgz" class="feat-icon-wrap"><svg data-hf-id="hf-qsoy" class="lucide lucide-chrome" width="34" height="34" viewBox="0 0 24 24"><circle data-hf-id="hf-ozdc" cx="12" cy="12" r="10" /><circle data-hf-id="hf-h8wr" cx="12" cy="12" r="4" /><line data-hf-id="hf-kkx1" x1="21.17" x2="12" y1="8" /><line data-hf-id="hf-as68" x1="3.95" x2="8.54" y2="6.06" /><line data-hf-id="hf-iggn" x1="10.88" x2="15.46" y2="21.94" /></svg></div>
+            <div data-hf-id="hf-s02o" class="feat-text">
+              <h3 data-hf-id="hf-ek0f" class="feat-h3">Extensión Chrome MV3</h3>
+              <p data-hf-id="hf-71br" class="feat-p">Captura selecciones de cualquier sitio con auto-guardado en segundo plano y popup interactivo.</p>
+            </div>
+          </div>
+          <div data-hf-id="hf-cwzg" id="feat-3" class="feature-box">
+            <div data-hf-id="hf-yj5y" class="feat-icon-wrap"><svg data-hf-id="hf-hqy0" class="lucide lucide-tag" width="34" height="34" viewBox="0 0 24 24"><path data-hf-id="hf-7gw4" d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /><circle data-hf-id="hf-mfmb" cx="7" cy="7" r=".5" fill="currentColor" /></svg></div>
+            <div data-hf-id="hf-qt5l" class="feat-text">
+              <h3 data-hf-id="hf-30x2" class="feat-h3">Categorías y Etiquetas</h3>
+              <p data-hf-id="hf-vymj" class="feat-p">Filtrado por paletas de color, búsqueda en tiempo real y clasificación por code, article o idea.</p>
+            </div>
+          </div>
+          <div data-hf-id="hf-0egz" id="feat-4" class="feature-box">
+            <div data-hf-id="hf-y4ux" class="feat-icon-wrap"><svg data-hf-id="hf-c078" class="lucide lucide-shield-check" width="34" height="34" viewBox="0 0 24 24"><path data-hf-id="hf-49ze" d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path data-hf-id="hf-yfzu" d="m9 12 2 2 4-4" /></svg></div>
+            <div data-hf-id="hf-r7gm" class="feat-text">
+              <h3 data-hf-id="hf-am8g" class="feat-h3">Seguridad y Dark Mode</h3>
+              <p data-hf-id="hf-i94e" class="feat-p">Autenticación Supabase con Google OAuth, políticas RLS y estilos minimalistas con Tailwind CSS v4.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 5: OUTRO (24.5s - 28.0s) -->
+      <section data-hf-id="hf-ho05" id="scene-outro" class="clip" data-start="24.5" data-duration="3.5">
+        <div data-hf-id="hf-p7ed" class="outro-content">
+          <!-- ClipSync Official App Icon in Outro -->
+          <div data-hf-id="hf-hdep" id="outro-logo" class="outro-logo-circle">
+            <svg data-hf-id="hf-dmsy" class="app-flower-icon" width="62" height="62" viewBox="0 0 24 24">
+              <path data-hf-id="hf-hu33" d="M9.65 8.76 A4 4 0 1 1 14.35 8.76 A4 4 0 1 1 15.8 13.24 A4 4 0 1 1 12 16 A4 4 0 1 1 8.2 13.24 A4 4 0 1 1 9.65 8.76Z" />
+              <circle data-hf-id="hf-8xcm" cx="12" cy="12" r="2.5" fill="currentColor" />
+            </svg>
+          </div>
+          <h1 data-hf-id="hf-polj" id="outro-title" class="brand-title" style="font-size: 96px; margin: 0 0 16px;">Clip<span data-hf-id="hf-1j8o" class="accent">Sync</span></h1>
+          <p data-hf-id="hf-o7gd" id="outro-desc" class="hero-desc" style="font-size: 24px; margin-bottom: 24px;">Tu block de notas inteligente en la web y en tu navegador Chrome.</p>
+          <div data-hf-id="hf-lbu5" id="outro-pills" class="hero-pills">
+            <div data-hf-id="hf-95iy" class="pill" style="border-color: var(--color-petal-green);">
+              <span data-hf-id="hf-fq6k" class="pill-icon"><svg data-hf-id="hf-is4u" class="lucide lucide-laptop" width="22" height="22" viewBox="0 0 24 24"><path data-hf-id="hf-twbt" d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" /></svg></span>
+              <span data-hf-id="hf-lph3">Web Application</span>
+            </div>
+            <div data-hf-id="hf-6twe" class="pill" style="border-color: var(--color-petal-green);">
+              <span data-hf-id="hf-g4hl" class="pill-icon"><svg data-hf-id="hf-zpvg" class="lucide lucide-chrome" width="22" height="22" viewBox="0 0 24 24"><circle data-hf-id="hf-ol2b" cx="12" cy="12" r="10" /><circle data-hf-id="hf-hn7s" cx="12" cy="12" r="4" /><line data-hf-id="hf-kz82" x1="21.17" x2="12" y1="8" /><line data-hf-id="hf-adv7" x1="3.95" x2="8.54" y2="6.06" /><line data-hf-id="hf-iuro" x1="10.88" x2="15.46" y2="21.94" /></svg></span>
+              <span data-hf-id="hf-43ta">Extensión de Chrome (MV3)</span>
+            </div>
+          </div>
+          <div data-hf-id="hf-wssx" id="outro-stack" class="stack-pills">
+            <span data-hf-id="hf-tmaq" class="stack-pill">React 19</span>
+            <span data-hf-id="hf-vyi4" class="stack-pill">Tailwind CSS v4</span>
+            <span data-hf-id="hf-2mbg" class="stack-pill">Supabase Realtime</span>
+            <span data-hf-id="hf-f6xy" class="stack-pill">Lucide React</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // SCENE 1 (0.0s -> 5.5s)
+      tl.fromTo("#intro-logo", { autoAlpha: 0, scale: 0.5, rotation: -12 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.8, ease: "back.out(1.5)" }, 0.1);
+      tl.fromTo("#intro-badge", { autoAlpha: 0, y: -25, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }, 0.2);
+      tl.fromTo("#intro-title", { autoAlpha: 0, y: 40, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 1.0, ease: "back.out(1.2)" }, 0.5);
+      tl.fromTo("#intro-desc", { autoAlpha: 0, y: 25 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.9);
+      tl.fromTo("#intro-pills .pill", { autoAlpha: 0, y: 30, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.15, ease: "power3.out" }, 1.3);
+      tl.to("#intro-logo, #intro-badge, #intro-title, #intro-desc, #intro-pills", { autoAlpha: 0, y: -30, duration: 0.5, ease: "power2.in" }, 5.0);
+      tl.set("#intro-logo, #intro-badge, #intro-title, #intro-desc, #intro-pills", { autoAlpha: 0 }, 5.50);
+
+      // SCENE 2 (5.5s -> 13.0s)
+      tl.fromTo("#ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 5.6);
+      tl.fromTo("#ext-browser", { autoAlpha: 0, x: -60, scale: 0.96 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 5.8);
+      tl.fromTo("#ext-popup", { autoAlpha: 0, x: 60, scale: 0.95 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 6.1);
+      tl.fromTo("#mouse-cursor", { autoAlpha: 0, x: 100, y: 150 }, { autoAlpha: 1, x: 10, y: 50, duration: 0.7, ease: "power2.out" }, 6.6);
+      tl.to("#mouse-cursor", { x: 340, y: 50, duration: 1.1, ease: "power1.inOut" }, 7.3);
+      tl.fromTo("#selection-bg", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 1.1, ease: "power1.inOut" }, 7.3);
+      tl.fromTo("#popup-note-card", { autoAlpha: 0, scale: 0.9, y: 20 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.4)" }, 8.3);
+      tl.fromTo("#popup-toast", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.9);
+      tl.to("#ext-browser, #ext-popup, #ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 12.5);
+      tl.set("#ext-browser, #ext-popup, #ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0 }, 13.00);
+
+      // SCENE 3 (13.0s -> 20.5s)
+      tl.fromTo("#dash-badge, #dash-headline, #dash-sub", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 13.1);
+      tl.fromTo("#dashboard-window", { autoAlpha: 0, y: 50, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 13.3);
+      tl.fromTo("#card-1", { autoAlpha: 0, y: 30, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 14.0);
+      tl.fromTo("#card-2", { autoAlpha: 0, y: 30, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 14.2);
+      tl.fromTo("#card-3", { autoAlpha: 0, y: 30, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 14.4);
+
+      const searchTarget = document.getElementById("search-input-text");
+      const searchChars = "React".split("");
+      searchChars.forEach((char, index) => {
+        tl.call(() => {
+          if (searchTarget) searchTarget.innerText = searchChars.slice(0, index + 1).join("");
+        }, null, 15.5 + (index * 0.12));
+      });
+      tl.to("#card-1", { scale: 1.03, duration: 0.5, ease: "power2.out" }, 16.3);
+      tl.to("#card-2, #card-3", { opacity: 0.35, scale: 0.98, duration: 0.5, ease: "power2.out" }, 16.3);
+      tl.call(() => { if (searchTarget) searchTarget.innerText = ""; }, null, 13.0);
+      tl.to("#dashboard-window, #dash-badge, #dash-headline, #dash-sub", { autoAlpha: 0, y: -30, duration: 0.5, ease: "power2.in" }, 20.0);
+      tl.set("#dashboard-window, #dash-badge, #dash-headline, #dash-sub", { autoAlpha: 0 }, 20.50);
+
+      // SCENE 4 (20.5s -> 24.5s)
+      tl.fromTo("#feat-badge, #feat-headline", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }, 20.6);
+      tl.fromTo("#feat-1, #feat-2, #feat-3, #feat-4", { autoAlpha: 0, y: 40, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.12, ease: "power3.out" }, 20.9);
+      tl.to("#feat-1, #feat-2, #feat-3, #feat-4, #feat-badge, #feat-headline", { autoAlpha: 0, scale: 0.95, duration: 0.4, ease: "power2.in" }, 24.0);
+      tl.set("#feat-1, #feat-2, #feat-3, #feat-4, #feat-badge, #feat-headline", { autoAlpha: 0 }, 24.50);
+
+      // SCENE 5 (24.5s -> 28.0s)
+      tl.fromTo("#outro-logo", { autoAlpha: 0, scale: 0.5, rotation: -15 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.5)" }, 24.6);
+      tl.fromTo("#outro-title", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, 24.9);
+      tl.fromTo("#outro-desc", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, 25.2);
+      tl.fromTo("#outro-pills .pill", { autoAlpha: 0, y: 20, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: "power3.out" }, 25.5);
+      tl.fromTo("#outro-stack .stack-pill", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.4, stagger: 0.08, ease: "power2.out" }, 26.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

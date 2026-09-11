@@ -6,6 +6,16 @@
 
 ---
 
+## 🎬 Video Showcase
+
+[![ClipSync Showcase Preview](clipsync-video/snapshots/contact-sheet.jpg)](clipsync-video/clipsync-showcase.mp4)
+
+> 📹 **Showcase Video (1080p / 16:9)**: [clipsync-video/clipsync-showcase.mp4](clipsync-video/clipsync-showcase.mp4)  
+> Deterministically authored and rendered with **HyperFrames** and **GSAP**.
+
+
+---
+
 ## ⚡ Key Features
 
 - 🔄 **Real-Time Synchronization**: PostgreSQL database with instant change subscriptions via Supabase Realtime.
@@ -72,7 +82,9 @@ The web application will be available at `http://localhost:5173`.
 | `npm run lint` | Lints code using ESLint 10 and React rules. |
 | `npm run test` | Runs unit tests with Vitest. |
 | `npx playwright test` | Executes the End-to-End test suite across real browsers. |
-| `npm run preview` | Locally previews the production build from `dist/`. |
+| `npm run preview` | Locally previews production build from `dist/`. |
+| `npm run video:preview` | Opens interactive HyperFrames player to preview the showcase. |
+| `npm run video:render` | Renders the MP4 video (`clipsync-video/clipsync-showcase.mp4`). |
 
 ---
 
