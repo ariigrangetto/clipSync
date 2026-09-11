@@ -1,3 +1,3 @@
-# ClipSync - Video Ilustrativo
+# ClipSync - Showcase Video
 ## Intent
-Video promocional e ilustrativo de ClipSync en HyperFrames (16:9, Lucide Icons, Extension + Web App).
+Promotional showcase video for ClipSync in HyperFrames (16:9, Lucide Icons, Extension + Web App).

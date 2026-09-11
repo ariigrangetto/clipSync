@@ -39,3 +39,4 @@ dist-ssr
 # HyperFrames cache & local agent skills
 .thumbnails/
 .agents/
+renders/
