@@ -2,7 +2,7 @@
 
 > **Documento de Estado del Proyecto y Contexto para Agentes y Desarrolladores.**  
 > *Última actualización:* 2026-09-11  
-> *Rama principal:* `main` | *Versión Extensión:* `v1.0.3`
+> *Rama principal:* `main` | *Versión Extensión:* `v1.0.4`
 
 ---
 
