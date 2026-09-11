@@ -8,10 +8,11 @@
 
 ## 🎬 Video Showcase
 
-[![ClipSync Showcase Preview](clipsync-video/snapshots/contact-sheet.jpg)](clipsync-video/clipsync-showcase.mp4)
 
-> 📹 **Video demostrativo (1080p / 16:9)**: [clipsync-video/clipsync-showcase.mp4](clipsync-video/clipsync-showcase.mp4)  
-> Creado de forma determinista y reproducible con **HyperFrames** y **GSAP**.
+
+https://github.com/user-attachments/assets/6370a95e-958b-4772-993b-b0407b32c1c6
+
+
 
 
 ---
@@ -88,13 +89,3 @@ La aplicación web estará disponible en `http://localhost:5173`.
 
 ---
 
-## 🔌 Instalación de la Extensión en Chrome
-
-1. Compila la aplicación:
-   ```bash
-   npm run build
-   ```
-2. Abre Google Chrome y navega a `chrome://extensions/`.
-3. Activa la casilla **Modo de desarrollador** (Developer mode) en la esquina superior derecha.
-4. Haz clic en **Cargar descomprimida** (Load unpacked) y selecciona la carpeta `dist/` de este proyecto.
-5. ¡Listo! El ícono de ClipSync aparecerá en tu barra de extensiones.
