@@ -73,10 +73,20 @@
       .browser-body { padding: 40px 50px; flex: 1; display: flex; flex-direction: column; gap: 20px; background: #151816; position: relative; }
       .doc-tag { font-size: 13px; font-weight: 600; color: var(--color-petal-green); text-transform: uppercase; letter-spacing: 0.05em; }
       .doc-h1 { font-family: var(--font-display); font-size: 38px; font-weight: 600; color: #EDEDEA; }
-      .doc-p { font-size: 21px; line-height: 1.7; color: #D1CEC7; position: relative; }
-      .highlight-text { position: relative; display: inline; border-radius: 4px; color: #FFFFFF; font-weight: 500; }
-      .highlight-bg { position: absolute; inset: 0; background: rgba(104, 180, 123, 0.45); border: 1px solid var(--color-petal-green); border-radius: 4px; z-index: 0; }
-      .cursor-elem { position: absolute; z-index: 30; color: #FFFFFF; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); pointer-events: none; }
+      .doc-p { font-size: 21px; line-height: 1.7; color: #D1CEC7; }
+      .selection-track { position: relative; margin: 4px 0; }
+      .selection-box { position: relative; display: inline-block; width: 870px; }
+      .selection-overlay {
+        position: absolute; top: 0; left: 0; height: 100%; width: 0%; pointer-events: none; border-radius: 6px;
+        background: rgba(74, 120, 86, 0.75); border: 1px solid #68B47B; box-shadow: 0 0 16px rgba(104, 180, 123, 0.4);
+        z-index: 1;
+      }
+      .selection-text {
+        position: relative; z-index: 2; width: 870px; font-size: 21px; line-height: 1.6; color: #FFFFFF; font-weight: 500; padding: 4px 10px; white-space: nowrap;
+      }
+      .cursor-elem {
+        position: absolute; top: 12px; left: 0px; z-index: 50; pointer-events: none; transform: translate(-3px, -3px);
+      }
       .popup-mock {
         width: 500px; height: 620px; background: #181B19; border: 1px solid var(--color-petal-border); border-radius: 24px;
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; padding: 24px; position: relative;
@@ -219,16 +229,20 @@
               <div data-hf-id="hf-780w" class="doc-tag">React 19 Documentation</div>
               <h3 data-hf-id="hf-dh2p" class="doc-h1">Optimistic UI &amp; Action States</h3>
               <p data-hf-id="hf-7wl2" class="doc-p">Building modern web interfaces requires declarative patterns for server communication and client updates.</p>
-              <p data-hf-id="hf-28q6" class="doc-p" style="position: relative;">
-                <span data-hf-id="hf-kzl3" id="target-selection" class="highlight-text">
-                  <span data-hf-id="hf-lk3p" id="selection-bg" class="highlight-bg"></span>
-                  React 19 Server Actions facilitate asynchronous state transitions without manual pending state flags or repetitive boilerplate.
-                </span>
-              </p>
-              <p data-hf-id="hf-8tu7" class="doc-p" style="color: var(--color-petal-muted);">This architecture guarantees minimal re-renders and smooth real-time updates across client boundaries.</p>
-              <div data-hf-id="hf-24lo" id="mouse-cursor" class="cursor-elem">
-                <svg data-hf-id="hf-brja" class="lucide lucide-mouse-pointer-click" width="32" height="32" viewBox="0 0 24 24"><path data-hf-id="hf-mqck" d="m9 9 5 12 1.8-5.2L21 14Z" /><path data-hf-id="hf-w4sm" d="M7.2 2.2 8 5.1" /><path data-hf-id="hf-o90s" d="m5.1 8-2.9-.8" /><path data-hf-id="hf-hwai" d="M14 4.1 12 6" /><path data-hf-id="hf-a5sv" d="m6 12-1.9 2" /></svg>
+              <div data-hf-id="hf-04rc" class="selection-track">
+                <div data-hf-id="hf-w5vm" id="selection-box" class="selection-box">
+                  <div data-hf-id="hf-0qg0" id="selection-overlay" class="selection-overlay"></div>
+                  <div data-hf-id="hf-dbfz" class="selection-text">
+                    React 19 Server Actions facilitate asynchronous state transitions without boilerplate.
+                  </div>
+                  <div data-hf-id="hf-24lo" id="mouse-cursor" class="cursor-elem" style="opacity: 0; visibility: hidden;">
+                    <svg data-hf-id="hf-jr8x" width="26" height="26" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));">
+                      <path data-hf-id="hf-3gob" d="M3 3l7 18 3.5-6.5L20 11 3 3z" fill="#181B19" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                </div>
               </div>
+              <p data-hf-id="hf-8tu7" class="doc-p" style="color: var(--color-petal-muted);">This architecture guarantees minimal re-renders and smooth real-time updates across client boundaries.</p>
             </div>
           </div>
           <div data-hf-id="hf-5h7p" id="ext-popup" class="popup-mock">
@@ -260,7 +274,7 @@
                 </div>
                 <div data-hf-id="hf-h6s1" class="category-pill">code</div>
               </div>
-              <div data-hf-id="hf-xfqh" class="card-snippet-text">"React 19 Server Actions facilitate asynchronous state transitions without manual pending state flags..."</div>
+              <div data-hf-id="hf-xfqh" class="card-snippet-text">"React 19 Server Actions facilitate asynchronous state transitions without boilerplate."</div>
               <div data-hf-id="hf-qreb" class="card-tags-row">
                 <span data-hf-id="hf-jg6t" class="tag-item">#react</span>
                 <span data-hf-id="hf-kkcy" class="tag-item">#frontend</span>
@@ -487,6 +501,8 @@
     <script>
       const tl = gsap.timeline({ paused: true });
 
+      gsap.set("#mouse-cursor", { autoAlpha: 0, x: 0, y: 0, scale: 1 });
+
       // SCENE 1 (0.0s -> 5.5s)
       tl.fromTo("#intro-logo", { autoAlpha: 0, scale: 0.5, rotation: -12 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.8, ease: "back.out(1.5)" }, 0.1);
       tl.fromTo("#intro-badge", { autoAlpha: 0, y: -25, scale: 0.95 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }, 0.2);
@@ -500,11 +516,14 @@
       tl.fromTo("#ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0, y: -20 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 5.6);
       tl.fromTo("#ext-browser", { autoAlpha: 0, x: -60, scale: 0.96 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 5.8);
       tl.fromTo("#ext-popup", { autoAlpha: 0, x: 60, scale: 0.95 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.9, ease: "power3.out" }, 6.1);
-      tl.fromTo("#mouse-cursor", { autoAlpha: 0, x: 100, y: 150 }, { autoAlpha: 1, x: 10, y: 50, duration: 0.7, ease: "power2.out" }, 6.6);
-      tl.to("#mouse-cursor", { x: 340, y: 50, duration: 1.1, ease: "power1.inOut" }, 7.3);
-      tl.fromTo("#selection-bg", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 1.1, ease: "power1.inOut" }, 7.3);
-      tl.fromTo("#popup-note-card", { autoAlpha: 0, scale: 0.9, y: 20 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.4)" }, 8.3);
-      tl.fromTo("#popup-toast", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, 8.9);
+      tl.fromTo("#mouse-cursor", { autoAlpha: 0, x: -40, y: 30, scale: 0.8 }, { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.55, ease: "power2.out", immediateRender: false }, 6.6);
+      tl.to("#mouse-cursor", { scale: 0.88, duration: 0.12 }, 7.15);
+      tl.fromTo("#selection-overlay", { width: "0%" }, { width: "100%", duration: 1.25, ease: "power1.inOut", immediateRender: false }, 7.27);
+      tl.to("#mouse-cursor", { x: 870, duration: 1.25, ease: "power1.inOut" }, 7.27);
+      tl.to("#mouse-cursor", { scale: 1, duration: 0.12 }, 8.52);
+      tl.to("#mouse-cursor", { autoAlpha: 0, x: 895, y: 15, duration: 0.4, ease: "power2.in" }, 8.7);
+      tl.fromTo("#popup-note-card", { autoAlpha: 0, scale: 0.9, y: 20 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.4)" }, 8.85);
+      tl.fromTo("#popup-toast", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.45);
       tl.to("#ext-browser, #ext-popup, #ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 12.5);
       tl.set("#ext-browser, #ext-popup, #ext-badge, #ext-headline, #ext-sub", { autoAlpha: 0 }, 13.00);
 
