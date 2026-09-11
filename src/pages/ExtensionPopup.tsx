@@ -4,13 +4,13 @@ import useNotes from "../hooks/useNotes.tsx";
 import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, ExternalLinkIcon } from "../components/Icons.tsx";
 import { getTagPalette } from "../components/TagsColor.tsx";
-import { Zap, Copy, Check, Plus, LogOut } from "lucide-react";
+import { Zap, Copy, Check, Plus, CircleAlert } from "lucide-react";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 declare const chrome: any;
 
 export default function ExtensionPopup() {
-    const { user, token, loading: authLoading, signOut } = useUserToken();
+    const { token, loading: authLoading } = useUserToken();
     const { notes, loading: notesLoading, addNote } = useNotes();
     const { showNotification } = useNotification();
 
@@ -18,6 +18,8 @@ export default function ExtensionPopup() {
         const saved = localStorage.getItem("clipsync_autosave_enabled");
         return saved === null ? true : saved === "true";
     });
+
+    const isAutoSaveActive = Boolean(token && autoSaveEnabled);
 
     const [copiedId, setCopiedId] = useState<string | null>(null);
     const [quickNoteText, setQuickNoteText] = useState("");
@@ -36,6 +38,11 @@ export default function ExtensionPopup() {
     }, []);
 
     const toggleAutoSave = () => {
+        if (!token) {
+            showNotification("User not logged in", true);
+            return;
+        }
+
         const newValue = !autoSaveEnabled;
         setAutoSaveEnabled(newValue);
         localStorage.setItem("clipsync_autosave_enabled", String(newValue));
@@ -167,8 +174,8 @@ export default function ExtensionPopup() {
                 <div
                     className="p-3.5 rounded-2xl border transition-all"
                     style={{
-                        background: autoSaveEnabled ? "#17231B" : "#1A1D1B",
-                        borderColor: autoSaveEnabled ? "#2F5238" : "#2C322E",
+                        background: isAutoSaveActive ? "#17231B" : "#1A1D1B",
+                        borderColor: isAutoSaveActive ? "#2F5238" : "#2C322E",
                     }}
                 >
                     <div className="flex items-center justify-between gap-3">
@@ -176,35 +183,62 @@ export default function ExtensionPopup() {
                             <div className="flex items-center gap-1.5">
                                 <span
                                     className="w-2 h-2 rounded-full shrink-0"
-                                    style={{ background: autoSaveEnabled ? "#4ADE80" : "#7D7A73" }}
+                                    style={{ background: isAutoSaveActive ? "#4ADE80" : "#7D7A73" }}
                                 />
                                 <span className="text-xs font-semibold text-petal-text">
                                     Auto-Save Selection
                                 </span>
                             </div>
                             <p className="text-[10.5px] mt-0.5 text-petal-muted leading-tight">
-                                {autoSaveEnabled
+                                {isAutoSaveActive
                                     ? "Active: Selected text on any web page will be saved"
                                     : "Paused: Free selection without automatic saving"}
                             </p>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={toggleAutoSave}
-                            title={autoSaveEnabled ? "Disable Auto-Save" : "Enable Auto-Save"}
-                            className="w-10 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out cursor-pointer relative shrink-0"
-                            style={{
-                                background: autoSaveEnabled ? "#5E9E6E" : "#3A403C",
-                            }}
-                        >
-                            <span
-                                className="block w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out"
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                            <button
+                                type="button"
+                                onClick={toggleAutoSave}
+                                disabled={!token}
+                                title={
+                                    !token
+                                        ? "User not logged in"
+                                        : isAutoSaveActive
+                                        ? "Disable Auto-Save"
+                                        : "Enable Auto-Save"
+                                }
+                                aria-label={
+                                    !token
+                                        ? "User not logged in"
+                                        : isAutoSaveActive
+                                        ? "Disable Auto-Save"
+                                        : "Enable Auto-Save"
+                                }
+                                className={`w-10 h-5 rounded-full p-0.5 transition-all duration-200 ease-in-out relative shrink-0 ${
+                                    !token ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                                }`}
                                 style={{
-                                    transform: autoSaveEnabled ? "translateX(20px)" : "translateX(0px)",
+                                    background: isAutoSaveActive ? "#5E9E6E" : "#3A403C",
                                 }}
-                            />
-                        </button>
+                            >
+                                <span
+                                    className="block w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-200 ease-in-out"
+                                    style={{
+                                        transform: isAutoSaveActive ? "translateX(20px)" : "translateX(0px)",
+                                    }}
+                                />
+                            </button>
+                            {!token && (
+                                <div
+                                    className="flex items-center gap-1 text-[10px] text-red-400 font-medium animate-pulse select-none"
+                                    role="status"
+                                >
+                                    <CircleAlert size={12} className="shrink-0 text-red-400" />
+                                    <span className="whitespace-nowrap">User not logged in</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -373,39 +407,6 @@ export default function ExtensionPopup() {
                     )}
                 </div>
             </main>
-
-            <footer
-                className="px-4 py-2.5 border-t flex items-center justify-between text-[11px] text-petal-muted"
-                style={{ borderColor: "#2C322E", background: "#141615" }}
-            >
-                {user ? (
-                    <div className="flex items-center justify-between w-full">
-                        <span className="truncate max-w-55" title={user.email}>
-                            {user.email}
-                        </span>
-                        <button
-                            type="button"
-                            onClick={() => signOut()}
-                            title="Sign out"
-                            className="text-[#F87171] hover:underline flex items-center gap-1 cursor-pointer"
-                        >
-                            <LogOut size={11} />
-                            <span>Sign out</span>
-                        </button>
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-between w-full">
-                        <span>Not signed in</span>
-                        <button
-                            type="button"
-                            onClick={handleOpenLogin}
-                            className="text-petal-green hover:underline cursor-pointer"
-                        >
-                            Log in
-                        </button>
-                    </div>
-                )}
-            </footer>
         </div>
     );
 }

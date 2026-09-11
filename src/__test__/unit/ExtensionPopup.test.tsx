@@ -154,4 +154,16 @@ describe("ExtensionPopup Component Unit Tests", () => {
         expect(openSpy).toHaveBeenCalledWith("https://clipsyncc-ashen.vercel.app/login", "_blank");
         openSpy.mockRestore();
     });
+
+    test("disables auto-save and displays 'User not logged in' warning when user is not authenticated", () => {
+        mockUser = null;
+        render(<ExtensionPopup />, { wrapper: AllTheProviders });
+
+        expect(screen.getByText("User not logged in")).toBeInTheDocument();
+        const toggleBtn = screen.getByRole("button", { name: /User not logged in/i });
+        expect(toggleBtn).toBeDisabled();
+
+        fireEvent.click(toggleBtn);
+        expect(mockShowNotification).not.toHaveBeenCalledWith("Auto-Save is enabled", false);
+    });
 });
