@@ -8,10 +8,10 @@
 
 ## 🎬 Video Showcase
 
-[![ClipSync Showcase Preview](clipsync-video/snapshots/contact-sheet.jpg)](clipsync-video/clipsync-showcase.mp4)
 
-> 📹 **Showcase Video (1080p / 16:9)**: [clipsync-video/clipsync-showcase.mp4](clipsync-video/clipsync-showcase.mp4)  
-> Deterministically authored and rendered with **HyperFrames** and **GSAP**.
+
+https://github.com/user-attachments/assets/3db99cc4-7ce2-47b1-9d01-277c720124c6
+
 
 
 ---
