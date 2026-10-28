@@ -12,8 +12,8 @@ import {
     updateNote as apiUpdateNote,
     updateCat as apiUpdateCat,
     type InsertNoteParams,
-} from "../service/supabase";
-import { supabase } from "../lib/supabase.ts";
+} from "../service/notesService.ts";
+import { supabase } from "../lib/supabaseClient.ts";
 import useNotification from "../hooks/useNotification.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
 import { getUserIdFromJwt } from "../lib/jwt.ts";

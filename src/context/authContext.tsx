@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { User, Session, AuthError, AuthResponse, OAuthResponse } from "@supabase/supabase-js";
-import { supabase, setSupabaseAccessToken } from "../lib/supabase.ts";
+import { supabase, setSupabaseAccessToken } from "../lib/supabaseClient.ts";
 import { decodeJwtPayload } from "../lib/jwt.ts";
 
 export interface AuthContextType {

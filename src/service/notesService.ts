@@ -1,5 +1,5 @@
 import type { Note } from "../types/note.ts";
-import { supabase } from "../lib/supabase.ts";
+import { supabase } from "../lib/supabaseClient.ts";
 
 export interface InsertNoteParams {
   text: string;

@@ -9,7 +9,7 @@ const { mockGetSession, mockOnAuthStateChange, mockSignOut, mockSetSupabaseAcces
     mockSetSupabaseAccessToken: vi.fn(),
   }));
 
-vi.mock("../../lib/supabase.ts", () => ({
+vi.mock("../../lib/supabaseClient.ts", () => ({
   setSupabaseAccessToken: mockSetSupabaseAccessToken,
   supabase: {
     auth: {

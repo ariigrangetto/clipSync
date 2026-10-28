@@ -23,7 +23,7 @@ const { mockFrom, selectMock, eqIdMock, insertMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../../lib/supabase.ts", () => ({
+vi.mock("../../lib/supabaseClient.ts", () => ({
   supabase: {
     from: mockFrom,
     channel: vi.fn(),
@@ -40,7 +40,7 @@ import {
   updateNote,
   updateCat,
   deleteNote,
-} from "../../service/supabase.ts";
+} from "../../service/notesService.ts";
 
 describe("Single-Instance Supabase Service Layer (No redundant getSupabaseClient / accessToken prop drilling)", () => {
   beforeEach(() => {
