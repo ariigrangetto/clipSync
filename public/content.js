@@ -1,20 +1,20 @@
-// ClipSync Extension Content Script - Automatic Selection Capture
+// ClipSync Extension Content Script - Automatic Selection Capture (JWT-Only Auth)
 (function () {
   let isEnabled = true;
-  let activeUserToken = "";
+  let activeAccessToken = "";
   let supabaseUrl = "";
   let supabaseKey = "";
   let lastSavedText = "";
   let lastSavedSource = "";
 
-  // Cargar y actualizar configuración dinámicamente
+  // Cargar y actualizar configuración dinámicamente (solo JWT access_token)
   function refreshCredentials() {
     return new Promise((resolve) => {
       if (typeof chrome !== "undefined" && chrome.storage?.local) {
         chrome.storage.local.get(
           [
             "clipsync_autosave_enabled",
-            "clipsync_user_token",
+            "clipsync_access_token",
             "clipsync_supabase_url",
             "clipsync_supabase_key",
           ],
@@ -25,9 +25,7 @@
                   res.clipsync_autosave_enabled === true ||
                   res.clipsync_autosave_enabled === "true";
               }
-              if (res.clipsync_user_token) {
-                activeUserToken = res.clipsync_user_token;
-              }
+              activeAccessToken = res.clipsync_access_token || "";
               if (res.clipsync_supabase_url) {
                 supabaseUrl = res.clipsync_supabase_url;
               }
@@ -35,31 +33,35 @@
                 supabaseKey = res.clipsync_supabase_key;
               }
             }
-            // Fallback secundario a localStorage si falta algún valor y existe
-            try {
-              if (!activeUserToken && window.localStorage?.getItem("clipsync_user_token")) {
-                activeUserToken = window.localStorage.getItem("clipsync_user_token") || "";
+            // Fallback secundario a localStorage únicamente en dominios de la web app ClipSync
+            if (isClipSyncApp()) {
+              try {
+                if (!activeAccessToken && window.localStorage?.getItem("clipsync_access_token")) {
+                  activeAccessToken = window.localStorage.getItem("clipsync_access_token") || "";
+                }
+                if (!supabaseUrl && window.localStorage?.getItem("clipsync_supabase_url")) {
+                  supabaseUrl = window.localStorage.getItem("clipsync_supabase_url") || "";
+                }
+                if (!supabaseKey && window.localStorage?.getItem("clipsync_supabase_key")) {
+                  supabaseKey = window.localStorage.getItem("clipsync_supabase_key") || "";
+                }
+              } catch {
               }
-              if (!supabaseUrl && window.localStorage?.getItem("clipsync_supabase_url")) {
-                supabaseUrl = window.localStorage.getItem("clipsync_supabase_url") || "";
-              }
-              if (!supabaseKey && window.localStorage?.getItem("clipsync_supabase_key")) {
-                supabaseKey = window.localStorage.getItem("clipsync_supabase_key") || "";
-              }
-            } catch {
             }
             resolve();
           }
         );
-      } else {
+      } else if (isClipSyncApp()) {
         try {
           const saved = localStorage.getItem("clipsync_autosave_enabled");
           isEnabled = saved === null ? true : saved === "true";
-          activeUserToken = localStorage.getItem("clipsync_user_token") || "";
+          activeAccessToken = localStorage.getItem("clipsync_access_token") || "";
           supabaseUrl = localStorage.getItem("clipsync_supabase_url") || "";
           supabaseKey = localStorage.getItem("clipsync_supabase_key") || "";
         } catch {
         }
+        resolve();
+      } else {
         resolve();
       }
     });
@@ -77,8 +79,8 @@
           changes.clipsync_autosave_enabled.newValue === true ||
           changes.clipsync_autosave_enabled.newValue === "true";
       }
-      if (changes.clipsync_user_token) {
-        activeUserToken = changes.clipsync_user_token.newValue || "";
+      if (changes.clipsync_access_token) {
+        activeAccessToken = changes.clipsync_access_token.newValue || "";
       }
       if (changes.clipsync_supabase_url) {
         supabaseUrl = changes.clipsync_supabase_url.newValue || "";
@@ -89,10 +91,11 @@
     });
   }
 
-  // 3. Escuchar cambios de localStorage entre pestañas
+  // 3. Escuchar cambios de localStorage entre pestañas (únicamente en dominios de la web app ClipSync)
   window.addEventListener("storage", (e) => {
-    if (e.key === "clipsync_user_token") {
-      activeUserToken = e.newValue || "";
+    if (!isClipSyncApp()) return;
+    if (e.key === "clipsync_access_token") {
+      activeAccessToken = e.newValue || "";
     }
     if (e.key === "clipsync_supabase_url") {
       supabaseUrl = e.newValue || "";
@@ -131,60 +134,56 @@
     }
   }
 
-  // Al no tener acceso a chrome.storage desde la app de ClipSync, se utiliza un intermedio que en este caso es content.js
-  // Se leerán los datos guardados dentro del localStorage de la app y luego se enviarán a través de chrome.storage
-  // Puente (Bridge): Sincronizar credenciales desde la web app de ClipSync hacia chrome.storage.local (únicamente en dominios de la app)
+  // Puente (Bridge): Sincronizar el JWT desde la web app de ClipSync hacia chrome.storage.local (únicamente en dominios de la app)
   if (typeof window !== "undefined" && isClipSyncApp()) {
-    // 1. Sincronización inicial si ya existen credenciales guardadas en el localStorage de la web app
+    // 1. Sincronización inicial si ya existe un JWT guardado en el localStorage de la web app
     try {
-      const webToken = window.localStorage.getItem("clipsync_user_token");
+      const webAccessToken = window.localStorage.getItem("clipsync_access_token");
       const webUrl = window.localStorage.getItem("clipsync_supabase_url");
       const webKey = window.localStorage.getItem("clipsync_supabase_key");
-      const webUser = window.localStorage.getItem("clipsync_user_data");
 
       if (typeof chrome !== "undefined" && chrome.storage?.local) {
-        if (webToken) {
-          activeUserToken = webToken;
+        if (webAccessToken) {
+          activeAccessToken = webAccessToken;
           if (webUrl) supabaseUrl = webUrl;
           if (webKey) supabaseKey = webKey;
 
           chrome.storage.local.set({
-            clipsync_user_token: webToken,
+            clipsync_access_token: webAccessToken,
             clipsync_supabase_url: webUrl || supabaseUrl,
             clipsync_supabase_key: webKey || supabaseKey,
-            clipsync_user_data: webUser || "",
           });
         }
       }
     } catch {
     }
 
-    // 2. Escuchar cambios de autenticación en tiempo real desde la web app mediante window.postMessage (sin recargar la página)
+    // 2. Escuchar cambios de autenticación en tiempo real desde la web app mediante window.postMessage (validando estrictamente el origin)
     window.addEventListener("message", (event) => {
-      if (event.source !== window || event.data?.type !== "CLIPSYNC_AUTH_STATE") {
+      if (
+        event.source !== window ||
+        event.origin !== window.location.origin ||
+        event.data?.type !== "CLIPSYNC_AUTH_STATE"
+      ) {
         return;
       }
 
-      if (event.data.action === "LOGIN" && event.data.token) {
-        activeUserToken = event.data.token;
+      if (event.data.action === "LOGIN" && event.data.accessToken) {
+        activeAccessToken = event.data.accessToken;
         if (event.data.supabaseUrl) supabaseUrl = event.data.supabaseUrl;
         if (event.data.supabaseKey) supabaseKey = event.data.supabaseKey;
 
         if (typeof chrome !== "undefined" && chrome.storage?.local) {
           chrome.storage.local.set({
-            clipsync_user_token: event.data.token,
+            clipsync_access_token: event.data.accessToken,
             clipsync_supabase_url: event.data.supabaseUrl || supabaseUrl,
             clipsync_supabase_key: event.data.supabaseKey || supabaseKey,
-            clipsync_user_data: event.data.user ? JSON.stringify(event.data.user) : "",
           });
         }
       } else if (event.data.action === "LOGOUT") {
-        activeUserToken = "";
+        activeAccessToken = "";
         if (typeof chrome !== "undefined" && chrome.storage?.local) {
-          chrome.storage.local.remove([
-            "clipsync_user_token",
-            "clipsync_user_data",
-          ]);
+          chrome.storage.local.remove(["clipsync_access_token"]);
         }
       }
     });
@@ -240,12 +239,11 @@
       return;
     }
 
-    // Refrescar credenciales en tiempo real antes de validar (evita requerir recargar la página)
+    // Refrescar credenciales en tiempo real antes de validar
     await refreshCredentials();
 
-    // 1. Validar si hay credenciales válidas
-    if (!supabaseUrl || !supabaseKey || !activeUserToken) {
-      // No guardar nada en memoria ni en BD, pero alertar al usuario de que debe iniciar sesión primero
+    // 1. Validar si existe un JWT firmado activo
+    if (!supabaseUrl || !supabaseKey || !activeAccessToken) {
       lastSavedText = "";
       lastSavedSource = "";
       showToast("Please log in to ClipSync to save notes", true);
@@ -253,17 +251,16 @@
     }
 
     try {
-      // 1. Check if a note already exists for current URL and user (requesting id AND text)
+      // 1. Check if a note already exists for current URL (RLS filters automatically by JWT auth.uid())
       const checkRes = await fetch(
         `${supabaseUrl}/rest/v1/Notes?source=eq.${encodeURIComponent(
           currentSource
-        )}&user_token=eq.${encodeURIComponent(activeUserToken)}&select=id,text`,
+        )}&select=id,text`,
         {
           method: "GET",
           headers: {
             apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "x-user-token": activeUserToken,
+            Authorization: `Bearer ${activeAccessToken}`,
           },
         }
       );
@@ -278,15 +275,12 @@
         const combinedText = previousText ? `${previousText}\n\n${text}` : text;
 
         const updateRes = await fetch(
-          `${supabaseUrl}/rest/v1/Notes?id=eq.${noteId}&user_token=eq.${encodeURIComponent(
-            activeUserToken
-          )}`,
+          `${supabaseUrl}/rest/v1/Notes?id=eq.${noteId}`,
           {
             method: "PATCH",
             headers: {
               apikey: supabaseKey,
-              Authorization: `Bearer ${supabaseKey}`,
-              "x-user-token": activeUserToken,
+              Authorization: `Bearer ${activeAccessToken}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ text: combinedText }),
@@ -301,13 +295,12 @@
           lastSavedText = "";
         }
       } else {
-        // 3. Otherwise create a new note
+        // 3. Otherwise create a new note (PostgreSQL sets user_token = auth.uid()::text via DEFAULT)
         const createRes = await fetch(`${supabaseUrl}/rest/v1/Notes`, {
           method: "POST",
           headers: {
             apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            "x-user-token": activeUserToken,
+            Authorization: `Bearer ${activeAccessToken}`,
             "Content-Type": "application/json",
             Prefer: "return=representation",
           },
@@ -316,7 +309,6 @@
             source: currentSource,
             category: "article",
             tags: ["extension"],
-            user_token: activeUserToken,
           }),
         });
 
@@ -328,7 +320,7 @@
           lastSavedText = "";
         }
       }
-    } catch (error) {
+    } catch {
       lastSavedText = "";
     }
   }
@@ -344,7 +336,6 @@
     setTimeout(() => {
       let selectedText = "";
 
-      // Si la selección ocurre en un input o textarea (excluyendo contraseñas por privacidad)
       const activeEl = document.activeElement;
       const inputEl =
         target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
@@ -361,11 +352,9 @@
             selectedText = inputEl.value.substring(start, end).trim();
           }
         } catch {
-          // Ignorar tipos de input que no admiten selectionStart
         }
       }
 
-      // Si no se obtuvo de un input/textarea, obtener la selección del DOM (texto normal y contenteditable)
       if (!selectedText) {
         const selection = window.getSelection();
         selectedText = selection ? selection.toString().trim() : "";

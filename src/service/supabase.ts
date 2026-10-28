@@ -1,57 +1,25 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Note } from "../types/note.ts";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-// Cache client instances by token to prevent GoTrueClient duplication and memory leaks
-const clientCache = new Map<string, SupabaseClient>();
-
-// RLS con encabezado HTTP personalizado
-export function getSupabaseClient(userToken: string): SupabaseClient {
-  const cached = clientCache.get(userToken);
-  if (cached) {
-    return cached;
-  }
-
-  const client = createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-    global: {
-      headers: {
-        "x-user-token": userToken,
-      },
-    },
-  });
-
-  clientCache.set(userToken, client);
-  return client;
-}
+import { supabase } from "../lib/supabase.ts";
 
 export interface InsertNoteParams {
   text: string;
   source?: string;
   tags?: string[] | string;
   category?: string;
-  userToken: string;
   title?: string;
 }
 
-export async function insertText(params: InsertNoteParams): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  const token = params.userToken;
-  if (!token) {
-    return { error: "No user token provided", success: false, data: null };
-  }
-
+export async function insertText(
+  params: InsertNoteParams
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
   const formattedTags = Array.isArray(params.tags)
     ? params.tags
     : typeof params.tags === "string"
-      ? params.tags.split(",").map((t) => t.trim()).filter(Boolean)
+      ? params.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
       : [];
-
-  const supabase = getSupabaseClient(token);
 
   const { data, error } = await supabase
     .from("Notes")
@@ -61,7 +29,6 @@ export async function insertText(params: InsertNoteParams): Promise<{ success: b
       category: params.category || "article",
       text: params.text,
       source: params.source || "Manual entry",
-      user_token: token,
     })
     .select();
 
@@ -73,17 +40,14 @@ export async function insertText(params: InsertNoteParams): Promise<{ success: b
   return { success: true, error: null, data: data?.[0] as Note };
 }
 
-export async function fetchNotes(userToken: string) {
-  if (!userToken) {
-    return { success: false, error: "No user token provided", data: [] };
-  }
-
-  const supabase = getSupabaseClient(userToken);
-
+export async function fetchNotes(): Promise<{
+  success: boolean;
+  error: string | null;
+  data: Note[];
+}> {
   const { data, error } = await supabase
     .from("Notes")
     .select("*")
-    .eq("user_token", userToken)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -94,14 +58,14 @@ export async function fetchNotes(userToken: string) {
   return { success: true, error: null, data: (data as Note[]) || [] };
 }
 
-export async function deleteNote(id: string, userToken: string): Promise<{ success: boolean, error: string | null }> {
-  const supabase = getSupabaseClient(userToken);
-  const { error } = await supabase
-    .from("Notes")
-    .delete()
-    .eq("id", id)
-    .eq("user_token", userToken)
-    .select();
+export async function deleteNote(
+  id: string
+): Promise<{ success: boolean; error: string | null }> {
+  if (!id) {
+    return { success: false, error: "ID missing" };
+  }
+
+  const { error } = await supabase.from("Notes").delete().eq("id", id).select();
 
   if (error) {
     console.error("Error deleting note:", error);
@@ -111,13 +75,18 @@ export async function deleteNote(id: string, userToken: string): Promise<{ succe
   return { success: true, error: null };
 }
 
-export async function updateFavorite(id: string, userToken: string, favorite: boolean): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  const supabase = getSupabaseClient(userToken);
+export async function updateFavorite(
+  id: string,
+  favorite: boolean
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
+  if (!id) {
+    return { success: false, error: "ID missing", data: null };
+  }
+
   const { data, error } = await supabase
     .from("Notes")
     .update({ favorite })
     .eq("id", id)
-    .eq("user_token", userToken)
     .select();
 
   if (error) {
@@ -128,43 +97,40 @@ export async function updateFavorite(id: string, userToken: string, favorite: bo
   return { success: true, error: null, data: data?.[0] as Note };
 }
 
-
-
-export async function updateTags(id: string, userToken: string, tags: string[]): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  if (!userToken || !id) {
-    return { success: false, error: "Token or ID missing", data: null };
-  };
-
-  const supabase = getSupabaseClient(userToken);
+export async function updateTags(
+  id: string,
+  tags: string[]
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
+  if (!id) {
+    return { success: false, error: "ID missing", data: null };
+  }
 
   const { data, error } = await supabase
     .from("Notes")
     .update({ tags })
     .eq("id", id)
-    .eq("user_token", userToken)
     .select();
 
   if (error) {
     console.error("Error updating note tags:", error);
     return { success: false, error: error.message, data: null };
-  };
-
-  return { success: true, error: null, data: data?.[0] as Note };
-
-}
-
-export async function updateTitle(id: string, userToken: string, title: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  if (!userToken || !id) {
-    return { success: false, error: "Token or ID missing", data: null };
   }
 
-  const supabase = getSupabaseClient(userToken);
+  return { success: true, error: null, data: data?.[0] as Note };
+}
+
+export async function updateTitle(
+  id: string,
+  title: string
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
+  if (!id) {
+    return { success: false, error: "ID missing", data: null };
+  }
 
   const { data, error } = await supabase
     .from("Notes")
     .update({ title })
     .eq("id", id)
-    .eq("user_token", userToken)
     .select();
 
   if (error) {
@@ -173,18 +139,19 @@ export async function updateTitle(id: string, userToken: string, title: string):
   }
 
   return { success: true, error: null, data: data?.[0] as Note };
-};
+}
 
-export async function updateNote(userToken: string, text: string, noteId?: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  if (!userToken || !noteId) {
-    return { success: false, error: "Token or ID missing", data: null };
+export async function updateNote(
+  text: string,
+  noteId?: string
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
+  if (!noteId) {
+    return { success: false, error: "ID missing", data: null };
   }
 
-  const supabase = getSupabaseClient(userToken);
-
-  const { data, error } = await supabase.from("Notes")
-    .update({ text: text })
-    .eq("user_token", userToken)
+  const { data, error } = await supabase
+    .from("Notes")
+    .update({ text })
     .eq("id", noteId)
     .select();
 
@@ -196,19 +163,18 @@ export async function updateNote(userToken: string, text: string, noteId?: strin
   return { success: true, error: null, data: data?.[0] as Note };
 }
 
-
-export async function updateCat(id: string, userToken: string, category: string): Promise<{ success: boolean, error: string | null, data: Note | null }> {
-  if (!userToken || !id) {
-    return { success: false, error: "Token or ID missing", data: null };
+export async function updateCat(
+  id: string,
+  category: string
+): Promise<{ success: boolean; error: string | null; data: Note | null }> {
+  if (!id) {
+    return { success: false, error: "ID missing", data: null };
   }
-
-  const supabase = getSupabaseClient(userToken);
 
   const { data, error } = await supabase
     .from("Notes")
     .update({ category })
     .eq("id", id)
-    .eq("user_token", userToken)
     .select();
 
   if (error) {
@@ -217,4 +183,4 @@ export async function updateCat(id: string, userToken: string, category: string)
   }
 
   return { success: true, error: null, data: data?.[0] as Note };
-};
+}

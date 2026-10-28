@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { User, Session, AuthError, AuthResponse, OAuthResponse } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase.ts";
+import { supabase, setSupabaseAccessToken } from "../lib/supabase.ts";
+import { decodeJwtPayload } from "../lib/jwt.ts";
 
 export interface AuthContextType {
   user: User | null;
@@ -19,42 +20,37 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 declare const chrome: any;
 
-const syncExtensionToken = (token: string, userObj?: User | null) => {
+const syncExtensionToken = (accessToken: string) => {
+  setSupabaseAccessToken(accessToken || null);
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
   const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+  const targetOrigin = typeof window !== "undefined" ? window.location.origin : "";
 
-  if (token) {
-    localStorage.setItem("clipsync_user_token", token);
+  if (accessToken) {
+    localStorage.setItem("clipsync_access_token", accessToken);
     localStorage.setItem("clipsync_supabase_url", supabaseUrl);
     localStorage.setItem("clipsync_supabase_key", supabaseKey);
-    if (userObj) {
-      localStorage.setItem("clipsync_user_data", JSON.stringify(userObj));
-    }
-    // Notificar a content.js en tiempo real sin requerir APIs de Chrome en la app
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && targetOrigin) {
       window.postMessage(
         {
           type: "CLIPSYNC_AUTH_STATE",
           action: "LOGIN",
-          token,
+          accessToken,
           supabaseUrl,
           supabaseKey,
-          user: userObj,
         },
-        "*"
+        targetOrigin
       );
     }
   } else {
-    localStorage.removeItem("clipsync_user_token");
-    localStorage.removeItem("clipsync_user_data");
-    // Notificar logout a content.js en tiempo real
-    if (typeof window !== "undefined") {
+    localStorage.removeItem("clipsync_access_token");
+    if (typeof window !== "undefined" && targetOrigin) {
       window.postMessage(
         {
           type: "CLIPSYNC_AUTH_STATE",
           action: "LOGOUT",
         },
-        "*"
+        targetOrigin
       );
     }
   }
@@ -74,19 +70,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (isExtensionPopup && typeof chrome !== "undefined" && chrome?.storage?.local) {
       chrome.storage.local.get(
-        ["clipsync_user_token", "clipsync_user_data"],
+        ["clipsync_access_token"],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (res: any) => {
           if (!isMounted) return;
-          if (res?.clipsync_user_token) {
+          if (res?.clipsync_access_token) {
             try {
-              const parsedUser = res.clipsync_user_data
-                ? JSON.parse(res.clipsync_user_data)
+              const jwt = res.clipsync_access_token as string;
+              setSupabaseAccessToken(jwt);
+              const claims = decodeJwtPayload(jwt);
+              const derivedUser = claims?.sub
+                ? ({ id: claims.sub, email: claims.email } as User)
                 : null;
-              setUser(parsedUser);
+              setUser(derivedUser);
+              setSession({ access_token: jwt, user: derivedUser } as Session);
             } catch {
+              setSupabaseAccessToken(null);
               setUser(null);
+              setSession(null);
             }
+          } else {
+            setSupabaseAccessToken(null);
           }
           setLoading(false);
         }
@@ -95,16 +99,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const handleStorageChange = (changes: any) => {
         if (!isMounted) return;
-        if (changes.clipsync_user_token) {
-          if (!changes.clipsync_user_token.newValue) {
+        if (changes.clipsync_access_token) {
+          const newAccess = changes.clipsync_access_token.newValue as string | undefined;
+          if (!newAccess) {
+            setSupabaseAccessToken(null);
             setUser(null);
-          }
-        }
-        if (changes.clipsync_user_data?.newValue) {
-          try {
-            setUser(JSON.parse(changes.clipsync_user_data.newValue));
-          } catch {
-            setUser(null);
+            setSession(null);
+          } else {
+            setSupabaseAccessToken(newAccess);
+            const claims = decodeJwtPayload(newAccess);
+            const derivedUser = claims?.sub
+              ? ({ id: claims.sub, email: claims.email } as User)
+              : null;
+            setUser(derivedUser);
+            setSession({ access_token: newAccess, user: derivedUser } as Session);
           }
         }
       };
@@ -112,7 +120,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       chrome.storage.onChanged.addListener(handleStorageChange);
       return () => {
         isMounted = false;
-        chrome.storage.onChanged.removeListener(handleStorageChange);
+        if (typeof chrome !== "undefined" && chrome?.storage?.onChanged) {
+          chrome.storage.onChanged.removeListener(handleStorageChange);
+        }
       };
     }
 
@@ -122,8 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         const currentUser = session?.user ?? null;
         setUser(currentUser);
-        const currentToken = currentUser?.id || currentUser?.email || "";
-        syncExtensionToken(currentToken, currentUser);
+        syncExtensionToken(session?.access_token || "");
         setLoading(false);
       }
     });
@@ -133,8 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         const currentUser = session?.user ?? null;
         setUser(currentUser);
-        const currentToken = currentUser?.id || currentUser?.email || "";
-        syncExtensionToken(currentToken, currentUser);
+        syncExtensionToken(session?.access_token || "");
         setLoading(false);
       }
     });
@@ -175,7 +183,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   }, []);
 
-  const token = user?.id || user?.email || "";
+  // El único token de sesión expuesto en toda la aplicación es el JWT firmado (access_token)
+  const token = session?.access_token || "";
 
   const value = useMemo(
     () => ({
