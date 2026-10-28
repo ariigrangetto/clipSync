@@ -4,6 +4,7 @@ import useNotes from "../hooks/useNotes.tsx";
 import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, HeartIcon, ExternalLinkIcon } from "../components/Icons.tsx";
 import { getTagPalette } from "../components/TagsColor.tsx";
+import { isSafeHttpUrl, getSafeHostname } from "../lib/url.ts";
 import { Edit } from "lucide-react";
 
 export default function NoteDetail() {
@@ -90,15 +91,6 @@ export default function NoteDetail() {
     const res = await deleteNote(note.id);
     if (res) navigate("/");
     setIsDeleting(false);
-  };
-
-  const isUrl = (str: string) => {
-    try {
-      new URL(str);
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   async function handleAddTitle(title: string) {
@@ -291,14 +283,14 @@ export default function NoteDetail() {
                   >
                     <FlowerIcon size={12} />
                   </div>
-                  {note.source && isUrl(note.source) ? (
+                  {note.source && isSafeHttpUrl(note.source) ? (
                     <a
                       href={note.source}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-petal-green hover:underline flex items-center gap-1 font-medium truncate max-w-[150px] sm:max-w-xs"
                     >
-                      {new URL(note.source).hostname}
+                      {getSafeHostname(note.source, "Manual Entry")}
                       <ExternalLinkIcon size={12} />
                     </a>
                   ) : (

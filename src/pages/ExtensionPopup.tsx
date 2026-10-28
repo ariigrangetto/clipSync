@@ -4,6 +4,7 @@ import useNotes from "../hooks/useNotes.tsx";
 import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, ExternalLinkIcon } from "../components/Icons.tsx";
 import { getTagPalette } from "../components/TagsColor.tsx";
+import { getSafeHostname } from "../lib/url.ts";
 import { Zap, Copy, Check, Plus, CircleAlert } from "lucide-react";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -346,9 +347,7 @@ export default function ExtensionPopup() {
                         <div className="space-y-2">
                             {recentNotes.map((note) => {
                                 const palette = getTagPalette(note.category || "article");
-                                const hostname = note.source && note.source.startsWith("http")
-                                    ? new URL(note.source).hostname
-                                    : note.source || "Manual entry";
+                                const hostname = getSafeHostname(note.source, "Manual entry");
 
                                 return (
                                     <div

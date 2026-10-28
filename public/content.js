@@ -231,6 +231,21 @@
     }, 2200);
   }
 
+  function isValidSupabaseUrl(urlStr) {
+    if (!urlStr || typeof urlStr !== "string") return false;
+    try {
+      const parsed = new URL(urlStr.trim());
+      const host = parsed.hostname.toLowerCase();
+      return (
+        parsed.protocol === "https:" &&
+        Boolean(host) &&
+        (host.endsWith(".supabase.co") || host.endsWith(".supabase.in"))
+      );
+    } catch {
+      return false;
+    }
+  }
+
   async function saveSelectionToClipSync(text) {
     const currentSource = window.location.href;
 
@@ -242,18 +257,20 @@
     // Refrescar credenciales en tiempo real antes de validar
     await refreshCredentials();
 
-    // 1. Validar si existe un JWT firmado activo
-    if (!supabaseUrl || !supabaseKey || !activeAccessToken) {
+    // 1. Validar si existe un JWT firmado activo y que supabaseUrl sea un endpoint HTTPS legítimo de Supabase
+    if (!isValidSupabaseUrl(supabaseUrl) || !supabaseKey || !activeAccessToken) {
       lastSavedText = "";
       lastSavedSource = "";
       showToast("Please log in to ClipSync to save notes", true);
       return;
     }
 
+    const baseUrl = supabaseUrl.trim().replace(/\/+$/, "");
+
     try {
       // 1. Check if a note already exists for current URL (RLS filters automatically by JWT auth.uid())
       const checkRes = await fetch(
-        `${supabaseUrl}/rest/v1/Notes?source=eq.${encodeURIComponent(
+        `${baseUrl}/rest/v1/Notes?source=eq.${encodeURIComponent(
           currentSource
         )}&select=id,text`,
         {
@@ -275,7 +292,7 @@
         const combinedText = previousText ? `${previousText}\n\n${text}` : text;
 
         const updateRes = await fetch(
-          `${supabaseUrl}/rest/v1/Notes?id=eq.${noteId}`,
+          `${baseUrl}/rest/v1/Notes?id=eq.${encodeURIComponent(String(noteId))}`,
           {
             method: "PATCH",
             headers: {
@@ -296,7 +313,7 @@
         }
       } else {
         // 3. Otherwise create a new note (PostgreSQL sets user_token = auth.uid()::text via DEFAULT)
-        const createRes = await fetch(`${supabaseUrl}/rest/v1/Notes`, {
+        const createRes = await fetch(`${baseUrl}/rest/v1/Notes`, {
           method: "POST",
           headers: {
             apikey: supabaseKey,
