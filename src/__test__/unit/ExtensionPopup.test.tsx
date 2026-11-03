@@ -85,7 +85,6 @@ describe("ExtensionPopup Component Unit Tests", () => {
             screen.getByText(/Highlight any text on any webpage to save and sync it automatically/i)
         ).toBeInTheDocument();
 
-
         expect(screen.getByText("Auto-Save Selection")).toBeInTheDocument();
         expect(screen.getByTitle(/Disable Auto-Save/i)).toBeInTheDocument();
     });
@@ -105,23 +104,25 @@ describe("ExtensionPopup Component Unit Tests", () => {
         expect(mockShowNotification).toHaveBeenCalledWith("Auto-Save is enabled", false);
     });
 
-    test("renders user's latest notes list correctly", () => {
+    test("renders only the user's single latest note and does not show Add Note button", () => {
         render(<ExtensionPopup />, { wrapper: AllTheProviders });
 
-        expect(screen.getByText("Latest Notes")).toBeInTheDocument();
+        expect(screen.getByText("Latest Note")).toBeInTheDocument();
         expect(screen.getByText("Research Idea")).toBeInTheDocument();
         expect(screen.getByText("First clipped note content")).toBeInTheDocument();
-        expect(screen.getByText("Second clipped snippet")).toBeInTheDocument();
+        expect(screen.queryByText("Second clipped snippet")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /Add Note/i })).not.toBeInTheDocument();
     });
 
-    test("renders empty state when user has no notes", () => {
+    test("renders empty state when user has no notes without referencing Add Note", () => {
         mockNotes = [];
         render(<ExtensionPopup />, { wrapper: AllTheProviders });
 
         expect(screen.getByText("No notes yet")).toBeInTheDocument();
         expect(
-            screen.getByText(/Highlight any text on a webpage or click "\+ Add Note" above/i)
+            screen.getByText(/Highlight any text on a webpage to save it automatically/i)
         ).toBeInTheDocument();
+        expect(screen.queryByText(/click "\+ Add Note"/i)).not.toBeInTheDocument();
     });
 
     test("renders sign in prompt when user is not authenticated", () => {

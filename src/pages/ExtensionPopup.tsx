@@ -5,14 +5,14 @@ import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, ExternalLinkIcon } from "../components/Icons.tsx";
 import { getTagPalette } from "../components/TagsColor.tsx";
 import { getSafeHostname } from "../lib/url.ts";
-import { Zap, Copy, Check, Plus, CircleAlert } from "lucide-react";
+import { Zap, Copy, Check, CircleAlert } from "lucide-react";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 declare const chrome: any;
 
 export default function ExtensionPopup() {
     const { token, loading: authLoading } = useUserToken();
-    const { notes, loading: notesLoading, addNote } = useNotes();
+    const { notes, loading: notesLoading } = useNotes();
     const { showNotification } = useNotification();
 
     const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
@@ -23,9 +23,6 @@ export default function ExtensionPopup() {
     const isAutoSaveActive = Boolean(token && autoSaveEnabled);
 
     const [copiedId, setCopiedId] = useState<string | null>(null);
-    const [quickNoteText, setQuickNoteText] = useState("");
-    const [isAddingQuick, setIsAddingQuick] = useState(false);
-    const [savingQuick, setSavingQuick] = useState(false);
 
     useEffect(() => {
         if (typeof chrome !== "undefined" && chrome?.storage?.local) {
@@ -81,28 +78,11 @@ export default function ExtensionPopup() {
     const handleOpenFullDashboard = () => openApp("/");
     const handleOpenLogin = () => openApp("/login");
 
-    const handleQuickSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!quickNoteText.trim()) return;
-        setSavingQuick(true);
-        const res = await addNote({
-            text: quickNoteText.trim(),
-            source: "Extension Quick Note",
-            category: "article",
-            tags: ["quick", "extension"],
-        });
-        setSavingQuick(false);
-        if (res.success) {
-            setQuickNoteText("");
-            setIsAddingQuick(false);
-        }
-    };
-
-    const recentNotes = notes.slice(0, 4);
+    const latestNote = notes.length > 0 ? notes[0] : null;
 
     return (
         <div
-            className="w-full max-w-sm sm:w-95 min-h-125 max-h-150 flex flex-col justify-between overflow-y-auto text-petal-text select-none text-left mx-auto"
+            className="w-[430px] min-h-[360px] max-h-[500px] flex flex-col justify-between overflow-y-auto text-petal-text select-none text-left mx-auto"
             style={{
                 background: "#121413",
                 fontFamily: "var(--font-body)",
@@ -246,55 +226,10 @@ export default function ExtensionPopup() {
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-1.5">
                             <h4 className="text-xs font-semibold text-petal-text">
-                                Latest Notes
+                                Latest Note
                             </h4>
-                            {token && notes.length > 0 && (
-                                <span
-                                    className="text-[10px] px-1.5 py-0.2 rounded-full font-medium"
-                                    style={{ background: "#232825", color: "#88847C" }}
-                                >
-                                    {notes.length}
-                                </span>
-                            )}
                         </div>
-
-                        {token && (
-                            <button
-                                type="button"
-                                onClick={() => setIsAddingQuick(!isAddingQuick)}
-                                className="text-[11px] text-petal-green hover:underline flex items-center gap-1 cursor-pointer"
-                            >
-                                <Plus size={12} />
-                                <span>{isAddingQuick ? "Cancel" : "Add Note"}</span>
-                            </button>
-                        )}
                     </div>
-
-                    {isAddingQuick && token && (
-                        <form
-                            onSubmit={handleQuickSave}
-                            className="space-y-2 p-2.5 rounded-xl border animate-in fade-in duration-150"
-                            style={{ background: "#181B19", borderColor: "#2C322E" }}
-                        >
-                            <textarea
-                                autoFocus
-                                value={quickNoteText}
-                                onChange={(e) => setQuickNoteText(e.target.value)}
-                                placeholder="Type a quick note..."
-                                rows={2}
-                                className="w-full text-xs bg-transparent border-none outline-none resize-none text-petal-text placeholder-[#6E6B65]"
-                            />
-                            <div className="flex justify-end gap-1.5">
-                                <button
-                                    type="submit"
-                                    disabled={savingQuick || !quickNoteText.trim()}
-                                    className="px-2.5 py-1 text-[11px] rounded-lg bg-petal-green text-white font-medium hover:bg-petal-green-hover transition-colors disabled:opacity-50 cursor-pointer"
-                                >
-                                    {savingQuick ? "Saving..." : "Save Note"}
-                                </button>
-                            </div>
-                        </form>
-                    )}
 
                     {authLoading ? (
                         <div className="p-6 text-center text-xs text-petal-muted animate-pulse">
@@ -322,85 +257,75 @@ export default function ExtensionPopup() {
                         </div>
                     ) : notesLoading ? (
                         <div className="space-y-2">
-                            {[1, 2].map((i) => (
-                                <div
-                                    key={i}
-                                    className="p-2.5 rounded-xl border animate-pulse space-y-1.5"
-                                    style={{ background: "#181B19", borderColor: "#2C322E" }}
-                                >
-                                    <div className="h-3 bg-[#232825] rounded w-3/4" />
-                                    <div className="h-2 bg-[#232825] rounded w-1/2" />
-                                </div>
-                            ))}
+                            <div
+                                className="p-2.5 rounded-xl border animate-pulse space-y-1.5"
+                                style={{ background: "#181B19", borderColor: "#2C322E" }}
+                            >
+                                <div className="h-3 bg-[#232825] rounded w-3/4" />
+                                <div className="h-2 bg-[#232825] rounded w-1/2" />
+                            </div>
                         </div>
-                    ) : recentNotes.length === 0 ? (
+                    ) : !latestNote ? (
                         <div
                             className="p-4 rounded-2xl border text-center space-y-1 text-petal-muted"
                             style={{ background: "#181B19", borderColor: "#2C322E" }}
                         >
                             <p className="text-xs text-petal-text">No notes yet</p>
                             <p className="text-[11px] text-petal-muted">
-                                Highlight any text on a webpage or click "+ Add Note" above.
+                                Highlight any text on a webpage to save it automatically.
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-2">
-                            {recentNotes.map((note) => {
-                                const palette = getTagPalette(note.category || "article");
-                                const hostname = getSafeHostname(note.source, "Manual entry");
+                        <div
+                            className="p-3 rounded-xl border transition-all hover:border-[#3A423D] group relative"
+                            style={{ background: "#181B19", borderColor: "#2C322E" }}
+                        >
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                                <span
+                                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
+                                    style={{
+                                        background: getTagPalette(latestNote.category || "article").bg,
+                                        color: getTagPalette(latestNote.category || "article").text,
+                                    }}
+                                >
+                                    {latestNote.category || "article"}
+                                </span>
 
-                                return (
-                                    <div
-                                        key={note.id}
-                                        className="p-2.5 rounded-xl border transition-all hover:border-[#3A423D] group relative"
-                                        style={{ background: "#181B19", borderColor: "#2C322E" }}
-                                    >
-                                        <div className="flex items-center justify-between gap-2 mb-1">
-                                            <span
-                                                className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                                                style={{ background: palette.bg, color: palette.text }}
-                                            >
-                                                {note.category || "article"}
-                                            </span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(latestNote.id, latestNote.text)}
+                                    title="Copy to clipboard"
+                                    className="p-1 rounded text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer"
+                                >
+                                    {copiedId === latestNote.id ? (
+                                        <Check size={12} className="text-petal-green" />
+                                    ) : (
+                                        <Copy size={12} />
+                                    )}
+                                </button>
+                            </div>
 
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopy(note.id, note.text)}
-                                                title="Copy to clipboard"
-                                                className="p-1 rounded text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer"
-                                            >
-                                                {copiedId === note.id ? (
-                                                    <Check size={12} className="text-petal-green" />
-                                                ) : (
-                                                    <Copy size={12} />
-                                                )}
-                                            </button>
-                                        </div>
+                            {latestNote.title && (
+                                <p className="text-xs font-semibold text-petal-text truncate mb-1">
+                                    {latestNote.title}
+                                </p>
+                            )}
 
-                                        {note.title && (
-                                            <p className="text-xs font-semibold text-petal-text truncate mb-0.5">
-                                                {note.title}
-                                            </p>
-                                        )}
+                            <p className="text-[12px] text-petal-muted line-clamp-3 leading-relaxed">
+                                {latestNote.text}
+                            </p>
 
-                                        <p className="text-[11.5px] text-petal-muted line-clamp-2 leading-relaxed">
-                                            {note.text}
-                                        </p>
-
-                                        <div className="mt-1.5 flex items-center justify-between text-[10px] text-petal-muted">
-                                            <span className="truncate max-w-40" title={note.source}>
-                                                {hostname}
-                                            </span>
-                                            <span>
-                                                {new Date(note.created_at).toLocaleDateString("en-US", {
-                                                    month: "short",
-                                                    day: "numeric",
-                                                })}
-                                            </span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                            <div className="mt-2 flex items-center justify-between text-[10px] text-petal-muted">
+                                <span className="truncate max-w-52" title={latestNote.source}>
+                                    {getSafeHostname(latestNote.source, "Manual entry")}
+                                </span>
+                                <span>
+                                    {new Date(latestNote.created_at).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                    })}
+                                </span>
+                            </div>
                         </div>
                     )}
                 </div>
