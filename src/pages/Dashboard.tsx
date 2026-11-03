@@ -356,18 +356,27 @@ export default function Dashboard() {
                                 <MenuIcon size={20} />
                             </button>
                             {!isSidebarOpen && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsSidebarOpen(true);
-                                        localStorage.setItem("clipsync_sidebar_open", "true");
-                                    }}
-                                    className="hidden md:flex p-2 -ml-1 rounded-xl text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer shrink-0"
-                                    aria-label="Expand sidebar"
-                                    title="Expand sidebar"
-                                >
-                                    <PanelLeftOpen size={20} />
-                                </button>
+                                <div className="hidden md:flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsSidebarOpen(true);
+                                            localStorage.setItem("clipsync_sidebar_open", "true");
+                                        }}
+                                        className="p-2 -ml-1 rounded-xl text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer shrink-0"
+                                        aria-label="Expand sidebar"
+                                        title="Expand sidebar"
+                                    >
+                                        <PanelLeftOpen size={20} />
+                                    </button>
+                                    <div
+                                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                                        style={{ background: '#5E9E6E' }}
+                                        title="ClipSync"
+                                    >
+                                        <FlowerIcon size={16} className="logo-flower" style={{ color: '#ffffff' } as CSSProperties} />
+                                    </div>
+                                </div>
                             )}
                             <div>
                                 <h1
