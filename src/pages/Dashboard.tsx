@@ -1,6 +1,7 @@
 import { useState, useEffect, type CSSProperties } from "react";
 import useNotification from "../hooks/useNotification.tsx";
 import { FlowerIcon, PlusIcon, SearchIcon, GridIcon, HeartIcon, KeyIcon, MenuIcon, CloseIcon } from "../components/Icons.tsx";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import NoteCard from "../components/NoteCard.tsx";
 import AddNoteModal from "../components/AddNoteModal.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
@@ -18,6 +19,10 @@ export default function Dashboard() {
     const [searchFocused, setSearchFocused] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+        const saved = localStorage.getItem("clipsync_sidebar_open");
+        return saved === null ? true : saved === "true";
+    });
     const { showNotification } = useNotification();
     const navigate = useNavigate();
     const { user, signOut, loading: userLoading } = useUserToken();
@@ -147,9 +152,13 @@ export default function Dashboard() {
                 )}
 
                 <aside
-                    className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] flex flex-col shrink-0 border-r bg-[#181B19] transition-transform duration-200 ease-in-out md:static md:w-56 md:translate-x-0 ${
-                        isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
-                    }`}
+                    className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] flex flex-col shrink-0 border-r bg-[#181B19] transition-all duration-200 ease-in-out md:static ${
+                        isSidebarOpen
+                            ? "md:w-56 md:translate-x-0"
+                            : "md:w-0 md:-translate-x-full md:border-r-0 md:opacity-0 pointer-events-none md:pointer-events-none"
+                    } ${
+                        isMobileMenuOpen ? "translate-x-0 shadow-2xl pointer-events-auto" : "-translate-x-full md:translate-x-0"
+                    } overflow-hidden`}
                     style={{
                         background: '#181B19',
                         borderColor: '#2C322E',
@@ -158,26 +167,40 @@ export default function Dashboard() {
                     <div className="px-5 pt-6 pb-5 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                             <div
-                                className="w-8 h-8 rounded-xl flex items-center justify-center"
+                                className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                                 style={{ background: '#5E9E6E' }}
                             >
                                 <FlowerIcon size={18} className="logo-flower" style={{ color: '#ffffff' } as CSSProperties} />
                             </div>
                             <span
-                                className="text-base font-semibold tracking-tight"
+                                className="text-base font-semibold tracking-tight whitespace-nowrap"
                                 style={{ fontFamily: 'var(--font-display)', color: '#EDEDEA', fontWeight: 500 }}
                             >
                                 ClipSync
                             </span>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="md:hidden p-1 rounded-lg text-petal-muted hover:text-petal-text hover:bg-[#232825] cursor-pointer"
-                            aria-label="Close navigation"
-                        >
-                            <CloseIcon size={18} />
-                        </button>
+                        <div className="flex items-center">
+                            <button
+                                type="button"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="md:hidden p-1 rounded-lg text-petal-muted hover:text-petal-text hover:bg-[#232825] cursor-pointer"
+                                aria-label="Close navigation"
+                            >
+                                <CloseIcon size={18} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsSidebarOpen(false);
+                                    localStorage.setItem("clipsync_sidebar_open", "false");
+                                }}
+                                className="hidden md:flex p-1.5 rounded-lg text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer"
+                                aria-label="Collapse sidebar"
+                                title="Collapse sidebar"
+                            >
+                                <PanelLeftClose size={18} />
+                            </button>
+                        </div>
                     </div>
 
                     <nav className="flex-1 px-3 space-y-0.5">
@@ -332,6 +355,20 @@ export default function Dashboard() {
                             >
                                 <MenuIcon size={20} />
                             </button>
+                            {!isSidebarOpen && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsSidebarOpen(true);
+                                        localStorage.setItem("clipsync_sidebar_open", "true");
+                                    }}
+                                    className="hidden md:flex p-2 -ml-1 rounded-xl text-petal-muted hover:text-petal-text hover:bg-[#232825] transition-colors cursor-pointer shrink-0"
+                                    aria-label="Expand sidebar"
+                                    title="Expand sidebar"
+                                >
+                                    <PanelLeftOpen size={20} />
+                                </button>
+                            )}
                             <div>
                                 <h1
                                     className="text-lg sm:text-xl leading-tight"

@@ -51,6 +51,7 @@ vi.mock("../../hooks/useNotes.tsx", () => ({
 describe("Dashboard Unit Tests", () => {
     beforeEach(() => {
         mockUser = { id: "test-user-id", email: "test@example.com" };
+        localStorage.clear();
     });
 
     test("Elements that dashboard should contain even when there are no notes yet", async () => {
@@ -84,6 +85,27 @@ describe("Dashboard Unit Tests", () => {
         });
         fireEvent.click(newNoteBtn);
         expect(screen.getByText("Add new note")).toBeInTheDocument();
+    });
 
+    test("should allow collapsing and expanding sidebar and persist state in localStorage", () => {
+        render(<Dashboard />, { wrapper: AllTheProviders });
+
+        // Sidebar should initially be open
+        const collapseBtn = screen.getByRole("button", { name: "Collapse sidebar" });
+        expect(collapseBtn).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Expand sidebar" })).not.toBeInTheDocument();
+
+        // Click collapse button
+        fireEvent.click(collapseBtn);
+        expect(localStorage.getItem("clipsync_sidebar_open")).toBe("false");
+
+        // Expand button should now be visible in the header
+        const expandBtn = screen.getByRole("button", { name: "Expand sidebar" });
+        expect(expandBtn).toBeInTheDocument();
+
+        // Click expand button to restore
+        fireEvent.click(expandBtn);
+        expect(localStorage.getItem("clipsync_sidebar_open")).toBe("true");
+        expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
     });
 });
