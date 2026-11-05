@@ -298,6 +298,28 @@ describe("NoteCard Component Unit Tests", () => {
             expect(mockNavigate).toHaveBeenCalledWith("/note/note-123");
         });
 
+        test("should not navigate to note detail when user has text selected within the card", () => {
+            const originalGetSelection = window.getSelection;
+            window.getSelection = vi.fn().mockReturnValue({
+                toString: () => "Selected text sample",
+            } as unknown as Selection);
+
+            render(
+                <MemoryRouter>
+                    <NoteCard
+                        note={sampleNote}
+                        onToggleFavorite={mockOnToggleFavorite}
+                    />
+                </MemoryRouter>
+            );
+
+            const title = screen.getByText("Test Note Title");
+            fireEvent.click(title);
+
+            expect(mockNavigate).not.toHaveBeenCalled();
+            window.getSelection = originalGetSelection;
+        });
+
         test("should navigate to note detail when Open button is clicked", () => {
             render(
                 <MemoryRouter>

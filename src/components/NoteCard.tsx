@@ -38,6 +38,10 @@ export default function NoteCard({
     const tags = Array.isArray(note.tags) ? note.tags : [];
 
     const handleCardClick = () => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim().length > 0) {
+            return;
+        }
         navigate(`/note/${note.id}`);
     };
 
