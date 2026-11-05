@@ -6,7 +6,8 @@ import NoteCard from "../components/NoteCard.tsx";
 import AddNoteModal from "../components/AddNoteModal.tsx";
 import { useUserToken } from "../hooks/useUserToken.ts";
 import useNotes from "../hooks/useNotes.tsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 declare const chrome: any;
@@ -25,6 +26,31 @@ export default function Dashboard() {
     });
     const { showNotification } = useNotification();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [showPasswordResetSuccess, setShowPasswordResetSuccess] = useState<boolean>(() => {
+        if (typeof window === "undefined") return false;
+        const fromSession = sessionStorage.getItem("clipsync_password_reset_success") === "true";
+        const fromState = Boolean(location.state && (location.state as { passwordResetSuccess?: boolean }).passwordResetSuccess);
+
+        if (fromSession) {
+            sessionStorage.removeItem("clipsync_password_reset_success");
+        }
+        return fromSession || fromState;
+    });
+
+    useEffect(() => {
+        if (!showPasswordResetSuccess) return;
+
+        if (location.state && (location.state as { passwordResetSuccess?: boolean }).passwordResetSuccess) {
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+
+        const timer = setTimeout(() => {
+            setShowPasswordResetSuccess(false);
+        }, 4500);
+
+        return () => clearTimeout(timer);
+    }, [showPasswordResetSuccess, location.pathname, location.state, navigate]);
     const { user, signOut, loading: userLoading } = useUserToken();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -553,6 +579,56 @@ export default function Dashboard() {
                     </div>
                 </main>
             </div>
+
+
+            {/* Password Reset Success Window */}
+            {showPasswordResetSuccess && (
+                <div
+                    role="status"
+                    aria-live="polite"
+                    data-testid="password-reset-success-modal"
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeSlideUp"
+                    onClick={() => setShowPasswordResetSuccess(false)}
+                >
+                    <div
+                        className="relative max-w-sm w-full rounded-2xl sm:rounded-3xl p-6 border shadow-2xl text-center space-y-4"
+                        style={{
+                            background: "#181B19",
+                            borderColor: "#2C322E",
+                            color: "#EDEDEA",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto"
+                            style={{ background: "#1D3323", border: "1px solid #2C4233" }}
+                            data-testid="shield-icon-container"
+                        >
+                            <ShieldCheck className="w-7 h-7" style={{ color: "#7EC691" }} />
+                        </div>
+                        <div className="space-y-1.5">
+                            <h3
+                                className="text-lg font-medium"
+                                style={{ fontFamily: "var(--font-display)", color: "#EDEDEA" }}
+                            >
+                                Password Saved Successfully
+                            </h3>
+                            <p className="text-xs text-[#9E9B93] leading-relaxed">
+                                Your new password has been updated and securely saved.
+                            </p>
+                        </div>
+                        <div className="pt-2">
+                            <button
+                                onClick={() => setShowPasswordResetSuccess(false)}
+                                className="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white transition-colors cursor-pointer"
+                                style={{ background: "#5E9E6E" }}
+                            >
+                                Continue to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AddNoteModal
                 isOpen={isAddModalOpen}

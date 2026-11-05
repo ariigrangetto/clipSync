@@ -9,9 +9,12 @@ export function useUserToken(): AuthContextType {
       session: null,
       token: "",
       loading: false,
+      isPasswordRecovery: false,
       signInWithEmail: async () => ({ data: { user: null, session: null }, error: null }),
       signUpWithEmail: async () => ({ data: { user: null, session: null }, error: null }),
       signInWithGoogle: async () => ({ data: { provider: "google" as const, url: null }, error: null }),
+      resetPasswordForEmail: async () => ({ error: null }),
+      updatePassword: async () => ({ error: null }),
       signOut: async () => ({ error: null }),
     };
   }

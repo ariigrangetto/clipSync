@@ -1,7 +1,8 @@
 import { describe, expect, test, vi, beforeEach } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import Dashboard from "../../pages/Dashboard.tsx";
-import { AllTheProviders } from "./Providers.tsx";
+import { MemoryRouter } from "react-router-dom";
+const TestWrapper = ({ children }: { children: React.ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
 
 let mockUser: { id: string; email: string } | null = null;
 
@@ -55,7 +56,7 @@ describe("Dashboard Unit Tests", () => {
     });
 
     test("Elements that dashboard should contain even when there are no notes yet", async () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
+        render(<Dashboard />, { wrapper: TestWrapper });
 
         expect(screen.getByText(/All Notes/i)).toBeInTheDocument();
         expect(screen.getByText(/Favorites/i)).toBeInTheDocument();
@@ -70,14 +71,14 @@ describe("Dashboard Unit Tests", () => {
     });
 
     test("should call signOut when the logout button is clicked", () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
+        render(<Dashboard />, { wrapper: TestWrapper });
         const logoutBtn = screen.getByRole("button", { name: "Logout" });
         fireEvent.click(logoutBtn);
         expect(mockSignOut).toHaveBeenCalled();
     });
 
     test("Opening modal for adding a new note", () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
+        render(<Dashboard />, { wrapper: TestWrapper });
         expect(screen.queryByText("Add new note")).not.toBeInTheDocument();
 
         const newNoteBtn = screen.getByRole("button", {
@@ -88,7 +89,7 @@ describe("Dashboard Unit Tests", () => {
     });
 
     test("should allow collapsing and expanding sidebar and persist state in localStorage", () => {
-        render(<Dashboard />, { wrapper: AllTheProviders });
+        render(<Dashboard />, { wrapper: TestWrapper });
 
         // Sidebar should initially be open
         const collapseBtn = screen.getByRole("button", { name: "Collapse sidebar" });
@@ -107,5 +108,47 @@ describe("Dashboard Unit Tests", () => {
         fireEvent.click(expandBtn);
         expect(localStorage.getItem("clipsync_sidebar_open")).toBe("true");
         expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+    });
+    test("renders password reset success window with shield icon when navigated from recovery", () => {
+        render(
+            <MemoryRouter initialEntries={[{ pathname: "/", state: { passwordResetSuccess: true } }]}>
+                <Dashboard />
+            </MemoryRouter>
+        );
+
+        const modal = screen.getByTestId("password-reset-success-modal");
+        expect(modal).toBeInTheDocument();
+        expect(screen.getByTestId("shield-icon-container")).toBeInTheDocument();
+        expect(screen.getByText(/Password Saved Successfully/i)).toBeInTheDocument();
+        expect(screen.getByText(/Your new password has been updated and securely saved/i)).toBeInTheDocument();
+
+        // Dismiss via Continue button
+        const continueBtn = screen.getByRole("button", { name: /Continue to Dashboard/i });
+        fireEvent.click(continueBtn);
+        expect(screen.queryByTestId("password-reset-success-modal")).not.toBeInTheDocument();
+    });
+
+    test("renders password reset success window when session storage flag is present", () => {
+        sessionStorage.setItem("clipsync_password_reset_success", "true");
+
+        render(
+            <MemoryRouter initialEntries={["/"]}>
+                <Dashboard />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByTestId("password-reset-success-modal")).toBeInTheDocument();
+        expect(sessionStorage.getItem("clipsync_password_reset_success")).toBeNull();
+    });
+
+    test("does not render password reset success window on regular dashboard mount without recovery flags", () => {
+        sessionStorage.clear();
+        render(
+            <MemoryRouter initialEntries={[{ pathname: "/", state: {} }]}>
+                <Dashboard />
+            </MemoryRouter>
+        );
+
+        expect(screen.queryByTestId("password-reset-success-modal")).not.toBeInTheDocument();
     });
 });

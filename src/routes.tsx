@@ -4,6 +4,7 @@ import { lazy } from "react";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const Login = lazy(() => import("./pages/Login.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const NoteDetail = lazy(() => import("./pages/NoteDetail.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage.tsx"));
@@ -35,6 +36,11 @@ export const Router = createBrowserRouter([
         errorElement: <ErrorPage />
     },
     {
+        path: "/reset-password",
+        element: <ResetPassword />,
+        errorElement: <ErrorPage />
+    },
+    {
         path: "/",
         element: (
             <ProtectedRoute>
@@ -57,5 +63,3 @@ export const Router = createBrowserRouter([
         element: <ErrorPage />
     }
 ]);
-
-

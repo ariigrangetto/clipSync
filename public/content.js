@@ -119,13 +119,30 @@
     }
   });
 
+  function isJwtExpired(jwt) {
+    if (!jwt || typeof jwt !== "string") return true;
+    const parts = jwt.split(".");
+    if (parts.length !== 3) return true;
+    try {
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+      const payload = JSON.parse(atob(padded));
+      if (!payload || !payload.sub) return true;
+      if (typeof payload.exp === "number" && payload.exp * 1000 <= Date.now()) {
+        return true;
+      }
+      return false;
+    } catch {
+      return true;
+    }
+  }
+
   // Comprobar a través de la URL si el usuario se encuentra dentro de la web app ClipSync
   function isClipSyncApp() {
     try {
-      const hostname = window.location.hostname;
+      const hostname = window.location.hostname.toLowerCase();
       return (
         hostname === "clipsyncc-ashen.vercel.app" ||
-        (hostname.endsWith(".vercel.app") && hostname.includes("clipsync")) ||
         hostname === "localhost" ||
         hostname === "127.0.0.1"
       );
@@ -257,8 +274,19 @@
     // Refrescar credenciales en tiempo real antes de validar
     await refreshCredentials();
 
-    // 1. Validar si existe un JWT firmado activo y que supabaseUrl sea un endpoint HTTPS legítimo de Supabase
-    if (!isValidSupabaseUrl(supabaseUrl) || !supabaseKey || !activeAccessToken) {
+    // 1. Validar si existe un JWT firmado activo (no expirado) y que supabaseUrl sea un endpoint HTTPS legítimo de Supabase
+    if (
+      !isValidSupabaseUrl(supabaseUrl) ||
+      !supabaseKey ||
+      !activeAccessToken ||
+      isJwtExpired(activeAccessToken)
+    ) {
+      if (activeAccessToken && isJwtExpired(activeAccessToken)) {
+        activeAccessToken = "";
+        if (typeof chrome !== "undefined" && chrome.storage?.local) {
+          chrome.storage.local.remove(["clipsync_access_token"]);
+        }
+      }
       lastSavedText = "";
       lastSavedSource = "";
       showToast("Please log in to ClipSync to save notes", true);

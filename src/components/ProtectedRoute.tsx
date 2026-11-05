@@ -3,7 +3,7 @@ import { useUserToken } from "../hooks/useUserToken.ts";
 import { FlowerIcon } from "./Icons.tsx";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useUserToken();
+  const { user, loading, isPasswordRecovery } = useUserToken();
 
   if (loading) {
     return (
@@ -23,6 +23,10 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         </div>
       </div>
     );
+  }
+
+  if (isPasswordRecovery) {
+    return <Navigate to="/reset-password" replace />;
   }
 
   if (!user) {
