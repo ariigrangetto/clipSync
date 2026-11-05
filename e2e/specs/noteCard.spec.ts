@@ -146,7 +146,7 @@ test.describe("NoteCard component with non-existing notes", () => {
     test("should display a message when no notes are found", async ({ page }) => {
         await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
         await expect(page.getByText("There are no notes here yet")).toBeVisible();
-        await expect(page.getByText("Select text anywhere on the web or create a note manually to get started")).toBeVisible();
+        await expect(page.getByText("Select text anywhere on the web or create a manual snippet to get started.")).toBeVisible();
         await expect(page.getByRole("button", { name: "+ New Manual Note" })).toBeVisible();
     });
 });

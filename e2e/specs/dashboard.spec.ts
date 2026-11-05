@@ -73,7 +73,7 @@ test.describe("Dashboard page test", () => {
         await page.goto("http://localhost:5173", { waitUntil: "domcontentloaded" });
 
         await expect(page.getByText("There are no notes here yet")).toBeVisible();
-        await expect(page.getByText("Select text anywhere on the web or create a note manually to get started")).toBeVisible();
+        await expect(page.getByText("Select text anywhere on the web or create a manual snippet to get started.")).toBeVisible();
         await expect(page.getByRole("button", { name: "+ New Manual Note" })).toBeVisible();
         await expect(page.getByText("0 notes")).toBeVisible();
     });

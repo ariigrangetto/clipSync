@@ -140,7 +140,9 @@ describe("Login Page Unit Tests", () => {
         });
 
         expect(screen.getByRole("heading", { level: 2, name: /Recover your password/i })).toBeInTheDocument();
-        expect(screen.getByText(/Email sent! Please check your inbox for the reset link./i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(/Email sent! Please check your inbox for the reset link./i)).toBeInTheDocument();
+        });
     });
 
     test("should display friendly attempt-based error message inline when rate-limited during forgot password", async () => {
