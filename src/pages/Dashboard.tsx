@@ -138,7 +138,7 @@ export default function Dashboard() {
             const category = isCodeBlock ? 'code' : 'general';
 
             if (typeof chrome !== "undefined" && chrome?.storage?.local) {
-                chrome.storage.local.get(["clipsync_notes"], (result: { clipsync_notes?: any[] }) => {
+                chrome.storage.local.get(["clipsync_notes"], (result: { clipsync_notes?: unknown[] }) => {
                     const currentNotes = result.clipsync_notes || [];
                     const newNote = {
                         id: crypto.randomUUID(),
